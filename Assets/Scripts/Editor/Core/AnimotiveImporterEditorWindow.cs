@@ -12,6 +12,7 @@ namespace AnimotiveImporterEditor
     using UnityEngine.Animations;
     using UnityEngine.Playables;
     using UnityEngine.Timeline;
+    using Object = UnityEngine.Object;
 
 
     public class AnimotiveImporterEditorWindow : EditorWindow
@@ -85,6 +86,19 @@ namespace AnimotiveImporterEditor
 
             if (GUILayout.Button("TESTTTTTTTTTTT"))
             {
+                string path =
+                    "Assets/StreamingAssets/AnimotivePluginExampleStructure/Example Data/Animation/Pat Character Holder_0_FacialClip_Take1.anim";
+                string outputPath =
+                    "Assets/testtt.anim";
+
+
+                Object obj = new AnimationClip();
+                
+                
+
+                AssetDatabase.CreateAsset(obj, outputPath);
+
+                AssetDatabase.Refresh();
             }
         }
 
@@ -115,10 +129,10 @@ namespace AnimotiveImporterEditor
             TimelineAsset asset = CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
-           var track =  asset.CreateTrack<TestTrack>();
-          var clip = track.CreateClip<TestClip>();
-          clip.displayName = "DISPLAY_NAME_HERE";
-          
+            var track = asset.CreateTrack<TestTrack>();
+            var clip = track.CreateClip<TestClip>();
+            clip.displayName = "DISPLAY_NAME_HERE";
+
 
             AssetDatabase.Refresh();
 
@@ -126,8 +140,7 @@ namespace AnimotiveImporterEditor
                 AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
 
 
-            
-            return playableAsset ;
+            return playableAsset;
         }
     }
 }
