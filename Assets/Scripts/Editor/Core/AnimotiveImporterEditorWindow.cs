@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace AnimotiveImporterEditor
 {
+    using UnityEngine.Animations;
     using UnityEngine.Playables;
     using UnityEngine.Timeline;
 
@@ -113,12 +114,20 @@ namespace AnimotiveImporterEditor
             string assetPath = string.Concat("Assets/", obj.GetInstanceID().ToString(), ".playable");
             TimelineAsset asset = CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
-            // var track = asset.CreateTrack<T_TYPE>(null, "tt");
-            // var clip = track.CreateClip<T_TYPE>();
-            AssetDatabase.Refresh();
-            return AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
-        }
 
-   
+           var track =  asset.CreateTrack<TestTrack>();
+          var clip = track.CreateClip<TestClip>();
+          clip.displayName = "DISPLAY_NAME_HERE";
+          
+
+            AssetDatabase.Refresh();
+
+            PlayableAsset playableAsset =
+                AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
+
+
+            
+            return playableAsset ;
+        }
     }
 }
