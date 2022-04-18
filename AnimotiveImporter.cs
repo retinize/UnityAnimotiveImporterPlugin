@@ -1,14 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
-
-public class ExampleWindow : EditorWindow
+public class AnimotiveImporter : EditorWindow
 {
     private const string _StreamingAssets = "StreamingAssets";
 
@@ -21,7 +18,7 @@ public class ExampleWindow : EditorWindow
     [MenuItem("Animotive/Importer")]
     public static void ShowWindow()
     {
-        ExampleWindow window = GetWindow<ExampleWindow>("Example");
+        AnimotiveImporter window = GetWindow<AnimotiveImporter>("Example");
         window.Show();
     }
 
@@ -69,6 +66,9 @@ public class ExampleWindow : EditorWindow
         if (GUILayout.Button("Create Test scene"))
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            scene.name = "Test";
+            EditorSceneManager.SaveScene(scene,"C:\\Users\\Ertan\\Desktop\\Unity\\UnityAnimotiveImporterPlugin\\Assets\\StreamingAssets\\AnimotivePluginExampleStructure\\test.unity");
+            AssetDatabase.Refresh();
         }
 
 
@@ -77,4 +77,11 @@ public class ExampleWindow : EditorWindow
 
         EditorGUI.EndDisabledGroup();
     }
+
+
+    private void CreateGroups(List<AnimotiveImporterGroup> groups)
+    {
+        
+    }
+
 }
