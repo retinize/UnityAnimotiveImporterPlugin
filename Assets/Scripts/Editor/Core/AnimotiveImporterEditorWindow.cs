@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 namespace AnimotiveImporterEditor
 {
+    using System.IO;
+    using OdinSerializer;
     using UnityEngine.Animations;
     using UnityEngine.Playables;
     using UnityEngine.Timeline;
@@ -87,18 +89,16 @@ namespace AnimotiveImporterEditor
             if (GUILayout.Button("TESTTTTTTTTTTT"))
             {
                 string path =
-                    "Assets/StreamingAssets/AnimotivePluginExampleStructure/Example Data/Animation/Pat Character Holder_0_FacialClip_Take1.anim";
-                string outputPath =
-                    "Assets/testtt.anim";
+                    @"C:\\Users\\Ertan\\Desktop\\Unity\\UnityAnimotiveImporterPlugin\\Assets\\AnimotivePluginExampleStructure\\Example Data\\Animation\\Binary\\Frank Character Root_TransformClip_Take1";
+                IT_CharacterTransformAnimationClip clip =
+                    SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
+                        File.ReadAllBytes(path),
+                        DataFormat.Binary);
+                for (int i = 0; i < clip.physicsKeyframesCurve0.Length; i++)
+                {
+                    Debug.Log(clip.physicsKeyframesCurve0[i]);
+                }
 
-
-                Object obj = new AnimationClip();
-                
-                
-
-                AssetDatabase.CreateAsset(obj, outputPath);
-
-                AssetDatabase.Refresh();
             }
         }
 
@@ -144,3 +144,5 @@ namespace AnimotiveImporterEditor
         }
     }
 }
+
+
