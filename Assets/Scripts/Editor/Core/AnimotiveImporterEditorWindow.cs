@@ -89,23 +89,55 @@ namespace AnimotiveImporterEditor
             if (GUILayout.Button("TESTTTTTTTTTTT"))
             {
                 string path =
-                    @"C:\\Users\\Ertan\\Desktop\\Unity\\UnityAnimotiveImporterPlugin\\Assets\\AnimotivePluginExampleStructure\\Example Data\\Animation\\Binary\\Frank Character Root_TransformClip_Take1";
+                    @"C:\Users\Ertan-Laptop\Documents\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Binary\\Frank Character Root_TransformClip_Take1";
                 IT_CharacterTransformAnimationClip clip =
                     SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
                         File.ReadAllBytes(path),
                         DataFormat.Binary);
-                for (int i = 0; i < clip.physicsKeyframesCurve0.Length; i++)
+
+                GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
+                    "Assets\\AnimotivePluginExampleStructure\\SampleModels\\Frank_Export_Master.fbx",
+                    typeof(GameObject)) as GameObject;
+
+                characterRoot = Instantiate(characterRoot);
+                Animator animator = characterRoot.GetComponent<Animator>();
+
+
+                Dictionary<string, Transform> transformsByHumanBoneName =
+                    new Dictionary<string, Transform>(animator.avatar.humanDescription.human.Length);
+
+                for (int i = 0; i < animator.avatar.humanDescription.human.Length; i++)
                 {
-                    Debug.Log(clip.physicsKeyframesCurve0[i]);
+                    HumanBone bone = animator.avatar.humanDescription.human[i];
+                    Transform boneTransform = characterRoot.transform.FindChildRecursively(bone.boneName);
+                    transformsByHumanBoneName.Add(bone.humanName, boneTransform);
                 }
 
+                transformsByHumanBoneName.Add("LastBone", characterRoot.transform);
+
+                // var indexInCurveOfKey = _keyIndex * numberOfBonesToAnimate + transformIndex;
+
+
+                IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
+
+                Initialize(clip, itAvatar);
+
+
+                PlayAnimation(clip, transformsByHumanBoneName);
             }
         }
+
 
         private void CreateScene(string sceneName)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             string dirName = System.IO.Path.Combine(_fullPath, Constants.UNITY_FILES_FOLDER_NAME);
+
+            if (!Directory.Exists(dirName))
+            {
+                Directory.CreateDirectory(dirName);
+            }
+
             EditorSceneManager.SaveScene(scene,
                 string.Concat(dirName, System.IO.Path.DirectorySeparatorChar, sceneName,
                     Constants.UNITY_SCENE_EXTENSION));
@@ -142,7 +174,41 @@ namespace AnimotiveImporterEditor
 
             return playableAsset;
         }
+
+        private void Initialize(IT_CharacterTransformAnimationClip clip, IT_Avatar avatar)
+        {
+            Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
+            var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
+            for (var transformsToCaptureIndex = 0;
+                 transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
+                 transformsToCaptureIndex++)
+            {
+                Int32 humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
+                HumanBodyBones humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
+                Transform boneTransform = avatar.transformsByHumanBone[humanBodyBone];
+                physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
+            }
+        }
+
+        private void PlayAnimation(IT_CharacterTransformAnimationClip clip,
+            Dictionary<string, Transform> transformsByHumanBoneName)
+        {
+            for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
+            {
+                int transformIndex = 0;
+                foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
+                {
+                    var indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
+
+                    pair.Value.localPosition = new Vector3(clip.physicsKeyframesCurve0[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve1[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+                    pair.Value.localRotation = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve4[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve5[indexInCurveOfKey], clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+                    transformIndex++;
+                }
+            }
+        }
     }
 }
-
-

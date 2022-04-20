@@ -325,3 +325,247 @@ public class IT_KeyFrame
         outWeight = nOutWeight;
     }*/
 }
+[System.Serializable]
+public class IT_Avatar
+{
+    public Avatar unityAvatar;
+    private Dictionary<string, Transform> _transformsByHumanBoneName;
+    public Dictionary<HumanBodyBones, Transform> transformsByHumanBone;
+    public Dictionary<Transform, HumanBodyBones> humanBoneByTransforms;
+    private Dictionary<string, string> _transformsPathsFromHipToHumanBoneName;
+    public bool[][] leftHandBonesAvailability;
+    public bool[][] rightHandBonesAvailability;
+
+    /// <summary> List of humanoid bone indexes that this character has, based on HumanBodyBones enum </summary>
+    public int[] indexesOfHumanoidBonesEnumThatAreAvailable;
+
+    public int[] indexesOfHumanoidBonesEnumAvailableThatAreNotFingerBones;
+    public Dictionary<HumanBodyBones, int> indexOfTransformByHumanoidBone;
+
+    #region HumanoidBones
+
+    public static HashSet<HumanBodyBones> HumanoidFingerBones = new HashSet<HumanBodyBones>
+    {
+        HumanBodyBones.LeftThumbDistal, HumanBodyBones.LeftThumbIntermediate, HumanBodyBones.LeftThumbProximal,
+        HumanBodyBones.LeftIndexDistal, HumanBodyBones.LeftIndexIntermediate, HumanBodyBones.LeftIndexProximal,
+        HumanBodyBones.LeftMiddleDistal, HumanBodyBones.LeftMiddleIntermediate, HumanBodyBones.LeftMiddleProximal,
+        HumanBodyBones.LeftRingDistal, HumanBodyBones.LeftRingIntermediate, HumanBodyBones.LeftRingProximal,
+        HumanBodyBones.LeftLittleDistal, HumanBodyBones.LeftLittleIntermediate, HumanBodyBones.LeftLittleProximal,
+
+        HumanBodyBones.RightThumbDistal, HumanBodyBones.RightThumbIntermediate, HumanBodyBones.RightThumbProximal,
+        HumanBodyBones.RightIndexDistal, HumanBodyBones.RightIndexIntermediate, HumanBodyBones.RightIndexProximal,
+        HumanBodyBones.RightMiddleDistal, HumanBodyBones.RightMiddleIntermediate, HumanBodyBones.RightMiddleProximal,
+        HumanBodyBones.RightRingDistal, HumanBodyBones.RightRingIntermediate, HumanBodyBones.RightRingProximal,
+        HumanBodyBones.RightLittleDistal, HumanBodyBones.RightLittleIntermediate, HumanBodyBones.RightLittleProximal,
+    };
+
+    public static string[][] LeftHandHumanoidFingerBonesName =
+    {
+        new[] { "Left Thumb Proximal", "Left Thumb Intermediate", "Left Thumb Distal" },
+        new[] { "Left Index Proximal", "Left Index Intermediate", "Left Index Distal" },
+        new[] { "Left Middle Proximal", "Left Middle Intermediate", "Left Middle Distal" },
+        new[] { "Left Ring Proximal", "Left Ring Intermediate", "Left Ring Distal" },
+        new[] { "Left Little Proximal", "Left Little Intermediate", "Left Little Distal" },
+    };
+
+    public static string[][] RightHandHumanoidFingerBonesName =
+    {
+        new[] { "Right Thumb Proximal", "Right Thumb Intermediate", "Right Thumb Distal" },
+        new[] { "Right Index Proximal", "Right Index Intermediate", "Right Index Distal" },
+        new[] { "Right Middle Proximal", "Right Middle Intermediate", "Right Middle Distal" },
+        new[] { "Right Ring Proximal", "Right Ring Intermediate", "Right Ring Distal" },
+        new[] { "Right Little Proximal", "Right Little Intermediate", "Right Little Distal" },
+    };
+
+    #endregion
+
+    public IT_Avatar()
+    {
+    }
+
+    public IT_Avatar(Avatar unityAvatar, Dictionary<string, Transform> transformsByHumanBoneName)
+    {
+        this.unityAvatar = unityAvatar;
+        _transformsByHumanBoneName = transformsByHumanBoneName;
+        _transformsPathsFromHipToHumanBoneName = new Dictionary<string, string>();
+        Transform hip = transformsByHumanBoneName["Hips"];
+        foreach (var pair in _transformsByHumanBoneName)
+        {
+            string path = pair.Value.name;
+            Transform current = pair.Value;
+            while (current.parent != null && current.parent != hip)
+            {
+                current = current.parent;
+                path = current.name + "/" + path;
+            }
+
+            if (current.parent != null)
+            {
+                _transformsPathsFromHipToHumanBoneName.Add(path, pair.Key);
+            }
+        }
+
+        transformsByHumanBone = new Dictionary<HumanBodyBones, Transform>();
+        humanBoneByTransforms = new Dictionary<Transform, HumanBodyBones>();
+        var humanoidBonesNamesWithoutSpaces = new HashSet<string>();
+        foreach (var transformByHumanoidBoneName in transformsByHumanBoneName)
+        {
+            var humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
+            humanoidBonesNamesWithoutSpaces.Add(humanBodyBoneNameWithoutSpaces);
+
+            var humanBodyBoneEnumElement =
+                (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), humanBodyBoneNameWithoutSpaces);
+            transformsByHumanBone[humanBodyBoneEnumElement] = transformByHumanoidBoneName.Value;
+            humanBoneByTransforms[transformByHumanoidBoneName.Value] = humanBodyBoneEnumElement;
+        }
+
+        indexOfTransformByHumanoidBone = new Dictionary<HumanBodyBones, int>();
+
+        var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
+        var humanoidBonesAvailabilityList = new List<int>();
+        var humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
+        for (int i = 0; i < humanBodyBones.Length; i++)
+        {
+            var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
+            if (humanoidBonesNamesWithoutSpaces.Contains(humanBodyBone.ToString()))
+            {
+                humanoidBonesAvailabilityList.Add(i);
+                indexOfTransformByHumanoidBone.Add(humanBodyBone, i);
+                if (!HumanoidFingerBones.Contains(humanBodyBone))
+                    humanoidBonesAvailabilityThatAreNotFingerBonesList.Add(i);
+            }
+        }
+
+        indexesOfHumanoidBonesEnumThatAreAvailable = humanoidBonesAvailabilityList.ToArray();
+        indexesOfHumanoidBonesEnumAvailableThatAreNotFingerBones =
+            humanoidBonesAvailabilityThatAreNotFingerBonesList.ToArray();
+
+        rightHandBonesAvailability = new bool[5][];
+        leftHandBonesAvailability = new bool[5][];
+
+        for (int i = 0; i < 5; i++)
+        {
+            leftHandBonesAvailability[i] = new bool[3];
+            for (int j = 0; j < 3; j++)
+            {
+                leftHandBonesAvailability[i][j] =
+                    GetTransformsByHumanBoneName().ContainsKey(LeftHandHumanoidFingerBonesName[i][j]);
+            }
+
+            rightHandBonesAvailability[i] = new bool[3];
+            for (int j = 0; j < 3; j++)
+            {
+                rightHandBonesAvailability[i][j] =
+                    GetTransformsByHumanBoneName().ContainsKey(RightHandHumanoidFingerBonesName[i][j]);
+            }
+        }
+    }
+
+    public Dictionary<string, Transform> GetTransformsByHumanBoneName()
+    {
+        return _transformsByHumanBoneName;
+    }
+
+    public void RebuildFromNewHip(Transform hip)
+    {
+        Dictionary<string, Transform> pathsToTransforms = new Dictionary<String, Transform>();
+        GeneratePaths(hip, pathsToTransforms);
+
+        _transformsByHumanBoneName = new Dictionary<string, Transform>();
+        _transformsByHumanBoneName.Add("Hips", hip);
+        foreach (var bone in _transformsPathsFromHipToHumanBoneName)
+        {
+            if (pathsToTransforms.ContainsKey(bone.Key))
+            {
+                _transformsByHumanBoneName.Add(bone.Value, pathsToTransforms[bone.Key]);
+            }
+        }
+
+
+        //_transformsPathsFromHipToHumanBoneName = new Dictionary<string, string>();
+        //foreach (var pair in _transformsByHumanBoneName)
+        //{
+        //    string path = pair.Value.name;
+        //    Transform current = pair.Value;
+        //    while (current.parent != null && current.parent != hip)
+        //    {
+        //        current = current.parent;
+        //        path = current.name + "/" + path;
+        //    }
+        //    if (current.parent != null)
+        //    {
+        //        _transformsPathsFromHipToHumanBoneName.Add(pair.Key, path);
+        //    }
+        //}
+
+        transformsByHumanBone = new Dictionary<HumanBodyBones, Transform>();
+        humanBoneByTransforms = new Dictionary<Transform, HumanBodyBones>();
+        var humanoidBonesNamesWithoutSpaces = new HashSet<string>();
+        foreach (var transformByHumanoidBoneName in _transformsByHumanBoneName)
+        {
+            var humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
+            humanoidBonesNamesWithoutSpaces.Add(humanBodyBoneNameWithoutSpaces);
+
+            var humanBodyBoneEnumElement =
+                (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), humanBodyBoneNameWithoutSpaces);
+            transformsByHumanBone[humanBodyBoneEnumElement] = transformByHumanoidBoneName.Value;
+            humanBoneByTransforms[transformByHumanoidBoneName.Value] = humanBodyBoneEnumElement;
+        }
+
+        indexOfTransformByHumanoidBone = new Dictionary<HumanBodyBones, int>();
+
+        var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
+        var humanoidBonesAvailabilityList = new List<int>();
+        var humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
+        for (int i = 0; i < humanBodyBones.Length; i++)
+        {
+            var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
+            if (humanoidBonesNamesWithoutSpaces.Contains(humanBodyBone.ToString()))
+            {
+                humanoidBonesAvailabilityList.Add(i);
+                indexOfTransformByHumanoidBone.Add(humanBodyBone, i);
+                if (!HumanoidFingerBones.Contains(humanBodyBone))
+                    humanoidBonesAvailabilityThatAreNotFingerBonesList.Add(i);
+            }
+        }
+
+        indexesOfHumanoidBonesEnumThatAreAvailable = humanoidBonesAvailabilityList.ToArray();
+        indexesOfHumanoidBonesEnumAvailableThatAreNotFingerBones =
+            humanoidBonesAvailabilityThatAreNotFingerBonesList.ToArray();
+    }
+
+
+    private void GeneratePaths(Transform currentBone, Dictionary<string, Transform> pathsToTransformsIn)
+    {
+        for (int i = 0; i < currentBone.childCount; i++)
+        {
+            string bonePath = currentBone.GetChild(i).name;
+            pathsToTransformsIn.Add(bonePath, currentBone.GetChild(i));
+            if (currentBone.GetChild(i).childCount > 0)
+            {
+                GeneratePaths(bonePath, currentBone.GetChild(i), pathsToTransformsIn);
+            }
+        }
+    }
+
+    private void GeneratePaths(string pathStart, Transform currentBone,
+        Dictionary<string, Transform> pathsToTransformsIn)
+    {
+        for (int i = 0; i < currentBone.childCount; i++)
+        {
+            string bonePath = pathStart + "/" + currentBone.GetChild(i).name;
+            pathsToTransformsIn.Add(bonePath, currentBone.GetChild(i));
+            if (currentBone.GetChild(i).childCount > 0)
+            {
+                GeneratePaths(bonePath, currentBone.GetChild(i), pathsToTransformsIn);
+            }
+        }
+    }
+
+    public void SetTransformsByHumanBoneName(Dictionary<string, Transform> nTransformsByHumanBoneName)
+    {
+        _transformsByHumanBoneName = nTransformsByHumanBoneName;
+    }
+}
+
+
