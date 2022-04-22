@@ -123,7 +123,7 @@ namespace AnimotiveImporterEditor
                 Initialize(clip, itAvatar);
 
 
-                PlayAnimation(clip, transformsByHumanBoneName);
+                CreateAnimationClip(clip, transformsByHumanBoneName, characterRoot);
             }
         }
 
@@ -190,15 +190,26 @@ namespace AnimotiveImporterEditor
             }
         }
 
-        private void PlayAnimation(IT_CharacterTransformAnimationClip clip,
-            Dictionary<string, Transform> transformsByHumanBoneName)
+        private void CreateAnimationClip(IT_CharacterTransformAnimationClip clip,
+            Dictionary<string, Transform> transformsByHumanBoneName, GameObject characterRoot)
         {
+            AnimationClip animationClip = new AnimationClip();
             for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
             {
                 int transformIndex = 0;
                 foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
                     var indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
+
+                    Keyframe localPositionX = new Keyframe(IT_PhysicsManager.FixedDeltaTime * i,
+                        clip.physicsKeyframesCurve0[indexInCurveOfKey]);
+                    string pairTransform = pair.Value.name;
+
+                    string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
+                    
+                    animationClip.SetCurve(relativePath, typeof(Transform), string.Concat(pairTransform, ": Position"),
+                        new AnimationCurve(localPositionX));
+
 
                     pair.Value.localPosition = new Vector3(clip.physicsKeyframesCurve0[indexInCurveOfKey],
                         clip.physicsKeyframesCurve1[indexInCurveOfKey],
@@ -209,6 +220,8 @@ namespace AnimotiveImporterEditor
                     transformIndex++;
                 }
             }
+
+            AssetDatabase.CreateAsset(animationClip, "Assets/test.anim");
         }
     }
 }

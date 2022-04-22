@@ -1,0 +1,1117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!74 &7400000
+AnimationClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: test
+  serializedVersion: 6
+  m_Legacy: 0
+  m_Compressed: 0
+  m_UseHighQualityCurve: 1
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves: []
+  m_FloatCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.014628859
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'hips_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.15368842
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'hip_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.15627891
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'hip_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.000014927238
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'knee_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_l_drv_jnt/knee_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.00002320949
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'knee_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_r_drv_jnt/knee_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.00044729517
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ankle_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_l_drv_jnt/knee_l_drv_jnt/ankle_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.00014302689
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ankle_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_r_drv_jnt/knee_r_drv_jnt/ankle_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'spine_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.000037211343
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'chest_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.0013023698
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'neck_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/neck_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.0000042971224
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'head_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/neck_jnt/head_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.10578186
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'clavicle_l_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.1083866
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'clavicle_r_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.24320641
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'shoulder_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.243212
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'shoulder_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.30910873
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'elbow_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.3090773
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'elbow_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.3827073
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'wrist_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.38340926
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'wrist_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.057012565
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'toe_l_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_l_drv_jnt/knee_l_drv_jnt/ankle_l_drv_jnt/toe_l_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.05701312
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'toe_r_drv_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/hip_r_drv_jnt/knee_r_drv_jnt/ankle_r_drv_jnt/toe_r_drv_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.065088846
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'eye_l_root_sknJnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/neck_jnt/head_jnt/eye_l_root_sknJnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.065088846
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'eye_r_root_sknJnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/neck_jnt/head_jnt/eye_r_root_sknJnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.055656955
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'jaw_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/neck_jnt/head_jnt/jaw_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.025804928
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_l_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/thumb_l_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.03909285
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_l_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/thumb_l_01_skn_jnt/thumb_l_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.19602326
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_l_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/thumb_l_01_skn_jnt/thumb_l_02_skn_jnt/thumb_l_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.062335216
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_l_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/index_l_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.045929603
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_l_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/index_l_01_skn_jnt/index_l_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.2004284
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_l_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/index_l_01_skn_jnt/index_l_02_skn_jnt/index_l_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.07955656
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_l_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/middle_l_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.055018764
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_l_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/middle_l_01_skn_jnt/middle_l_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.19427188
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_l_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/middle_l_01_skn_jnt/middle_l_02_skn_jnt/middle_l_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.07146626
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_l_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/ring_l_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.039253324
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_l_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/ring_l_01_skn_jnt/ring_l_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.16211882
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_l_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/ring_l_01_skn_jnt/ring_l_02_skn_jnt/ring_l_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.058355983
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_l_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/pinky_l_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.039819498
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_l_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/pinky_l_01_skn_jnt/pinky_l_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.055705056
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_l_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_l_jnt/shoulder_l_drv_jnt/elbow_l_drv_jnt/wrist_l_drv_jnt/pinky_l_01_skn_jnt/pinky_l_02_skn_jnt/pinky_l_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.025800906
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_r_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/thumb_r_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.03918397
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_r_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/thumb_r_01_skn_jnt/thumb_r_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.19602038
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'thumb_r_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/thumb_r_01_skn_jnt/thumb_r_02_skn_jnt/thumb_r_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.06262984
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_r_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/index_r_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.046197746
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_r_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/index_r_01_skn_jnt/index_r_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.2003865
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'index_r_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/index_r_01_skn_jnt/index_r_02_skn_jnt/index_r_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.079639375
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_r_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/middle_r_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.054955166
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_r_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/middle_r_01_skn_jnt/middle_r_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.19423167
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'middle_r_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/middle_r_01_skn_jnt/middle_r_02_skn_jnt/middle_r_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.07128837
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_r_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/ring_r_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.03918757
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_r_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/ring_r_01_skn_jnt/ring_r_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.16211209
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'ring_r_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/ring_r_01_skn_jnt/ring_r_02_skn_jnt/ring_r_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.058287837
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_r_01_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/pinky_r_01_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.039739605
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_r_02_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/pinky_r_01_skn_jnt/pinky_r_02_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'pinky_r_03_skn_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt/clavicle_r_jnt/shoulder_r_drv_jnt/elbow_r_drv_jnt/wrist_r_drv_jnt/pinky_r_01_skn_jnt/pinky_r_02_skn_jnt/pinky_r_03_skn_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: 0.10531804
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'upperChest_jnt: Position'
+    path: jnt_grp/COG_jnt/hips_jnt/spine_jnt/chest_jnt/upperChest_jnt
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 9.766668
+        value: -0.014600998
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: 'Frank_Export_Master(Clone): Position'
+    path: 
+    classID: 4
+    script: {fileID: 0}
+  m_PPtrCurves: []
+  m_SampleRate: 60
+  m_WrapMode: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_ClipBindingConstant:
+    genericBindings: []
+    pptrCurveMapping: []
+  m_AnimationClipSettings:
+    serializedVersion: 2
+    m_AdditiveReferencePoseClip: {fileID: 0}
+    m_AdditiveReferencePoseTime: 0
+    m_StartTime: 0
+    m_StopTime: 9.766668
+    m_OrientationOffsetY: 0
+    m_Level: 0
+    m_CycleOffset: 0
+    m_HasAdditiveReferencePose: 0
+    m_LoopTime: 0
+    m_LoopBlend: 0
+    m_LoopBlendOrientation: 0
+    m_LoopBlendPositionY: 0
+    m_LoopBlendPositionXZ: 0
+    m_KeepOriginalOrientation: 0
+    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionXZ: 0
+    m_HeightFromFeet: 0
+    m_Mirror: 0
+  m_EditorCurves: []
+  m_EulerEditorCurves: []
+  m_HasGenericRootTransform: 0
+  m_HasMotionFloatCurves: 0
+  m_Events: []
