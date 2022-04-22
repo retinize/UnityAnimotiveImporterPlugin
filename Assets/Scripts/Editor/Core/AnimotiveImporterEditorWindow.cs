@@ -11,6 +11,7 @@ namespace AnimotiveImporterEditor
 {
     using System.IO;
     using OdinSerializer;
+    using UnityEditor.Animations;
     using UnityEngine.Animations;
     using UnityEngine.Playables;
     using UnityEngine.Timeline;
@@ -116,14 +117,18 @@ namespace AnimotiveImporterEditor
                 transformsByHumanBoneName.Add("LastBone", characterRoot.transform);
 
                 // var indexInCurveOfKey = _keyIndex * numberOfBonesToAnimate + transformIndex;
-
-
                 IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
                 Initialize(clip, itAvatar);
 
 
-                CreateAnimationClip(clip, transformsByHumanBoneName, characterRoot);
+                AnimationClip animationClip = CreateAnimationClip(clip, transformsByHumanBoneName, characterRoot);
+
+                AnimatorController controller =
+                    AnimatorController.CreateAnimatorControllerAtPathWithClip("Assets/animController.controller", animationClip);
+
+                animator.runtimeAnimatorController = controller;
+                AssetDatabase.Refresh();
             }
         }
 
@@ -190,40 +195,59 @@ namespace AnimotiveImporterEditor
             }
         }
 
-        private void CreateAnimationClip(IT_CharacterTransformAnimationClip clip,
+        private AnimationClip CreateAnimationClip(IT_CharacterTransformAnimationClip clip,
             Dictionary<string, Transform> transformsByHumanBoneName, GameObject characterRoot)
         {
             AnimationClip animationClip = new AnimationClip();
-            AnimationCurve curveX = new AnimationCurve();
-            
+            AnimationCurve positionCurveX = new AnimationCurve();
+            AnimationCurve positionCurveY = new AnimationCurve();
+            AnimationCurve positionCurveZ = new AnimationCurve();
+            AnimationCurve rotationCurveX = new AnimationCurve();
+            AnimationCurve rotationCurveY = new AnimationCurve();
+            AnimationCurve rotationCurveZ = new AnimationCurve();
+            AnimationCurve rotationCurveW = new AnimationCurve();
+
             for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
             {
                 int transformIndex = 0;
                 foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
                     var indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
-
-                    Keyframe localPositionX = new Keyframe(IT_PhysicsManager.FixedDeltaTime * i,
-                        clip.physicsKeyframesCurve0[indexInCurveOfKey]);
-                    string pairTransform = pair.Value.name;
+                    float time = clip.fixedDeltaTime * i;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
-                    curveX.AddKey(localPositionX);
-                    
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x",
-                        curveX);
+                    Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
+                    Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
+                    Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+                    Keyframe localRotationX = new Keyframe(time, clip.physicsKeyframesCurve3[indexInCurveOfKey]);
+                    Keyframe localRotationY = new Keyframe(time, clip.physicsKeyframesCurve4[indexInCurveOfKey]);
+                    Keyframe localRotationZ = new Keyframe(time, clip.physicsKeyframesCurve5[indexInCurveOfKey]);
+                    Keyframe localRotationW = new Keyframe(time, clip.physicsKeyframesCurve6[indexInCurveOfKey]);
 
-                    pair.Value.localPosition = new Vector3(clip.physicsKeyframesCurve0[indexInCurveOfKey],
-                        clip.physicsKeyframesCurve1[indexInCurveOfKey],
-                        clip.physicsKeyframesCurve2[indexInCurveOfKey]);
-                    pair.Value.localRotation = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
-                        clip.physicsKeyframesCurve4[indexInCurveOfKey],
-                        clip.physicsKeyframesCurve5[indexInCurveOfKey], clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+                    positionCurveX.AddKey(localPositionX);
+                    positionCurveY.AddKey(localPositionY);
+                    positionCurveZ.AddKey(localPositionZ);
+                    rotationCurveX.AddKey(localRotationX);
+                    rotationCurveY.AddKey(localRotationY);
+                    rotationCurveZ.AddKey(localRotationZ);
+                    rotationCurveW.AddKey(localRotationW);
+
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.x", rotationCurveX);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.w", rotationCurveW);
+
                     transformIndex++;
                 }
             }
 
+
             AssetDatabase.CreateAsset(animationClip, "Assets/test.anim");
+            AssetDatabase.Refresh();
+            return animationClip;
         }
     }
 }
