@@ -124,10 +124,9 @@ namespace AnimotiveImporterEditor
 
                 AnimationClip animationClip = CreateAnimationClip(clip, transformsByHumanBoneName, characterRoot);
 
-                AnimatorController controller =
-                    AnimatorController.CreateAnimatorControllerAtPathWithClip("Assets/animController.controller", animationClip);
-
-                animator.runtimeAnimatorController = controller;
+                // AnimatorController controller =
+                //     AnimatorController.CreateAnimatorControllerAtPathWithClip("Assets/animController.controller", animationClip);
+                // animator.runtimeAnimatorController = controller;
                 AssetDatabase.Refresh();
             }
         }
@@ -243,7 +242,6 @@ namespace AnimotiveImporterEditor
                     transformIndex++;
                 }
             }
-
 
             AssetDatabase.CreateAsset(animationClip, "Assets/test.anim");
             AssetDatabase.Refresh();
