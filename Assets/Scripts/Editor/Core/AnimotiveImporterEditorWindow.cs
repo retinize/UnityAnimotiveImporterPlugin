@@ -194,6 +194,8 @@ namespace AnimotiveImporterEditor
             Dictionary<string, Transform> transformsByHumanBoneName, GameObject characterRoot)
         {
             AnimationClip animationClip = new AnimationClip();
+            AnimationCurve curveX = new AnimationCurve();
+            
             for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
             {
                 int transformIndex = 0;
@@ -206,10 +208,10 @@ namespace AnimotiveImporterEditor
                     string pairTransform = pair.Value.name;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
+                    curveX.AddKey(localPositionX);
                     
-                    animationClip.SetCurve(relativePath, typeof(Transform), string.Concat(pairTransform, ": Position"),
-                        new AnimationCurve(localPositionX));
-
+                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x",
+                        curveX);
 
                     pair.Value.localPosition = new Vector3(clip.physicsKeyframesCurve0[indexInCurveOfKey],
                         clip.physicsKeyframesCurve1[indexInCurveOfKey],
