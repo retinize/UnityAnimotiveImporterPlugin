@@ -128,14 +128,55 @@ namespace AnimotiveImporterEditor
         private void HandleBlendshapeAnimationCreation()
         {
             var hardCodedJsonPath =
-                @"C:\Users\Ertan-Laptop\Documents\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
+                @"C:\Users\Ertan\Desktop\Unity\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
 
             var reader = new StreamReader(hardCodedJsonPath);
             var jsonData = reader.ReadToEnd();
             reader.Close();
             reader.Dispose();
-            var clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
-            Debug.Log(clip);
+            FacialAnimationExportWrapper clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
+
+            CreateBlendshapeAnimationClip(clip);
+        }
+
+        private void CreateBlendshapeAnimationClip(FacialAnimationExportWrapper clip)
+        {
+            AnimationClip animationClip = new AnimationClip();
+
+            Dictionary<string, AnimationCurve> blendshapeCurves =
+                new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
+
+            for (int i = 0; i < clip.characterGeos.Count; i++)
+            {
+                blendshapeCurves.Add(clip.characterGeos[i].name, new AnimationCurve());
+            }
+
+            for (int i = 0; i < clip.facialAnimationFrames.Count; i++)
+            {
+                float time = i * clip.fixedDeltaTimeBetweenKeyFrames;
+                for (int j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
+                {
+                    IT_SpecificCharacterBlendShapeData
+                        blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
+
+                    CharacterGeoDescriptor characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
+
+                    string skinnedMeshRendererName = characterGeoDescriptor.name;
+                    string blendshapeName = characterGeoDescriptor.blendShapeNames[blendShapeData.bsIndex];
+                    float blendshapeValue = blendShapeData.value;
+
+                    Keyframe keyframe = new Keyframe(time, blendshapeValue);
+
+                    AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
+                    curve.AddKey(keyframe);
+
+                    string propertyName = string.Concat("Shape.shapes.", blendshapeName);
+                    animationClip.SetCurve(skinnedMeshRendererName, typeof(SkinnedMeshRenderer), propertyName,curve);
+                }
+            }
+            
+            AssetDatabase.CreateAsset(animationClip, "Assets/blenshapeAnim.anim");
+            AssetDatabase.Refresh();
         }
 
         private void HandleCharacterAnimationCreation()
@@ -173,7 +214,7 @@ namespace AnimotiveImporterEditor
 
             InitializeItAvatar(clip, itAvatar);
 
-            CreateAnimationClip(clip, transformsByHumanBoneName, characterRoot);
+            CreateTransformMovementsAnimationClip(clip, transformsByHumanBoneName, characterRoot);
 
             AssetDatabase.Refresh();
         }
@@ -183,8 +224,8 @@ namespace AnimotiveImporterEditor
             var physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
             var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
             for (var transformsToCaptureIndex = 0;
-                 transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
-                 transformsToCaptureIndex++)
+                transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
+                transformsToCaptureIndex++)
             {
                 var humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
                 var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
@@ -193,34 +234,34 @@ namespace AnimotiveImporterEditor
             }
         }
 
-        private AnimationClip CreateAnimationClip(IT_CharacterTransformAnimationClip clip,
+        private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
             Dictionary<string, Transform> transformsByHumanBoneName, GameObject characterRoot)
         {
-            var animationClip = new AnimationClip();
-            var positionCurveX = new AnimationCurve();
-            var positionCurveY = new AnimationCurve();
-            var positionCurveZ = new AnimationCurve();
-            var rotationCurveX = new AnimationCurve();
-            var rotationCurveY = new AnimationCurve();
-            var rotationCurveZ = new AnimationCurve();
-            var rotationCurveW = new AnimationCurve();
+            AnimationClip animationClip = new AnimationClip();
+            AnimationCurve positionCurveX = new AnimationCurve();
+            AnimationCurve positionCurveY = new AnimationCurve();
+            AnimationCurve positionCurveZ = new AnimationCurve();
+            AnimationCurve rotationCurveX = new AnimationCurve();
+            AnimationCurve rotationCurveY = new AnimationCurve();
+            AnimationCurve rotationCurveZ = new AnimationCurve();
+            AnimationCurve rotationCurveW = new AnimationCurve();
 
-            for (var i = clip.initFrame; i < clip.lastFrame - 1; i++)
+            for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
             {
-                var transformIndex = 0;
-                foreach (var pair in transformsByHumanBoneName)
+                int transformIndex = 0;
+                foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
-                    var indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
+                    int indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
                     var time = clip.fixedDeltaTime * i;
 
-                    var relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
-                    var localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
-                    var localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
-                    var localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
-                    var localRotationX = new Keyframe(time, clip.physicsKeyframesCurve3[indexInCurveOfKey]);
-                    var localRotationY = new Keyframe(time, clip.physicsKeyframesCurve4[indexInCurveOfKey]);
-                    var localRotationZ = new Keyframe(time, clip.physicsKeyframesCurve5[indexInCurveOfKey]);
-                    var localRotationW = new Keyframe(time, clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+                    string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
+                    Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
+                    Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
+                    Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+                    Keyframe localRotationX = new Keyframe(time, clip.physicsKeyframesCurve3[indexInCurveOfKey]);
+                    Keyframe localRotationY = new Keyframe(time, clip.physicsKeyframesCurve4[indexInCurveOfKey]);
+                    Keyframe localRotationZ = new Keyframe(time, clip.physicsKeyframesCurve5[indexInCurveOfKey]);
+                    Keyframe localRotationW = new Keyframe(time, clip.physicsKeyframesCurve6[indexInCurveOfKey]);
 
                     positionCurveX.AddKey(localPositionX);
                     positionCurveY.AddKey(localPositionY);
@@ -242,7 +283,7 @@ namespace AnimotiveImporterEditor
                 }
             }
 
-            AssetDatabase.CreateAsset(animationClip, "Assets/test.anim");
+            AssetDatabase.CreateAsset(animationClip, "Assets/transforms.anim");
             AssetDatabase.Refresh();
             return animationClip;
         }

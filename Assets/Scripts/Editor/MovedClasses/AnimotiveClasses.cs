@@ -628,7 +628,6 @@ internal class FacialAnimationFrameWrapper
     public List<IT_SpecificCharacterBlendShapeData> blendShapesUsed;
 }
 
-
 [Serializable]
 public struct IT_SpecificCharacterBlendShapeData
 {
