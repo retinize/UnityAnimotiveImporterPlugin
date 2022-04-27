@@ -12,63 +12,29 @@ namespace AnimotiveImporterEditor
 
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
-        public string Path = "/StreamingAssets/RootFolder";
-        private string _basePath = "";
-        private string _fullPath = "";
-
-        private bool _validPathChoosen;
-
         private void OnGUI()
         {
             EditorGUILayout.BeginHorizontal();
 
 
             GUILayout.Label("Root Folder Path", EditorStyles.boldLabel);
-            Path = EditorGUILayout.TextField(Path);
-
-            if (GUILayout.Button("Browse"))
-            {
-                _fullPath = EditorUtility.OpenFolderPanel("Choose Root Folder", "Assets/StreamingAssets", "");
-                if (!string.IsNullOrEmpty(_fullPath) && _fullPath.Contains(Constants.STREAMING_ASSETS_FOLDER_NAME))
-                {
-                    var splitArray =
-                        _fullPath.Split(new[] { Constants.STREAMING_ASSETS_FOLDER_NAME }, StringSplitOptions.None);
-
-                    _basePath = splitArray[0];
-                    var spliitted = splitArray[1];
-
-                    if (string.IsNullOrEmpty(spliitted))
-                    {
-                        _validPathChoosen = false;
-                        Debug.LogWarning("Can not load from StreamingAssets directly !");
-                    }
-                    else
-                    {
-                        Path = string.Concat(Constants.STREAMING_ASSETS_FOLDER_NAME, "/", splitArray[1]);
-                        _validPathChoosen = true;
-
-                        CreateScene("___scene_name_here___");
-                        CreateGroups(new List<AnimotiveImporterGroupInfo>
-                        {
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo(),
-                            new AnimotiveImporterGroupInfo()
-                        });
-                    }
-                }
-                else
-                {
-                    Path = null;
-                    _validPathChoosen = false;
-                    Debug.LogWarning("Root file should be under Streaming Assets !");
-                }
-            }
 
             EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Create scene and playables"))
+            {
+                CreateScene("___scene_name_here___");
+                CreateGroups(new List<AnimotiveImporterGroupInfo>
+                             {
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo(),
+                                 new AnimotiveImporterGroupInfo()
+                             });
+            }
 
             if (GUILayout.Button("Test Animation Clip")) HandleCharacterAnimationCreation();
 
@@ -84,14 +50,14 @@ namespace AnimotiveImporterEditor
 
         private void CreateScene(string sceneName)
         {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var dirName = System.IO.Path.Combine(_fullPath, Constants.UNITY_FILES_FOLDER_NAME);
+            string hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
 
-            if (!Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
 
             EditorSceneManager.SaveScene(scene,
-                string.Concat(dirName, System.IO.Path.DirectorySeparatorChar, sceneName,
-                    Constants.UNITY_SCENE_EXTENSION));
+                                         string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,
+                                                       Constants.UNITY_SCENE_EXTENSION));
             AssetDatabase.Refresh();
         }
 
@@ -99,7 +65,7 @@ namespace AnimotiveImporterEditor
         {
             for (var i = 0; i < group.Count; i++)
             {
-                var obj = new GameObject("<group name here>");
+                var obj              = new GameObject("<group name here>");
                 var playableDirector = obj.AddComponent<PlayableDirector>();
                 playableDirector.playableAsset = CreatePlayableAsset(obj);
             }
@@ -107,20 +73,22 @@ namespace AnimotiveImporterEditor
 
         private PlayableAsset CreatePlayableAsset(GameObject obj)
         {
-            var assetPath = string.Concat("Assets/", obj.GetInstanceID().ToString(), ".playable");
-            var asset = CreateInstance<TimelineAsset>();
+            string assetPath = string.Concat(@"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\",
+                                          obj.GetInstanceID().ToString(), ".playable");
+            TimelineAsset asset = CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
-            var track = asset.CreateTrack<TestTrack>();
-            var clip = track.CreateClip<TestClip>();
+            TestTrack track = asset.CreateTrack<TestTrack>();
+            TimelineClip       clip  = track.CreateClip<TestClip>();
+            
             clip.displayName = "DISPLAY_NAME_HERE";
 
 
             AssetDatabase.Refresh();
 
-            var playableAsset =
+            PlayableAsset playableAsset =
                 AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
-
+            
 
             return playableAsset;
         }
@@ -130,7 +98,7 @@ namespace AnimotiveImporterEditor
             var hardCodedJsonPath =
                 @"C:\Users\Ertan\Desktop\Unity\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
 
-            var reader = new StreamReader(hardCodedJsonPath);
+            var reader   = new StreamReader(hardCodedJsonPath);
             var jsonData = reader.ReadToEnd();
             reader.Close();
             reader.Dispose();
@@ -162,8 +130,8 @@ namespace AnimotiveImporterEditor
                     CharacterGeoDescriptor characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
 
                     string skinnedMeshRendererName = characterGeoDescriptor.name;
-                    string blendshapeName = characterGeoDescriptor.blendShapeNames[blendShapeData.bsIndex];
-                    float blendshapeValue = blendShapeData.value;
+                    string blendshapeName          = characterGeoDescriptor.blendShapeNames[blendShapeData.bsIndex];
+                    float  blendshapeValue         = blendShapeData.value;
 
                     Keyframe keyframe = new Keyframe(time, blendshapeValue);
 
@@ -171,27 +139,31 @@ namespace AnimotiveImporterEditor
                     curve.AddKey(keyframe);
 
                     string propertyName = string.Concat("Shape.shapes.", blendshapeName);
-                    animationClip.SetCurve(skinnedMeshRendererName, typeof(SkinnedMeshRenderer), propertyName,curve);
+                    animationClip.SetCurve(skinnedMeshRendererName, typeof(SkinnedMeshRenderer), propertyName, curve);
                 }
             }
-            
-            AssetDatabase.CreateAsset(animationClip, "Assets/blenshapeAnim.anim");
+
+            AssetDatabase.CreateAsset(animationClip,
+                                      "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim");
             AssetDatabase.Refresh();
         }
 
         private void HandleCharacterAnimationCreation()
         {
-            var hardcodedAnimationDataPath =
-                @"C:\Users\Ertan-Laptop\Documents\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Binary\\Frank Character Root_TransformClip_Take1";
 
+            string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(),
+                                                             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1");
+
+            
+            
             var clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
-                    File.ReadAllBytes(hardcodedAnimationDataPath),
-                    DataFormat.Binary);
+                 File.ReadAllBytes(hardcodedAnimationDataPath),
+                 DataFormat.Binary);
 
             var characterRoot = AssetDatabase.LoadAssetAtPath(
-                "Assets\\AnimotivePluginExampleStructure\\SampleModels\\Frank_Export_Master.fbx",
-                typeof(GameObject)) as GameObject;
+                                                              "Assets\\AnimotivePluginExampleStructure\\SampleModels\\Frank_Export_Master.fbx",
+                                                              typeof(GameObject)) as GameObject;
 
             characterRoot = Instantiate(characterRoot);
             var animator = characterRoot.GetComponent<Animator>();
@@ -202,7 +174,7 @@ namespace AnimotiveImporterEditor
 
             for (var i = 0; i < animator.avatar.humanDescription.human.Length; i++)
             {
-                var bone = animator.avatar.humanDescription.human[i];
+                var bone          = animator.avatar.humanDescription.human[i];
                 var boneTransform = characterRoot.transform.FindChildRecursively(bone.boneName);
                 transformsByHumanBoneName.Add(bone.humanName, boneTransform);
             }
@@ -222,22 +194,24 @@ namespace AnimotiveImporterEditor
         private void InitializeItAvatar(IT_CharacterTransformAnimationClip clip, IT_Avatar avatar)
         {
             var physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
-            var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
+            var humanBodyBones             = Enum.GetValues(typeof(HumanBodyBones));
             for (var transformsToCaptureIndex = 0;
                 transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
                 transformsToCaptureIndex++)
             {
                 var humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
-                var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
-                var boneTransform = avatar.transformsByHumanBone[humanBodyBone];
+                var humanBodyBone      = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
+                var boneTransform      = avatar.transformsByHumanBone[humanBodyBone];
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
             }
         }
 
         private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
-            Dictionary<string, Transform> transformsByHumanBoneName, GameObject characterRoot)
+                                                                    Dictionary<string, Transform>
+                                                                        transformsByHumanBoneName,
+                                                                    GameObject characterRoot)
         {
-            AnimationClip animationClip = new AnimationClip();
+            AnimationClip  animationClip  = new AnimationClip();
             AnimationCurve positionCurveX = new AnimationCurve();
             AnimationCurve positionCurveY = new AnimationCurve();
             AnimationCurve positionCurveZ = new AnimationCurve();
@@ -252,7 +226,7 @@ namespace AnimotiveImporterEditor
                 foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
                     int indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
-                    var time = clip.fixedDeltaTime * i;
+                    var time              = clip.fixedDeltaTime * i;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
                     Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
@@ -283,7 +257,7 @@ namespace AnimotiveImporterEditor
                 }
             }
 
-            AssetDatabase.CreateAsset(animationClip, "Assets/transforms.anim");
+            AssetDatabase.CreateAsset(animationClip, "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim");
             AssetDatabase.Refresh();
             return animationClip;
         }
