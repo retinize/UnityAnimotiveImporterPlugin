@@ -37,9 +37,15 @@ namespace AnimotiveImporterEditor
                              });
             }
 
-            if (GUILayout.Button("Test Animation Clip")) HandleCharacterAnimationCreation();
+            if (GUILayout.Button("Test Animation Clip"))
+            {
+                HandleCharacterAnimationCreation();
+            }
 
-            if (GUILayout.Button("Test Json Blendshape")) HandleBlendshapeAnimationCreation();
+            if (GUILayout.Button("Test Json Blendshape"))
+            {
+                HandleBlendshapeAnimationCreation();
+            }
         }
 
         [MenuItem("Animotive/Importer")]
@@ -197,6 +203,10 @@ namespace AnimotiveImporterEditor
 
             InitializeItAvatar(clip, itAvatar);
 
+            animator.avatar = null;
+        
+            
+            
             CreateTransformMovementsAnimationClip(clip, transformsByHumanBoneName, characterRoot);
 
             AssetDatabase.Refresh();
