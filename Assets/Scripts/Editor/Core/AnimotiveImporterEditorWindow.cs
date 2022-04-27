@@ -63,32 +63,44 @@ namespace AnimotiveImporterEditor
 
         private void CreateGroups(List<AnimotiveImporterGroupInfo> group)
         {
-            for (var i = 0; i < group.Count; i++)
+            for (int i = 0; i < group.Count; i++)
             {
-                var obj              = new GameObject("<group name here>");
-                var playableDirector = obj.AddComponent<PlayableDirector>();
-                playableDirector.playableAsset = CreatePlayableAsset(obj);
+                GameObject obj = new GameObject(string.Format("<group name here : {0}>", i));
+                obj.AddComponent<AudioSource>();
+                obj.AddComponent<Animator>();
+                PlayableDirector playableDirector = obj.AddComponent<PlayableDirector>();
+                playableDirector.playableAsset = CreatePlayableAsset(obj, playableDirector);
             }
         }
 
-        private PlayableAsset CreatePlayableAsset(GameObject obj)
+        private PlayableAsset CreatePlayableAsset(GameObject obj, PlayableDirector playableDirector)
         {
             string assetPath = string.Concat(@"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\",
-                                          obj.GetInstanceID().ToString(), ".playable");
+                                             obj.GetInstanceID().ToString(), ".playable");
             TimelineAsset asset = CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
-            TestTrack track = asset.CreateTrack<TestTrack>();
-            TimelineClip       clip  = track.CreateClip<TestClip>();
-            
-            clip.displayName = "DISPLAY_NAME_HERE";
-            
+            GroupTrack groupTrack = asset.CreateTrack<GroupTrack>();
+            groupTrack.name = "GROUP_NAME_HERE";
+
+            AnimatorTrack animatorTrack = asset.CreateTrack<AnimatorTrack>();
+            animatorTrack.SetGroup(groupTrack);
+            TimelineClip animatorClip = animatorTrack.CreateClip<AnimatorClip>();
+            animatorClip.displayName = "ANIMATOR_CLIP_DISPLAY_NAME_HERE";
+            playableDirector.SetGenericBinding(animatorTrack, obj);
+
+
+            SoundTrack soundTrack = asset.CreateTrack<SoundTrack>();
+            soundTrack.SetGroup(groupTrack);
+            TimelineClip soundClip = soundTrack.CreateClip<SoundClip>();
+            soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
+            playableDirector.SetGenericBinding(soundTrack, obj);
 
             AssetDatabase.Refresh();
 
             PlayableAsset playableAsset =
                 AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
-            
+
 
             return playableAsset;
         }
@@ -150,12 +162,10 @@ namespace AnimotiveImporterEditor
 
         private void HandleCharacterAnimationCreation()
         {
-
             string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(),
-                                                             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1");
+                                                              @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1");
 
-            
-            
+
             var clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
                  File.ReadAllBytes(hardcodedAnimationDataPath),
@@ -257,7 +267,8 @@ namespace AnimotiveImporterEditor
                 }
             }
 
-            AssetDatabase.CreateAsset(animationClip, "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim");
+            AssetDatabase.CreateAsset(animationClip,
+                                      "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim");
             AssetDatabase.Refresh();
             return animationClip;
         }

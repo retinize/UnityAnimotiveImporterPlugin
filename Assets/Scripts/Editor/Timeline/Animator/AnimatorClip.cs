@@ -4,16 +4,14 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-public class TestClip : PlayableAsset, ITimelineClipAsset
+public class AnimatorClip : PlayableAsset, ITimelineClipAsset
 {
-  
-    public ClipCaps clipCaps
-    {
-        get { return ClipCaps.Blending; }
-    }
+    public ClipCaps clipCaps { get; }
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
     {
-        return new Playable();
+        Playable         playable = Playable.Create(graph);
+
+        return playable;
     }
 }
