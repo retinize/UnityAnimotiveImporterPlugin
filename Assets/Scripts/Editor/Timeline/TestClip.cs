@@ -6,13 +6,14 @@ using UnityEngine.Timeline;
 
 public class TestClip : PlayableAsset, ITimelineClipAsset
 {
-    public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
-    {
-        throw new System.NotImplementedException();
-    }
-
+  
     public ClipCaps clipCaps
     {
         get { return ClipCaps.Blending; }
+    }
+
+    public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
+    {
+        return new Playable();
     }
 }

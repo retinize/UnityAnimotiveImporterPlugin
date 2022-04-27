@@ -82,7 +82,7 @@ namespace AnimotiveImporterEditor
             TimelineClip       clip  = track.CreateClip<TestClip>();
             
             clip.displayName = "DISPLAY_NAME_HERE";
-
+            
 
             AssetDatabase.Refresh();
 
