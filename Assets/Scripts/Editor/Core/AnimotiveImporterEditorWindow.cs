@@ -9,6 +9,7 @@ namespace AnimotiveImporterEditor
     using UnityEngine;
     using UnityEngine.Playables;
     using UnityEngine.Timeline;
+    using Object = UnityEngine.Object;
 
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
@@ -166,33 +167,33 @@ namespace AnimotiveImporterEditor
                                                               @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1");
 
 
-            var clip =
+            IT_CharacterTransformAnimationClip clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
                  File.ReadAllBytes(hardcodedAnimationDataPath),
                  DataFormat.Binary);
 
-            var characterRoot = AssetDatabase.LoadAssetAtPath(
+            GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
                                                               "Assets\\AnimotivePluginExampleStructure\\SampleModels\\Frank_Export_Master.fbx",
                                                               typeof(GameObject)) as GameObject;
 
             characterRoot = Instantiate(characterRoot);
-            var animator = characterRoot.GetComponent<Animator>();
+            Animator animator = characterRoot.GetComponent<Animator>();
 
 
-            var transformsByHumanBoneName =
+            Dictionary<string, Transform> transformsByHumanBoneName =
                 new Dictionary<string, Transform>(animator.avatar.humanDescription.human.Length);
 
-            for (var i = 0; i < animator.avatar.humanDescription.human.Length; i++)
+            for (int i = 0; i < animator.avatar.humanDescription.human.Length; i++)
             {
-                var bone          = animator.avatar.humanDescription.human[i];
-                var boneTransform = characterRoot.transform.FindChildRecursively(bone.boneName);
+                HumanBone bone          = animator.avatar.humanDescription.human[i];
+                Transform boneTransform = characterRoot.transform.FindChildRecursively(bone.boneName);
                 transformsByHumanBoneName.Add(bone.humanName, boneTransform);
             }
 
             transformsByHumanBoneName.Add("LastBone", characterRoot.transform);
 
             // var indexInCurveOfKey = _keyIndex * numberOfBonesToAnimate + transformIndex;
-            var itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
+            IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
             InitializeItAvatar(clip, itAvatar);
 
@@ -215,7 +216,7 @@ namespace AnimotiveImporterEditor
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
             }
         }
-
+        
         private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
                                                                     Dictionary<string, Transform>
                                                                         transformsByHumanBoneName,
