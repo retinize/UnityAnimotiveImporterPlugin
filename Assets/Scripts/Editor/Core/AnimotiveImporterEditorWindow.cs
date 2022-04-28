@@ -8,11 +8,28 @@ namespace AnimotiveImporterEditor
     using UnityEditor.SceneManagement;
     using UnityEngine;
     using UnityEngine.Playables;
+    using UnityEngine.SceneManagement;
     using UnityEngine.Timeline;
-    using Object = UnityEngine.Object;
 
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
+        private const string _fbxPath =
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\Frank_Export_Master.fbx";
+
+        private const string _binaryAnimPath =
+            @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
+
+        private const string _blendShapeAnimCreatedPath =
+            @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim";
+
+        private const string _blendshapeJsonPath =
+            @"C:\Users\Ertan\Desktop\Unity\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
+
+        private const string _transformAnimPath =
+            @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim";
+
+        private const string _playablesCreationPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\";
+
         private void OnGUI()
         {
             EditorGUILayout.BeginHorizontal();
@@ -42,6 +59,7 @@ namespace AnimotiveImporterEditor
                 HandleCharacterAnimationCreation();
             }
 
+
             if (GUILayout.Button("Test Json Blendshape"))
             {
                 HandleBlendshapeAnimationCreation();
@@ -51,7 +69,7 @@ namespace AnimotiveImporterEditor
         [MenuItem("Animotive/Importer")]
         public static void ShowWindow()
         {
-            var window = GetWindow<AnimotiveImporterEditorWindow>("Example");
+            AnimotiveImporterEditorWindow window = GetWindow<AnimotiveImporterEditorWindow>("Example");
             window.Show();
         }
 
@@ -59,7 +77,7 @@ namespace AnimotiveImporterEditor
         {
             string hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
 
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
 
             EditorSceneManager.SaveScene(scene,
@@ -82,8 +100,7 @@ namespace AnimotiveImporterEditor
 
         private PlayableAsset CreatePlayableAsset(GameObject obj, PlayableDirector playableDirector)
         {
-            string assetPath = string.Concat(@"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\",
-                                             obj.GetInstanceID().ToString(), ".playable");
+            string assetPath = string.Concat(_playablesCreationPath, obj.GetInstanceID().ToString(), ".playable");
             TimelineAsset asset = CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
@@ -114,11 +131,10 @@ namespace AnimotiveImporterEditor
 
         private void HandleBlendshapeAnimationCreation()
         {
-            var hardCodedJsonPath =
-                @"C:\Users\Ertan\Desktop\Unity\UnityAnimotiveImporterPlugin\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
+            string hardCodedJsonPath = _blendshapeJsonPath;
 
-            var reader   = new StreamReader(hardCodedJsonPath);
-            var jsonData = reader.ReadToEnd();
+            StreamReader reader   = new StreamReader(hardCodedJsonPath);
+            string       jsonData = reader.ReadToEnd();
             reader.Close();
             reader.Dispose();
             FacialAnimationExportWrapper clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
@@ -134,9 +150,7 @@ namespace AnimotiveImporterEditor
                 new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
 
             for (int i = 0; i < clip.characterGeos.Count; i++)
-            {
                 blendshapeCurves.Add(clip.characterGeos[i].name, new AnimationCurve());
-            }
 
             for (int i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
@@ -162,15 +176,13 @@ namespace AnimotiveImporterEditor
                 }
             }
 
-            AssetDatabase.CreateAsset(animationClip,
-                                      "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim");
+            AssetDatabase.CreateAsset(animationClip, _blendShapeAnimCreatedPath);
             AssetDatabase.Refresh();
         }
 
         private void HandleCharacterAnimationCreation()
         {
-            string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(),
-                                                              @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1");
+            string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(), _binaryAnimPath);
 
 
             IT_CharacterTransformAnimationClip clip =
@@ -179,8 +191,8 @@ namespace AnimotiveImporterEditor
                  DataFormat.Binary);
 
             GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
-                                                              "Assets\\AnimotivePluginExampleStructure\\SampleModels\\Frank_Export_Master.fbx",
-                                                              typeof(GameObject)) as GameObject;
+                                                                     _fbxPath,
+                                                                     typeof(GameObject)) as GameObject;
 
             characterRoot = Instantiate(characterRoot);
             Animator animator = characterRoot.GetComponent<Animator>();
@@ -198,35 +210,40 @@ namespace AnimotiveImporterEditor
 
             transformsByHumanBoneName.Add("LastBone", characterRoot.transform);
 
+
             // var indexInCurveOfKey = _keyIndex * numberOfBonesToAnimate + transformIndex;
             IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
-            InitializeItAvatar(clip, itAvatar);
+            transformsByHumanBoneName = InitializeItAvatar(clip, itAvatar);
 
             animator.avatar = null;
-        
-            
-            
+
+
             CreateTransformMovementsAnimationClip(clip, transformsByHumanBoneName, characterRoot);
 
             AssetDatabase.Refresh();
         }
 
-        private void InitializeItAvatar(IT_CharacterTransformAnimationClip clip, IT_Avatar avatar)
+        private Dictionary<string, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
+                                                                 IT_Avatar                          avatar)
         {
-            var physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
-            var humanBodyBones             = Enum.GetValues(typeof(HumanBodyBones));
-            for (var transformsToCaptureIndex = 0;
-                transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
-                transformsToCaptureIndex++)
+            Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
+            Array humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
+            Dictionary<string, Transform> transformsByHumanBoneName = new Dictionary<string, Transform>(55);
+            for (int transformsToCaptureIndex = 0;
+                 transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
+                 transformsToCaptureIndex++)
             {
-                var humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
-                var humanBodyBone      = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
-                var boneTransform      = avatar.transformsByHumanBone[humanBodyBone];
+                int            humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
+                HumanBodyBones humanBodyBone      = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
+                Transform      boneTransform      = avatar.transformsByHumanBone[humanBodyBone];
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
+                transformsByHumanBoneName.Add(humanBodyBone.ToString(), boneTransform);
             }
+
+            return transformsByHumanBoneName;
         }
-        
+
         private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
                                                                     Dictionary<string, Transform>
                                                                         transformsByHumanBoneName,
@@ -241,15 +258,17 @@ namespace AnimotiveImporterEditor
             AnimationCurve rotationCurveZ = new AnimationCurve();
             AnimationCurve rotationCurveW = new AnimationCurve();
 
-            for (int i = clip.initFrame; i < clip.lastFrame - 1; i++)
+            for (int frame = clip.initFrame; frame < clip.lastFrame; frame++)
             {
-                int transformIndex = 0;
+                int   transformIndex = 0;
+                float time           = clip.fixedDeltaTime * frame;
+
                 foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
-                    int indexInCurveOfKey = i * (transformsByHumanBoneName.Count - 1) + transformIndex;
-                    var time              = clip.fixedDeltaTime * i;
+                    int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
+
                     Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
                     Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
                     Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
@@ -278,8 +297,7 @@ namespace AnimotiveImporterEditor
                 }
             }
 
-            AssetDatabase.CreateAsset(animationClip,
-                                      "Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim");
+            AssetDatabase.CreateAsset(animationClip, _transformAnimPath);
             AssetDatabase.Refresh();
             return animationClip;
         }
