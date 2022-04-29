@@ -6,10 +6,10 @@ using UnityEngine;
 [Serializable]
 public class IT_SceneInternalData
 {
-    public string currentSetName;
-    public int currentSessionNumber;
-    public int lastEntityIdAssigned;
-    public int numberOfTakesCaptured;
+    public string                              currentSetName;
+    public int                                 currentSessionNumber;
+    public int                                 lastEntityIdAssigned;
+    public int                                 numberOfTakesCaptured;
     public Dictionary<int, IT_EntitySceneData> entitiesDataById;
 }
 
@@ -37,8 +37,8 @@ public class IT_TransformClip : IT_ClipBase
     public IT_TransformClip(IT_ObjectTransformCurves[] singleObjectCurves, string nameOfClip, int initFrame = 0)
     {
         this.singleObjectCurves = singleObjectCurves;
-        this.nameOfClip = nameOfClip;
-        this.initFrame = initFrame;
+        this.nameOfClip         = nameOfClip;
+        this.initFrame          = initFrame;
         //TODO: Compute length here, or somewhere
     }
 }
@@ -47,7 +47,7 @@ public class IT_TransformClip : IT_ClipBase
 public class IT_FixedAnimationBaseClip : IT_ClipBase
 {
     public float fixedDeltaTime;
-    public int keyFramesCount;
+    public int   keyFramesCount;
 }
 
 
@@ -72,28 +72,33 @@ public class IT_CharacterTransformAnimationClip : IT_FixedAnimationBaseClip
 
     public int[] humanoidBonesEnumThatAreUsed;
 
-    public Vector3 worldPositionHolder;
+    public Vector3    worldPositionHolder;
     public Quaternion worldRotationHolder;
-    public float lossyScaleHolder;
+    public float      lossyScaleHolder;
 
-    public IT_CharacterTransformAnimationClip(int[] humanoidBonesEnumThatAreUsed,
-        float[] pureIkKeyframesCurve0, float[] pureIkKeyframesCurve1,
-        float[] pureIkKeyframesCurve2, float[] pureIkKeyframesCurve3, float[] pureIkKeyframesCurve4,
-        float[] pureIkKeyframesCurve5, float[] pureIkKeyframesCurve6, float[] physicsKeyframesCurve0,
-        float[] physicsKeyframesCurve1, float[] physicsKeyframesCurve2, float[] physicsKeyframesCurve3,
-        float[] physicsKeyframesCurve4, float[] physicsKeyframesCurve5, float[] physicsKeyframesCurve6,
-        string nameOfClip, int numberOfTakeInWhatWasCaptured, Vector3 worldPositionHolder,
-        Quaternion worldRotationHolder, float lossyScaleHolder, int initFrame = 0,
-        float fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime)
+    public IT_CharacterTransformAnimationClip(int[]      humanoidBonesEnumThatAreUsed,
+                                              float[]    pureIkKeyframesCurve0, float[] pureIkKeyframesCurve1,
+                                              float[]    pureIkKeyframesCurve2, float[] pureIkKeyframesCurve3,
+                                              float[]    pureIkKeyframesCurve4,
+                                              float[]    pureIkKeyframesCurve5, float[] pureIkKeyframesCurve6,
+                                              float[]    physicsKeyframesCurve0,
+                                              float[]    physicsKeyframesCurve1, float[] physicsKeyframesCurve2,
+                                              float[]    physicsKeyframesCurve3,
+                                              float[]    physicsKeyframesCurve4, float[] physicsKeyframesCurve5,
+                                              float[]    physicsKeyframesCurve6,
+                                              string     nameOfClip, int numberOfTakeInWhatWasCaptured,
+                                              Vector3    worldPositionHolder,
+                                              Quaternion worldRotationHolder, float lossyScaleHolder, int initFrame = 0,
+                                              float      fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime)
     {
-        this.fixedDeltaTime = fixedDeltaTime;
-        this.nameOfClip = nameOfClip;
-        this.initFrame = initFrame;
+        this.fixedDeltaTime                = fixedDeltaTime;
+        this.nameOfClip                    = nameOfClip;
+        this.initFrame                     = initFrame;
         this.numberOfTakeInWhatWasCaptured = numberOfTakeInWhatWasCaptured;
-        this.worldPositionHolder = worldPositionHolder;
-        this.worldRotationHolder = worldRotationHolder;
-        this.lossyScaleHolder = lossyScaleHolder;
-        this.humanoidBonesEnumThatAreUsed = humanoidBonesEnumThatAreUsed;
+        this.worldPositionHolder           = worldPositionHolder;
+        this.worldRotationHolder           = worldRotationHolder;
+        this.lossyScaleHolder              = lossyScaleHolder;
+        this.humanoidBonesEnumThatAreUsed  = humanoidBonesEnumThatAreUsed;
 
         this.pureIkKeyframesCurve0 = pureIkKeyframesCurve0;
         this.pureIkKeyframesCurve1 = pureIkKeyframesCurve1;
@@ -121,7 +126,8 @@ public class IT_CharacterTransformAnimationClip : IT_FixedAnimationBaseClip
     }
 
     public override IT_ClipPlayerBase GenerateAndInitializeClipPlayer(IT_ClipBase clip,
-        Transform objectInWhichIsGoingToBePlayed, IT_AnimatorControllerBase animatorController)
+                                                                      Transform objectInWhichIsGoingToBePlayed,
+                                                                      IT_AnimatorControllerBase animatorController)
     {
         return null;
     }
@@ -132,9 +138,9 @@ public class IT_CharacterTransformAnimationClip : IT_FixedAnimationBaseClip
 public class IT_ClipBase
 {
     public string nameOfClip;
-    public int initFrame;
-    public int lengthInFrames;
-    public int numberOfTakeInWhatWasCaptured;
+    public int    initFrame;
+    public int    lengthInFrames;
+    public int    numberOfTakeInWhatWasCaptured;
 
     public int lastFrame => initFrame + lengthInFrames - 1;
 
@@ -144,7 +150,8 @@ public class IT_ClipBase
     }
 
     public virtual IT_ClipPlayerBase GenerateAndInitializeClipPlayer(IT_ClipBase clip,
-        Transform objectInWhichIsGoingToBePlayed, IT_AnimatorControllerBase animatorController)
+                                                                     Transform objectInWhichIsGoingToBePlayed,
+                                                                     IT_AnimatorControllerBase animatorController)
     {
         return null;
     }
@@ -176,17 +183,20 @@ public static class IT_Utils
 {
     public static void RemoveValuesFromListOverIndex(IList list, int lastIndexToInclude)
     {
-        var listLength = list.Count;
-        var indexToDelete = lastIndexToInclude + 1;
-        for (var i = indexToDelete; i < listLength; i++) list.RemoveAt(indexToDelete);
+        int listLength    = list.Count;
+        int indexToDelete = lastIndexToInclude + 1;
+        for (int i = indexToDelete; i < listLength; i++)
+        {
+            list.RemoveAt(indexToDelete);
+        }
     }
 }
 
 
 public abstract class IT_ClipPlayerBase : IIT_Disposable
 {
-    public abstract int initFrameOfClip { get; }
-    public bool playingAnimation { get; protected set; }
+    public abstract int  initFrameOfClip  { get; }
+    public          bool playingAnimation { get; protected set; }
 
     /// <summary> Should be call every time that we delete an animationClipPlayer from an animator </summary>
     public virtual void Dispose()
@@ -227,7 +237,7 @@ public class IT_AnimatorControllerBase
 public struct IT_ObjectTransformCurves
 {
     public IT_Curve[] curves;
-    public List<int> hierarchyPath;
+    public List<int>  hierarchyPath;
 
     public IT_ObjectTransformCurves(List<int> hierarchyPath)
     {
@@ -292,7 +302,7 @@ public class IT_KeyFrame
 
     public IT_KeyFrame(Keyframe keyframe)
     {
-        time = keyframe.time;
+        time  = keyframe.time;
         value = keyframe.value;
         /*
         inTangent = keyframe.inTangent;
@@ -303,7 +313,7 @@ public class IT_KeyFrame
 
     public IT_KeyFrame(float nTime, float nValue)
     {
-        time = nTime;
+        time  = nTime;
         value = nValue;
     }
 
@@ -335,14 +345,14 @@ public class IT_Avatar
     /// <summary> List of humanoid bone indexes that this character has, based on HumanBodyBones enum </summary>
     public int[] indexesOfHumanoidBonesEnumThatAreAvailable;
 
-    public int[] indexesOfHumanoidBonesEnumAvailableThatAreNotFingerBones;
-    private Dictionary<string, Transform> _transformsByHumanBoneName;
-    private Dictionary<string, string> _transformsPathsFromHipToHumanBoneName;
-    public Dictionary<Transform, HumanBodyBones> humanBoneByTransforms;
-    public Dictionary<HumanBodyBones, int> indexOfTransformByHumanoidBone;
-    public bool[][] leftHandBonesAvailability;
-    public bool[][] rightHandBonesAvailability;
-    public Dictionary<HumanBodyBones, Transform> transformsByHumanBone;
+    public  int[]                                 indexesOfHumanoidBonesEnumAvailableThatAreNotFingerBones;
+    private Dictionary<string, Transform>         _transformsByHumanBoneName;
+    private Dictionary<string, string>            _transformsPathsFromHipToHumanBoneName;
+    public  Dictionary<Transform, HumanBodyBones> humanBoneByTransforms;
+    public  Dictionary<HumanBodyBones, int>       indexOfTransformByHumanoidBone;
+    public  bool[][]                              leftHandBonesAvailability;
+    public  bool[][]                              rightHandBonesAvailability;
+    public  Dictionary<HumanBodyBones, Transform> transformsByHumanBone;
 
     public IT_Avatar()
     {
@@ -350,51 +360,56 @@ public class IT_Avatar
 
     public IT_Avatar(Avatar unityAvatar, Dictionary<string, Transform> transformsByHumanBoneName)
     {
-        this.unityAvatar = unityAvatar;
-        _transformsByHumanBoneName = transformsByHumanBoneName;
+        this.unityAvatar                       = unityAvatar;
+        _transformsByHumanBoneName             = transformsByHumanBoneName;
         _transformsPathsFromHipToHumanBoneName = new Dictionary<string, string>();
-        var hip = transformsByHumanBoneName["Hips"];
-        foreach (var pair in _transformsByHumanBoneName)
+        Transform hip = transformsByHumanBoneName["Hips"];
+        foreach (KeyValuePair<string, Transform> pair in _transformsByHumanBoneName)
         {
-            var path = pair.Value.name;
-            var current = pair.Value;
+            string    path    = pair.Value.name;
+            Transform current = pair.Value;
             while (current.parent != null && current.parent != hip)
             {
                 current = current.parent;
-                path = current.name + "/" + path;
+                path    = current.name + "/" + path;
             }
 
-            if (current.parent != null) _transformsPathsFromHipToHumanBoneName.Add(path, pair.Key);
+            if (current.parent != null)
+            {
+                _transformsPathsFromHipToHumanBoneName.Add(path, pair.Key);
+            }
         }
 
         transformsByHumanBone = new Dictionary<HumanBodyBones, Transform>();
         humanBoneByTransforms = new Dictionary<Transform, HumanBodyBones>();
-        var humanoidBonesNamesWithoutSpaces = new HashSet<string>();
-        foreach (var transformByHumanoidBoneName in transformsByHumanBoneName)
+        HashSet<string> humanoidBonesNamesWithoutSpaces = new HashSet<string>();
+        foreach (KeyValuePair<string, Transform> transformByHumanoidBoneName in transformsByHumanBoneName)
         {
-            var humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
+            string humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
             humanoidBonesNamesWithoutSpaces.Add(humanBodyBoneNameWithoutSpaces);
 
-            var humanBodyBoneEnumElement =
+            HumanBodyBones humanBodyBoneEnumElement =
                 (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), humanBodyBoneNameWithoutSpaces);
-            transformsByHumanBone[humanBodyBoneEnumElement] = transformByHumanoidBoneName.Value;
+            transformsByHumanBone[humanBodyBoneEnumElement]          = transformByHumanoidBoneName.Value;
             humanBoneByTransforms[transformByHumanoidBoneName.Value] = humanBodyBoneEnumElement;
         }
 
         indexOfTransformByHumanoidBone = new Dictionary<HumanBodyBones, int>();
 
-        var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
-        var humanoidBonesAvailabilityList = new List<int>();
-        var humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
-        for (var i = 0; i < humanBodyBones.Length; i++)
+        Array     humanBodyBones                                     = Enum.GetValues(typeof(HumanBodyBones));
+        List<int> humanoidBonesAvailabilityList                      = new List<int>();
+        List<int> humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
+        for (int i = 0; i < humanBodyBones.Length; i++)
         {
-            var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
+            HumanBodyBones humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
             if (humanoidBonesNamesWithoutSpaces.Contains(humanBodyBone.ToString()))
             {
                 humanoidBonesAvailabilityList.Add(i);
                 indexOfTransformByHumanoidBone.Add(humanBodyBone, i);
                 if (!HumanoidFingerBones.Contains(humanBodyBone))
+                {
                     humanoidBonesAvailabilityThatAreNotFingerBonesList.Add(i);
+                }
             }
         }
 
@@ -403,19 +418,23 @@ public class IT_Avatar
             humanoidBonesAvailabilityThatAreNotFingerBonesList.ToArray();
 
         rightHandBonesAvailability = new bool[5][];
-        leftHandBonesAvailability = new bool[5][];
+        leftHandBonesAvailability  = new bool[5][];
 
-        for (var i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             leftHandBonesAvailability[i] = new bool[3];
-            for (var j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j++)
+            {
                 leftHandBonesAvailability[i][j] =
                     GetTransformsByHumanBoneName().ContainsKey(LeftHandHumanoidFingerBonesName[i][j]);
+            }
 
             rightHandBonesAvailability[i] = new bool[3];
-            for (var j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j++)
+            {
                 rightHandBonesAvailability[i][j] =
                     GetTransformsByHumanBoneName().ContainsKey(RightHandHumanoidFingerBonesName[i][j]);
+            }
         }
     }
 
@@ -426,14 +445,18 @@ public class IT_Avatar
 
     public void RebuildFromNewHip(Transform hip)
     {
-        var pathsToTransforms = new Dictionary<string, Transform>();
+        Dictionary<string, Transform> pathsToTransforms = new Dictionary<string, Transform>();
         GeneratePaths(hip, pathsToTransforms);
 
         _transformsByHumanBoneName = new Dictionary<string, Transform>();
         _transformsByHumanBoneName.Add("Hips", hip);
-        foreach (var bone in _transformsPathsFromHipToHumanBoneName)
+        foreach (KeyValuePair<string, string> bone in _transformsPathsFromHipToHumanBoneName)
+        {
             if (pathsToTransforms.ContainsKey(bone.Key))
+            {
                 _transformsByHumanBoneName.Add(bone.Value, pathsToTransforms[bone.Key]);
+            }
+        }
 
 
         //_transformsPathsFromHipToHumanBoneName = new Dictionary<string, string>();
@@ -454,32 +477,34 @@ public class IT_Avatar
 
         transformsByHumanBone = new Dictionary<HumanBodyBones, Transform>();
         humanBoneByTransforms = new Dictionary<Transform, HumanBodyBones>();
-        var humanoidBonesNamesWithoutSpaces = new HashSet<string>();
-        foreach (var transformByHumanoidBoneName in _transformsByHumanBoneName)
+        HashSet<string> humanoidBonesNamesWithoutSpaces = new HashSet<string>();
+        foreach (KeyValuePair<string, Transform> transformByHumanoidBoneName in _transformsByHumanBoneName)
         {
-            var humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
+            string humanBodyBoneNameWithoutSpaces = transformByHumanoidBoneName.Key.Replace(" ", "");
             humanoidBonesNamesWithoutSpaces.Add(humanBodyBoneNameWithoutSpaces);
 
-            var humanBodyBoneEnumElement =
+            HumanBodyBones humanBodyBoneEnumElement =
                 (HumanBodyBones)Enum.Parse(typeof(HumanBodyBones), humanBodyBoneNameWithoutSpaces);
-            transformsByHumanBone[humanBodyBoneEnumElement] = transformByHumanoidBoneName.Value;
+            transformsByHumanBone[humanBodyBoneEnumElement]          = transformByHumanoidBoneName.Value;
             humanBoneByTransforms[transformByHumanoidBoneName.Value] = humanBodyBoneEnumElement;
         }
 
         indexOfTransformByHumanoidBone = new Dictionary<HumanBodyBones, int>();
 
-        var humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
-        var humanoidBonesAvailabilityList = new List<int>();
-        var humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
-        for (var i = 0; i < humanBodyBones.Length; i++)
+        Array     humanBodyBones                                     = Enum.GetValues(typeof(HumanBodyBones));
+        List<int> humanoidBonesAvailabilityList                      = new List<int>();
+        List<int> humanoidBonesAvailabilityThatAreNotFingerBonesList = new List<int>();
+        for (int i = 0; i < humanBodyBones.Length; i++)
         {
-            var humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
+            HumanBodyBones humanBodyBone = (HumanBodyBones)humanBodyBones.GetValue(i);
             if (humanoidBonesNamesWithoutSpaces.Contains(humanBodyBone.ToString()))
             {
                 humanoidBonesAvailabilityList.Add(i);
                 indexOfTransformByHumanoidBone.Add(humanBodyBone, i);
                 if (!HumanoidFingerBones.Contains(humanBodyBone))
+                {
                     humanoidBonesAvailabilityThatAreNotFingerBonesList.Add(i);
+                }
             }
         }
 
@@ -491,48 +516,73 @@ public class IT_Avatar
 
     private void GeneratePaths(Transform currentBone, Dictionary<string, Transform> pathsToTransformsIn)
     {
-        for (var i = 0; i < currentBone.childCount; i++)
+        for (int i = 0; i < currentBone.childCount; i++)
         {
-            var bonePath = currentBone.GetChild(i).name;
+            string bonePath = currentBone.GetChild(i).name;
             pathsToTransformsIn.Add(bonePath, currentBone.GetChild(i));
             if (currentBone.GetChild(i).childCount > 0)
+            {
                 GeneratePaths(bonePath, currentBone.GetChild(i), pathsToTransformsIn);
+            }
         }
     }
 
-    private void GeneratePaths(string pathStart, Transform currentBone,
-        Dictionary<string, Transform> pathsToTransformsIn)
+    private void GeneratePaths(string                        pathStart, Transform currentBone,
+                               Dictionary<string, Transform> pathsToTransformsIn)
     {
-        for (var i = 0; i < currentBone.childCount; i++)
+        for (int i = 0; i < currentBone.childCount; i++)
         {
-            var bonePath = pathStart + "/" + currentBone.GetChild(i).name;
+            string bonePath = pathStart + "/" + currentBone.GetChild(i).name;
             pathsToTransformsIn.Add(bonePath, currentBone.GetChild(i));
             if (currentBone.GetChild(i).childCount > 0)
+            {
                 GeneratePaths(bonePath, currentBone.GetChild(i), pathsToTransformsIn);
+            }
         }
     }
+
 
     public void SetTransformsByHumanBoneName(Dictionary<string, Transform> nTransformsByHumanBoneName)
     {
         _transformsByHumanBoneName = nTransformsByHumanBoneName;
     }
 
-    #region HumanoidBones
+#region HumanoidBones
 
     public static HashSet<HumanBodyBones> HumanoidFingerBones = new HashSet<HumanBodyBones>
-    {
-        HumanBodyBones.LeftThumbDistal, HumanBodyBones.LeftThumbIntermediate, HumanBodyBones.LeftThumbProximal,
-        HumanBodyBones.LeftIndexDistal, HumanBodyBones.LeftIndexIntermediate, HumanBodyBones.LeftIndexProximal,
-        HumanBodyBones.LeftMiddleDistal, HumanBodyBones.LeftMiddleIntermediate, HumanBodyBones.LeftMiddleProximal,
-        HumanBodyBones.LeftRingDistal, HumanBodyBones.LeftRingIntermediate, HumanBodyBones.LeftRingProximal,
-        HumanBodyBones.LeftLittleDistal, HumanBodyBones.LeftLittleIntermediate, HumanBodyBones.LeftLittleProximal,
+                                                                {
+                                                                    HumanBodyBones.LeftThumbDistal,
+                                                                    HumanBodyBones.LeftThumbIntermediate,
+                                                                    HumanBodyBones.LeftThumbProximal,
+                                                                    HumanBodyBones.LeftIndexDistal,
+                                                                    HumanBodyBones.LeftIndexIntermediate,
+                                                                    HumanBodyBones.LeftIndexProximal,
+                                                                    HumanBodyBones.LeftMiddleDistal,
+                                                                    HumanBodyBones.LeftMiddleIntermediate,
+                                                                    HumanBodyBones.LeftMiddleProximal,
+                                                                    HumanBodyBones.LeftRingDistal,
+                                                                    HumanBodyBones.LeftRingIntermediate,
+                                                                    HumanBodyBones.LeftRingProximal,
+                                                                    HumanBodyBones.LeftLittleDistal,
+                                                                    HumanBodyBones.LeftLittleIntermediate,
+                                                                    HumanBodyBones.LeftLittleProximal,
 
-        HumanBodyBones.RightThumbDistal, HumanBodyBones.RightThumbIntermediate, HumanBodyBones.RightThumbProximal,
-        HumanBodyBones.RightIndexDistal, HumanBodyBones.RightIndexIntermediate, HumanBodyBones.RightIndexProximal,
-        HumanBodyBones.RightMiddleDistal, HumanBodyBones.RightMiddleIntermediate, HumanBodyBones.RightMiddleProximal,
-        HumanBodyBones.RightRingDistal, HumanBodyBones.RightRingIntermediate, HumanBodyBones.RightRingProximal,
-        HumanBodyBones.RightLittleDistal, HumanBodyBones.RightLittleIntermediate, HumanBodyBones.RightLittleProximal
-    };
+                                                                    HumanBodyBones.RightThumbDistal,
+                                                                    HumanBodyBones.RightThumbIntermediate,
+                                                                    HumanBodyBones.RightThumbProximal,
+                                                                    HumanBodyBones.RightIndexDistal,
+                                                                    HumanBodyBones.RightIndexIntermediate,
+                                                                    HumanBodyBones.RightIndexProximal,
+                                                                    HumanBodyBones.RightMiddleDistal,
+                                                                    HumanBodyBones.RightMiddleIntermediate,
+                                                                    HumanBodyBones.RightMiddleProximal,
+                                                                    HumanBodyBones.RightRingDistal,
+                                                                    HumanBodyBones.RightRingIntermediate,
+                                                                    HumanBodyBones.RightRingProximal,
+                                                                    HumanBodyBones.RightLittleDistal,
+                                                                    HumanBodyBones.RightLittleIntermediate,
+                                                                    HumanBodyBones.RightLittleProximal
+                                                                };
 
     public static string[][] LeftHandHumanoidFingerBonesName =
     {
@@ -552,7 +602,7 @@ public class IT_Avatar
         new[] { "Right Little Proximal", "Right Little Intermediate", "Right Little Distal" }
     };
 
-    #endregion
+#endregion
 }
 
 
@@ -562,19 +612,20 @@ public class IT_FixedAnimationPropertyClip : IT_FixedAnimationBaseClip
     public IT_FixedCurve[] curves;
 
     public IT_FixedAnimationPropertyClip(IT_FixedCurve[] curves, string nameOfClip, int numberOfTakeInWhatWasCaptured,
-        int initFrame = 0, float fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime)
+                                         int initFrame = 0, float fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime)
     {
-        this.curves = curves;
-        this.fixedDeltaTime = fixedDeltaTime;
-        this.nameOfClip = nameOfClip;
-        this.initFrame = initFrame;
+        this.curves                        = curves;
+        this.fixedDeltaTime                = fixedDeltaTime;
+        this.nameOfClip                    = nameOfClip;
+        this.initFrame                     = initFrame;
         this.numberOfTakeInWhatWasCaptured = numberOfTakeInWhatWasCaptured;
-        keyFramesCount = curves[0].KeyFrames.Count;
-        lengthInFrames = keyFramesCount;
+        keyFramesCount                     = curves[0].KeyFrames.Count;
+        lengthInFrames                     = keyFramesCount;
     }
 
     public override IT_ClipPlayerBase GenerateAndInitializeClipPlayer(IT_ClipBase clip,
-        Transform objectInWhichIsGoingToBePlayed, IT_AnimatorControllerBase animatorController)
+                                                                      Transform objectInWhichIsGoingToBePlayed,
+                                                                      IT_AnimatorControllerBase animatorController)
     {
         return null;
     }
@@ -583,25 +634,28 @@ public class IT_FixedAnimationPropertyClip : IT_FixedAnimationBaseClip
 [Serializable]
 public class IT_FixedAnimationCharacterPropertyClip : IT_FixedAnimationPropertyClip
 {
-    public int eyeAnimationSolutionIndexUsedForThisClip;
-    public int lipsAnimationSolutionIndexUsedForThisClip;
-    public List<byte[]> facialAnimationCurves;
+    public int                        eyeAnimationSolutionIndexUsedForThisClip;
+    public int                        lipsAnimationSolutionIndexUsedForThisClip;
+    public List<byte[]>               facialAnimationCurves;
     public Dictionary<int, float[]>[] specialNoInterpolationKeys;
 
     public IT_FixedAnimationCharacterPropertyClip(int eyeAnimationSolutionUsedForThisClip,
-        int lipsAnimationSolutionUsedForThisClip, IT_FixedCurve[] curves,
-        Dictionary<int, float[]>[] specialNoInterpolationKeys, List<byte[]> facialAnimationCurves, string nameOfClip,
-        int numberOfTakeInWhatWasCaptured, int initFrame = 0, float fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime) :
+                                                  int lipsAnimationSolutionUsedForThisClip, IT_FixedCurve[] curves,
+                                                  Dictionary<int, float[]>[] specialNoInterpolationKeys,
+                                                  List<byte[]> facialAnimationCurves, string nameOfClip,
+                                                  int numberOfTakeInWhatWasCaptured, int initFrame = 0,
+                                                  float fixedDeltaTime = IT_PhysicsManager.FixedDeltaTime) :
         base(curves, nameOfClip, numberOfTakeInWhatWasCaptured, initFrame, fixedDeltaTime)
     {
-        eyeAnimationSolutionIndexUsedForThisClip = eyeAnimationSolutionUsedForThisClip;
+        eyeAnimationSolutionIndexUsedForThisClip  = eyeAnimationSolutionUsedForThisClip;
         lipsAnimationSolutionIndexUsedForThisClip = lipsAnimationSolutionUsedForThisClip;
-        this.specialNoInterpolationKeys = specialNoInterpolationKeys;
-        this.facialAnimationCurves = facialAnimationCurves;
+        this.specialNoInterpolationKeys           = specialNoInterpolationKeys;
+        this.facialAnimationCurves                = facialAnimationCurves;
     }
 
     public override IT_ClipPlayerBase GenerateAndInitializeClipPlayer(IT_ClipBase clip,
-        Transform objectInWhichIsGoingToBePlayed, IT_AnimatorControllerBase animatorController)
+                                                                      Transform objectInWhichIsGoingToBePlayed,
+                                                                      IT_AnimatorControllerBase animatorController)
     {
         return null;
     }
@@ -610,15 +664,15 @@ public class IT_FixedAnimationCharacterPropertyClip : IT_FixedAnimationPropertyC
 [Serializable]
 internal class FacialAnimationExportWrapper
 {
-    public float fixedDeltaTimeBetweenKeyFrames;
-    public List<CharacterGeoDescriptor> characterGeos;
+    public float                             fixedDeltaTimeBetweenKeyFrames;
+    public List<CharacterGeoDescriptor>      characterGeos;
     public List<FacialAnimationFrameWrapper> facialAnimationFrames;
 }
 
 [Serializable]
 internal class CharacterGeoDescriptor
 {
-    public string name;
+    public string       name;
     public List<string> blendShapeNames;
 }
 
@@ -631,7 +685,7 @@ internal class FacialAnimationFrameWrapper
 [Serializable]
 public struct IT_SpecificCharacterBlendShapeData
 {
-    public int geo;
-    public int bsIndex;
+    public int   geo;
+    public int   bsIndex;
     public float value;
 }
