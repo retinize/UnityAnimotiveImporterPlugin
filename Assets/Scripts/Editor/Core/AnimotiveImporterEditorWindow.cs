@@ -14,7 +14,7 @@ namespace AnimotiveImporterEditor
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
         private const string _fbxPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\Paddy_FBX_Master.fbx";
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
 
         private const string _binaryAnimPath =
             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
@@ -23,22 +23,16 @@ namespace AnimotiveImporterEditor
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim";
 
         private const string _blendshapeJsonPath =
-            @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Paddy.json";
+            @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
 
         private const string _transformAnimPath =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim";
 
         private const string _playablesCreationPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\";
 
+
         private void OnGUI()
         {
-            EditorGUILayout.BeginHorizontal();
-
-
-            GUILayout.Label("Root Folder Path", EditorStyles.boldLabel);
-
-            EditorGUILayout.EndHorizontal();
-
             if (GUILayout.Button("Create scene and playables"))
             {
                 CreateScene("___scene_name_here___");
@@ -54,16 +48,18 @@ namespace AnimotiveImporterEditor
                              });
             }
 
-
             if (GUILayout.Button("Test Animation Clip"))
             {
-                HandleCharacterAnimationCreation(LoadFbx());
+                Tuple<GameObject, Animator> fbxTuple = LoadFbx();
+                Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>> clipTuple =
+                    PrepareAndGetAnimationData(fbxTuple);
+
+                CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
-
-            if (GUILayout.Button("Test Json Blendshape"))
+            if (GUILayout.Button("Test Json BlendShape"))
             {
-                HandleBlendshapeAnimationCreation(LoadFbx());
+                HandleBlendShapeAnimationCreation(LoadFbx());
             }
         }
 
@@ -130,7 +126,7 @@ namespace AnimotiveImporterEditor
             return playableAsset;
         }
 
-        private void HandleBlendshapeAnimationCreation(GameObject characterRoot)
+        private void HandleBlendShapeAnimationCreation(Tuple<GameObject, Animator> tuple)
         {
             string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(), _blendshapeJsonPath);
 
@@ -140,10 +136,10 @@ namespace AnimotiveImporterEditor
             reader.Dispose();
             FacialAnimationExportWrapper clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
 
-            CreateBlendshapeAnimationClip(clip, characterRoot);
+            CreateBlendShapeAnimationClip(clip, tuple);
         }
 
-        private void CreateBlendshapeAnimationClip(FacialAnimationExportWrapper clip, GameObject characterRoot)
+        private void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip, Tuple<GameObject, Animator> tuple)
         {
             AnimationClip animationClip = new AnimationClip();
 
@@ -167,14 +163,14 @@ namespace AnimotiveImporterEditor
 
                     string skinnedMeshRendererName = characterGeoDescriptor.name;
 
-                    Transform           tr = characterRoot.transform.FindChildRecursively(skinnedMeshRendererName);
+                    Transform           tr = tuple.Item1.transform.FindChildRecursively(skinnedMeshRendererName);
                     SkinnedMeshRenderer skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
 
                     string   blendshapeName  = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
                     float    blendshapeValue = blendShapeData.value;
                     Keyframe keyframe        = new Keyframe(time, blendshapeValue);
 
-                    string relativePath = AnimationUtility.CalculateTransformPath(tr, characterRoot.transform);
+                    string relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
 
 
                     AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
@@ -187,11 +183,14 @@ namespace AnimotiveImporterEditor
                 }
             }
 
+
+            tuple.Item2.avatar = null;
             AssetDatabase.CreateAsset(animationClip, _blendShapeAnimCreatedPath);
             AssetDatabase.Refresh();
         }
 
-        private void HandleCharacterAnimationCreation(GameObject characterRoot)
+        private Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>>
+            PrepareAndGetAnimationData(Tuple<GameObject, Animator> tuple)
         {
             string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(), _binaryAnimPath);
 
@@ -202,7 +201,7 @@ namespace AnimotiveImporterEditor
                  DataFormat.Binary);
 
 
-            Animator animator = characterRoot.GetComponent<Animator>();
+            Animator animator = tuple.Item2;
 
 
             Dictionary<string, Transform> transformsByHumanBoneName =
@@ -211,11 +210,11 @@ namespace AnimotiveImporterEditor
             for (int i = 0; i < animator.avatar.humanDescription.human.Length; i++)
             {
                 HumanBone bone          = animator.avatar.humanDescription.human[i];
-                Transform boneTransform = characterRoot.transform.FindChildRecursively(bone.boneName);
+                Transform boneTransform = tuple.Item1.transform.FindChildRecursively(bone.boneName);
                 transformsByHumanBoneName.Add(bone.humanName, boneTransform);
             }
 
-            transformsByHumanBoneName.Add("LastBone", characterRoot.transform);
+            transformsByHumanBoneName.Add("LastBone", tuple.Item1.transform);
 
             IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
@@ -223,9 +222,11 @@ namespace AnimotiveImporterEditor
 
             animator.avatar = null;
 
-            CreateTransformMovementsAnimationClip(clip, transformsByHumanBoneName, characterRoot);
 
             AssetDatabase.Refresh();
+            return new
+                Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>>(clip,
+                 transformsByHumanBoneName);
         }
 
         private Dictionary<string, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
@@ -234,6 +235,7 @@ namespace AnimotiveImporterEditor
             Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
             Array humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
             Dictionary<string, Transform> transformsByHumanBoneName = new Dictionary<string, Transform>(55);
+
             for (int transformsToCaptureIndex = 0;
                  transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
                  transformsToCaptureIndex++)
@@ -262,7 +264,10 @@ namespace AnimotiveImporterEditor
             AnimationCurve rotationCurveZ = new AnimationCurve();
             AnimationCurve rotationCurveW = new AnimationCurve();
 
-            for (int frame = clip.initFrame; frame < clip.lastFrame; frame++)
+            Vector3    worldPositionHolder = clip.worldPositionHolder;
+            Quaternion worlRotationHolder  = clip.worldRotationHolder;
+
+            for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
                 int   transformIndex = 0;
                 float time           = clip.fixedDeltaTime * frame;
@@ -284,14 +289,17 @@ namespace AnimotiveImporterEditor
                     positionCurveX.AddKey(localPositionX);
                     positionCurveY.AddKey(localPositionY);
                     positionCurveZ.AddKey(localPositionZ);
+
                     rotationCurveX.AddKey(localRotationX);
                     rotationCurveY.AddKey(localRotationY);
                     rotationCurveZ.AddKey(localRotationZ);
                     rotationCurveW.AddKey(localRotationW);
 
+
                     animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
                     animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
                     animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
+
                     animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.x", rotationCurveX);
                     animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
                     animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
@@ -301,19 +309,24 @@ namespace AnimotiveImporterEditor
                 }
             }
 
+            animationClip.wrapMode = WrapMode.Once;
+
             AssetDatabase.CreateAsset(animationClip, _transformAnimPath);
             AssetDatabase.Refresh();
             return animationClip;
         }
 
-        private GameObject LoadFbx()
+        private Tuple<GameObject, Animator> LoadFbx()
         {
             GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
                                                                      _fbxPath,
                                                                      typeof(GameObject)) as GameObject;
 
             characterRoot = Instantiate(characterRoot);
-            return characterRoot;
+
+            Animator animator = characterRoot.GetComponent<Animator>();
+
+            return new Tuple<GameObject, Animator>(characterRoot, animator);
         }
     }
 }
