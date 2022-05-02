@@ -14,7 +14,7 @@ namespace AnimotiveImporterEditor
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
         private const string _fbxPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\Frank_Export_Master.fbx";
 
         private const string _binaryAnimPath =
             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
@@ -229,8 +229,7 @@ namespace AnimotiveImporterEditor
 
             IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
-            InitializeItAvatar(clip, itAvatar);
-            transformsByHumanBoneName = itAvatar.GetTransformsByHumanBoneName();
+            transformsByHumanBoneName = InitializeItAvatar(clip, itAvatar);
 
             animator.avatar = null;
 
@@ -241,8 +240,8 @@ namespace AnimotiveImporterEditor
                  transformsByHumanBoneName);
         }
 
-        private void InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
-                                        IT_Avatar                          avatar)
+        private Dictionary<string, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
+                                                                 IT_Avatar                          avatar)
         {
             Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
             Array humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
@@ -258,6 +257,8 @@ namespace AnimotiveImporterEditor
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
                 transformsByHumanBoneName.Add(humanBodyBone.ToString(), boneTransform);
             }
+
+            return transformsByHumanBoneName;
         }
 
         private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
@@ -304,6 +305,7 @@ namespace AnimotiveImporterEditor
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //6
                     }
 
+
                     Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
                     Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
                     Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
@@ -320,7 +322,6 @@ namespace AnimotiveImporterEditor
                     pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
                     pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
                     pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
-
 
                     transformIndex++;
                 }
