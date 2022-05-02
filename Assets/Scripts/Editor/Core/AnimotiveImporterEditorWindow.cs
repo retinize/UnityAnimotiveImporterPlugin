@@ -54,6 +54,9 @@ namespace AnimotiveImporterEditor
                 Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>> clipTuple =
                     PrepareAndGetAnimationData(fbxTuple);
 
+                fbxTuple.Item1.transform.position = clipTuple.Item1.worldPositionHolder;
+                fbxTuple.Item1.transform.rotation = clipTuple.Item1.worldRotationHolder;
+
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
@@ -263,9 +266,6 @@ namespace AnimotiveImporterEditor
             AnimationCurve rotationCurveY = new AnimationCurve();
             AnimationCurve rotationCurveZ = new AnimationCurve();
             AnimationCurve rotationCurveW = new AnimationCurve();
-
-            Vector3    worldPositionHolder = clip.worldPositionHolder;
-            Quaternion worlRotationHolder  = clip.worldRotationHolder;
 
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
