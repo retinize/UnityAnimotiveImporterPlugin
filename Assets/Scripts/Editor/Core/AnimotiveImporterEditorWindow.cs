@@ -109,11 +109,17 @@ namespace AnimotiveImporterEditor
             GroupTrack groupTrack = asset.CreateTrack<GroupTrack>();
             groupTrack.name = "GROUP_NAME_HERE";
 
-            AnimatorTrack animatorTrack = asset.CreateTrack<AnimatorTrack>();
-            animatorTrack.SetGroup(groupTrack);
-            TimelineClip animatorClip = animatorTrack.CreateClip<AnimatorClip>();
-            animatorClip.displayName = "ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(animatorTrack, obj);
+            AnimatorTrack facialPerformanceAnimationTrack = asset.CreateTrack<AnimatorTrack>();
+            facialPerformanceAnimationTrack.SetGroup(groupTrack);
+            TimelineClip facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip<AnimatorClip>();
+            facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
+            playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, obj);
+
+            AnimatorTrack bodyPerformanceAnimationTrack = asset.CreateTrack<AnimatorTrack>();
+            bodyPerformanceAnimationTrack.SetGroup(groupTrack);
+            TimelineClip bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip<AnimatorClip>();
+            bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
+            playableDirector.SetGenericBinding(bodyPerformanceAnimationTrack, obj);
 
 
             SoundTrack soundTrack = asset.CreateTrack<SoundTrack>();
@@ -343,6 +349,8 @@ namespace AnimotiveImporterEditor
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.w", rotationCurveW);
             }
+
+            animationClip.EnsureQuaternionContinuity();
 
 
             AssetDatabase.CreateAsset(animationClip, _transformAnimPath);
