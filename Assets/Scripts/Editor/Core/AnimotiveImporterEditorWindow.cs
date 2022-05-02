@@ -51,12 +51,14 @@ namespace AnimotiveImporterEditor
             if (GUILayout.Button("Test Animation Clip"))
             {
                 Tuple<GameObject, Animator> fbxTuple = LoadFbx();
+
                 Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>> clipTuple =
                     PrepareAndGetAnimationData(fbxTuple);
 
                 fbxTuple.Item1.transform.position = clipTuple.Item1.worldPositionHolder;
                 fbxTuple.Item1.transform.rotation = clipTuple.Item1.worldRotationHolder;
 
+                DeleteAssetIfExists(_transformAnimPath, typeof(AnimationClip));
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
@@ -221,7 +223,8 @@ namespace AnimotiveImporterEditor
 
             IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
-            transformsByHumanBoneName = InitializeItAvatar(clip, itAvatar);
+            InitializeItAvatar(clip, itAvatar);
+            transformsByHumanBoneName = itAvatar.GetTransformsByHumanBoneName();
 
             animator.avatar = null;
 
@@ -232,8 +235,8 @@ namespace AnimotiveImporterEditor
                  transformsByHumanBoneName);
         }
 
-        private Dictionary<string, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
-                                                                 IT_Avatar                          avatar)
+        private void InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
+                                        IT_Avatar                          avatar)
         {
             Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
             Array humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
@@ -249,8 +252,6 @@ namespace AnimotiveImporterEditor
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
                 transformsByHumanBoneName.Add(humanBodyBone.ToString(), boneTransform);
             }
-
-            return transformsByHumanBoneName;
         }
 
         private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
@@ -258,7 +259,8 @@ namespace AnimotiveImporterEditor
                                                                         transformsByHumanBoneName,
                                                                     GameObject characterRoot)
         {
-            AnimationClip  animationClip  = new AnimationClip();
+            AnimationClip animationClip = new AnimationClip();
+
             AnimationCurve positionCurveX = new AnimationCurve();
             AnimationCurve positionCurveY = new AnimationCurve();
             AnimationCurve positionCurveZ = new AnimationCurve();
@@ -267,16 +269,34 @@ namespace AnimotiveImporterEditor
             AnimationCurve rotationCurveZ = new AnimationCurve();
             AnimationCurve rotationCurveW = new AnimationCurve();
 
+
+            Dictionary<string, List<List<Keyframe>>> pathAndKeyframesDictionary =
+                new Dictionary<string, List<List<Keyframe>>>(55);
+
+
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
                 int   transformIndex = 0;
                 float time           = clip.fixedDeltaTime * frame;
+
 
                 foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
                 {
                     int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
+
+                    if (!pathAndKeyframesDictionary.ContainsKey(relativePath))
+                    {
+                        pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>());
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //0
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //1
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //2
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //3
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //4
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //5
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //6
+                    }
 
                     Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
                     Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
@@ -286,30 +306,44 @@ namespace AnimotiveImporterEditor
                     Keyframe localRotationZ = new Keyframe(time, clip.physicsKeyframesCurve5[indexInCurveOfKey]);
                     Keyframe localRotationW = new Keyframe(time, clip.physicsKeyframesCurve6[indexInCurveOfKey]);
 
-                    positionCurveX.AddKey(localPositionX);
-                    positionCurveY.AddKey(localPositionY);
-                    positionCurveZ.AddKey(localPositionZ);
+                    pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
+                    pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
+                    pathAndKeyframesDictionary[relativePath][2].Add(localPositionZ);
 
-                    rotationCurveX.AddKey(localRotationX);
-                    rotationCurveY.AddKey(localRotationY);
-                    rotationCurveZ.AddKey(localRotationZ);
-                    rotationCurveW.AddKey(localRotationW);
+                    pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
+                    pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
+                    pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
+                    pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
 
-
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
-
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.x", rotationCurveX);
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
-                    animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.w", rotationCurveW);
 
                     transformIndex++;
                 }
             }
 
-            animationClip.wrapMode = WrapMode.Once;
+
+            foreach (KeyValuePair<string, List<List<Keyframe>>> keyValuePair in pathAndKeyframesDictionary)
+            {
+                string relativePath = keyValuePair.Key;
+
+                positionCurveX = new AnimationCurve(keyValuePair.Value[0].ToArray());
+                positionCurveY = new AnimationCurve(keyValuePair.Value[1].ToArray());
+                positionCurveZ = new AnimationCurve(keyValuePair.Value[2].ToArray());
+
+                rotationCurveX = new AnimationCurve(keyValuePair.Value[3].ToArray());
+                rotationCurveY = new AnimationCurve(keyValuePair.Value[4].ToArray());
+                rotationCurveZ = new AnimationCurve(keyValuePair.Value[5].ToArray());
+                rotationCurveW = new AnimationCurve(keyValuePair.Value[6].ToArray());
+
+                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
+                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
+                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
+
+                animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.x", rotationCurveX);
+                animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
+                animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
+                animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.w", rotationCurveW);
+            }
+
 
             AssetDatabase.CreateAsset(animationClip, _transformAnimPath);
             AssetDatabase.Refresh();
@@ -327,6 +361,14 @@ namespace AnimotiveImporterEditor
             Animator animator = characterRoot.GetComponent<Animator>();
 
             return new Tuple<GameObject, Animator>(characterRoot, animator);
+        }
+
+        private void DeleteAssetIfExists(string path, Type type)
+        {
+            if (AssetDatabase.LoadAssetAtPath(path, type) != null)
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
         }
     }
 }
