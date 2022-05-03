@@ -14,7 +14,7 @@ namespace AnimotiveImporterEditor
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
         private const string _fbxPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\Frank_Export_Master.fbx";
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
 
         private const string _binaryAnimPath =
             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
@@ -349,9 +349,8 @@ namespace AnimotiveImporterEditor
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.z", rotationCurveZ);
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.w", rotationCurveW);
+                animationClip.EnsureQuaternionContinuity();
             }
-
-            animationClip.EnsureQuaternionContinuity();
 
 
             AssetDatabase.CreateAsset(animationClip, _transformAnimPath);

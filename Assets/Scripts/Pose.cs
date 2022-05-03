@@ -19,8 +19,10 @@ public class Pose : MonoBehaviour
 
             if (tr != null)
             {
-                tr.localPosition = transformInfoList.TransformsByStrings[i].LocalPosition;
-                tr.localRotation = transformInfoList.TransformsByStrings[i].localRotation;
+                tr.localPosition    = transformInfoList.TransformsByStrings[i].LocalPosition;
+                tr.localRotation    = transformInfoList.TransformsByStrings[i].LocalRotation;
+                tr.localScale       = transformInfoList.TransformsByStrings[i].LocalScale;
+                tr.localEulerAngles = transformInfoList.TransformsByStrings[i].LocalEulerAngles;
             }
         }
     }
@@ -67,13 +69,17 @@ public class TransformsByString
 {
     public string     Name;
     public Vector3    LocalPosition;
-    public Quaternion localRotation;
+    public Quaternion LocalRotation;
+    public Vector3    LocalScale;
+    public Vector3    LocalEulerAngles;
 
     public TransformsByString(Transform tr)
     {
-        Name          = tr.name;
-        LocalPosition = tr.localPosition;
-        localRotation = tr.localRotation;
+        Name             = tr.name;
+        LocalPosition    = tr.localPosition;
+        LocalRotation    = tr.localRotation;
+        LocalScale       = tr.localScale;
+        LocalEulerAngles = tr.localEulerAngles;
     }
 }
 
