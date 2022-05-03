@@ -14,7 +14,10 @@ namespace AnimotiveImporterEditor
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
         private const string _fbxPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\Frank_forErtan.fbx";
+
+        private const string _blendshapeJsonPath =
+            @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
 
         private const string _binaryAnimPath =
             @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
@@ -22,14 +25,10 @@ namespace AnimotiveImporterEditor
         private const string _blendShapeAnimCreatedPath =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim";
 
-        private const string _blendshapeJsonPath =
-            @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
-
         private const string _transformAnimPath =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/transforms.anim";
 
         private const string _playablesCreationPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\";
-
 
         private void OnGUI()
         {
@@ -55,8 +54,6 @@ namespace AnimotiveImporterEditor
                 Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>> clipTuple =
                     PrepareAndGetAnimationData(fbxTuple);
 
-                fbxTuple.Item1.transform.position = clipTuple.Item1.worldPositionHolder;
-                fbxTuple.Item1.transform.rotation = clipTuple.Item1.worldRotationHolder;
 
                 DeleteAssetIfExists(_transformAnimPath, typeof(AnimationClip));
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
@@ -280,7 +277,6 @@ namespace AnimotiveImporterEditor
             Dictionary<string, List<List<Keyframe>>> pathAndKeyframesDictionary =
                 new Dictionary<string, List<List<Keyframe>>>(55);
 
-
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
                 int   transformIndex = 0;
@@ -305,14 +301,20 @@ namespace AnimotiveImporterEditor
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //6
                     }
 
+                    Quaternion keyframe = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
+                                                         clip.physicsKeyframesCurve4[indexInCurveOfKey],
+                                                         clip.physicsKeyframesCurve5[indexInCurveOfKey],
+                                                         clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+
 
                     Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
                     Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
                     Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
-                    Keyframe localRotationX = new Keyframe(time, clip.physicsKeyframesCurve3[indexInCurveOfKey]);
-                    Keyframe localRotationY = new Keyframe(time, clip.physicsKeyframesCurve4[indexInCurveOfKey]);
-                    Keyframe localRotationZ = new Keyframe(time, clip.physicsKeyframesCurve5[indexInCurveOfKey]);
-                    Keyframe localRotationW = new Keyframe(time, clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+
+                    Keyframe localRotationX = new Keyframe(time, keyframe.x);
+                    Keyframe localRotationY = new Keyframe(time, keyframe.y);
+                    Keyframe localRotationZ = new Keyframe(time, keyframe.z);
+                    Keyframe localRotationW = new Keyframe(time, keyframe.w);
 
                     pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
                     pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
