@@ -7,12 +7,17 @@ namespace AnimotiveImporterEditor
 
     public class Pose : MonoBehaviour
     {
-        [ContextMenu("Load Animotive Pose")]
+        public string LoadJson = "";
+        public string SaveJson = "";
+
+        [ContextMenu("Load Pose")]
         public void LoadPose()
         {
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-            string            text              = File.ReadAllText(desktopPath + "\\test.json");
+            string text = File.ReadAllText(string.Concat(desktopPath, $"\\{LoadJson}.json"));
+
+
             TransformInfoList transformInfoList = JsonUtility.FromJson<TransformInfoList>(text);
 
             for (int i = 0; i < transformInfoList.TransformsByStrings.Count; i++)
@@ -37,12 +42,12 @@ namespace AnimotiveImporterEditor
             List<Transform> transforms = new List<Transform>();
 
             TransformInfoList temp = new TransformInfoList();
-
+            temp.TransformsByStrings.Add(new TransformsByString(transform));
             GetAllChildrenRecursively(ref transforms, transform, ref temp);
 
 
             string jsonString = JsonUtility.ToJson(temp, true);
-            File.WriteAllText(desktopPath + "\\plugin.json", jsonString);
+            File.WriteAllText(string.Concat(desktopPath, $"\\{SaveJson}.json"), jsonString);
         }
 
         private void GetAllChildrenRecursively(ref List<Transform>   transforms, Transform targetTransform,
@@ -73,6 +78,7 @@ namespace AnimotiveImporterEditor
         public Quaternion LocalRotation;
         public Vector3    LocalScale;
         public Vector3    LocalEulerAngles;
+        public Quaternion GlobalRotation;
 
         public TransformsByString(Transform tr)
         {
@@ -81,6 +87,7 @@ namespace AnimotiveImporterEditor
             LocalRotation    = tr.localRotation;
             LocalScale       = tr.localScale;
             LocalEulerAngles = tr.localEulerAngles;
+            GlobalRotation   = tr.rotation;
         }
     }
 
