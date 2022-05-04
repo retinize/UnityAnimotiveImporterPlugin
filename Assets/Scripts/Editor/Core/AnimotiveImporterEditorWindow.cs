@@ -3,7 +3,9 @@ namespace AnimotiveImporterEditor
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using OdinSerializer;
+    using Retinize;
     using UnityEditor;
     using UnityEditor.SceneManagement;
     using UnityEngine;
@@ -14,7 +16,7 @@ namespace AnimotiveImporterEditor
     public class AnimotiveImporterEditorWindow : EditorWindow
     {
         private const string _fbxPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\Frank_forErtan.fbx";
+            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
 
         private const string _blendshapeJsonPath =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
@@ -56,6 +58,7 @@ namespace AnimotiveImporterEditor
 
 
                 DeleteAssetIfExists(_transformAnimPath, typeof(AnimationClip));
+                IT_ZeroJointRotations.ZeroRotations(clipTuple.Item2.Select(i => i.Value).ToList(), fbxTuple.Item1);
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
