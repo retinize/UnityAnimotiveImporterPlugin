@@ -3,9 +3,7 @@ namespace AnimotiveImporterEditor
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using OdinSerializer;
-    using Retinize;
     using UnityEditor;
     using UnityEditor.SceneManagement;
     using UnityEngine;
@@ -58,7 +56,7 @@ namespace AnimotiveImporterEditor
 
 
                 DeleteAssetIfExists(_transformAnimPath, typeof(AnimationClip));
-                IT_ZeroJointRotations.ZeroRotations(clipTuple.Item2.Select(i => i.Value).ToList(), fbxTuple.Item1);
+                // IT_ZeroJointRotations.ZeroRotations(clipTuple.Item2.Select(i => i.Value).ToList(), fbxTuple.Item1);
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
@@ -261,20 +259,12 @@ namespace AnimotiveImporterEditor
             return transformsByHumanBoneName;
         }
 
-        private AnimationClip CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
-                                                                    Dictionary<string, Transform>
-                                                                        transformsByHumanBoneName,
-                                                                    GameObject characterRoot)
+        private void CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
+                                                           Dictionary<string, Transform>
+                                                               transformsByHumanBoneName,
+                                                           GameObject characterRoot)
         {
             AnimationClip animationClip = new AnimationClip();
-
-            AnimationCurve positionCurveX = new AnimationCurve();
-            AnimationCurve positionCurveY = new AnimationCurve();
-            AnimationCurve positionCurveZ = new AnimationCurve();
-            AnimationCurve rotationCurveX = new AnimationCurve();
-            AnimationCurve rotationCurveY = new AnimationCurve();
-            AnimationCurve rotationCurveZ = new AnimationCurve();
-            AnimationCurve rotationCurveW = new AnimationCurve();
 
 
             Dictionary<string, List<List<Keyframe>>> pathAndKeyframesDictionary =
@@ -337,14 +327,14 @@ namespace AnimotiveImporterEditor
             {
                 string relativePath = keyValuePair.Key;
 
-                positionCurveX = new AnimationCurve(keyValuePair.Value[0].ToArray());
-                positionCurveY = new AnimationCurve(keyValuePair.Value[1].ToArray());
-                positionCurveZ = new AnimationCurve(keyValuePair.Value[2].ToArray());
+                AnimationCurve positionCurveX = new AnimationCurve(keyValuePair.Value[0].ToArray());
+                AnimationCurve positionCurveY = new AnimationCurve(keyValuePair.Value[1].ToArray());
+                AnimationCurve positionCurveZ = new AnimationCurve(keyValuePair.Value[2].ToArray());
 
-                rotationCurveX = new AnimationCurve(keyValuePair.Value[3].ToArray());
-                rotationCurveY = new AnimationCurve(keyValuePair.Value[4].ToArray());
-                rotationCurveZ = new AnimationCurve(keyValuePair.Value[5].ToArray());
-                rotationCurveW = new AnimationCurve(keyValuePair.Value[6].ToArray());
+                AnimationCurve rotationCurveX = new AnimationCurve(keyValuePair.Value[3].ToArray());
+                AnimationCurve rotationCurveY = new AnimationCurve(keyValuePair.Value[4].ToArray());
+                AnimationCurve rotationCurveZ = new AnimationCurve(keyValuePair.Value[5].ToArray());
+                AnimationCurve rotationCurveW = new AnimationCurve(keyValuePair.Value[6].ToArray());
 
                 animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
                 animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
@@ -360,7 +350,6 @@ namespace AnimotiveImporterEditor
 
             AssetDatabase.CreateAsset(animationClip, _transformAnimPath);
             AssetDatabase.Refresh();
-            return animationClip;
         }
 
         private Tuple<GameObject, Animator> LoadFbx()
