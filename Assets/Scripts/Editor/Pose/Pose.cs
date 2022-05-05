@@ -1,6 +1,6 @@
 namespace AnimotiveImporterEditor
 {
-    using System.Collections.Generic;
+    using System;
     using System.IO;
     using UnityEditor;
     using UnityEngine;
@@ -10,8 +10,12 @@ namespace AnimotiveImporterEditor
         private static readonly string _posesBase =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses";
 
-        public string LoadJson = "";
-        public string SaveJson = "";
+        [Header("Load")] public string   LoadJson = "";
+        public                  Animator LoadAnimator;
+
+        [Header("Save")] public string SaveJson = "";
+
+        public Animator SaveAnimator;
 
         [Space] [Header("For Loading Fixed Pose")]
         public string EditorTPose = "";
@@ -30,15 +34,14 @@ namespace AnimotiveImporterEditor
 
             TransformInfoList transformInfoList = JsonUtility.FromJson<TransformInfoList>(text);
 
-            for (int i = 0; i < transformInfoList.TransformsByStrings.Count; i++)
+            foreach (TransformsByString pair in transformInfoList.TransformsByStrings)
             {
-                Transform tr = transform.FindChildRecursively(transformInfoList.TransformsByStrings[i].Name);
-
+                Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
                 if (tr != null)
                 {
-                    tr.localPosition = transformInfoList.TransformsByStrings[i].LocalPosition;
-                    tr.localRotation = transformInfoList.TransformsByStrings[i].LocalRotation;
-                    tr.localScale    = transformInfoList.TransformsByStrings[i].LocalScale;
+                    tr.localPosition = pair.LocalPosition;
+                    tr.localRotation = pair.LocalRotation;
+                    tr.localScale    = pair.LocalScale;
                 }
             }
         }
@@ -60,13 +63,18 @@ namespace AnimotiveImporterEditor
             TransformInfoList frankGestureAnimotiveTransformInfoList =
                 JsonUtility.FromJson<TransformInfoList>(frankAnimotiveGestureText);
 
-            for (int i = 0; i < pluginTPoseTransformInfoList.TransformsByStrings.Count; i++)
+            for (int i = 0;
+                 i < pluginTPoseTransformInfoList
+                     .TransformsByStrings.Count;
+                 i++)
             {
-                Transform tr = transform.FindChildRecursively(pluginTPoseTransformInfoList.TransformsByStrings[i].Name);
+                TransformsByString pair = pluginTPoseTransformInfoList
+                    .TransformsByStrings[i];
+                Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
 
                 if (tr != null)
                 {
-                    tr.localPosition = pluginTPoseTransformInfoList.TransformsByStrings[i].LocalPosition;
+                    tr.localPosition = pair.LocalPosition;
 
                     Quaternion inverseAnimotiveTpose =
                         Quaternion.Inverse(animotiveTPoseTransformInfoList.TransformsByStrings[i].GlobalRotation);
@@ -74,11 +82,11 @@ namespace AnimotiveImporterEditor
                     Quaternion poseRotation =
                         frankGestureAnimotiveTransformInfoList.TransformsByStrings[i].GlobalRotation;
 
-                    Quaternion editorTPoseRotation = pluginTPoseTransformInfoList.TransformsByStrings[i].GlobalRotation;
+                    Quaternion editorTPoseRotation = pair.GlobalRotation;
 
                     tr.rotation = inverseAnimotiveTpose * poseRotation * editorTPoseRotation;
 
-                    tr.localScale = pluginTPoseTransformInfoList.TransformsByStrings[i].LocalScale;
+                    tr.localScale = pair.LocalScale;
                 }
             }
         }
@@ -90,35 +98,23 @@ namespace AnimotiveImporterEditor
             string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
 
-            List<Transform> transforms = new List<Transform>();
+            TransformInfoList transformInfoList = new TransformInfoList();
 
-            TransformInfoList temp = new TransformInfoList();
-            temp.TransformsByStrings.Add(new TransformsByString(transform));
-            GetAllChildrenRecursively(ref transforms, transform, ref temp);
+            foreach (HumanBodyBones pair in Enum.GetValues(typeof(HumanBodyBones)))
+            {
+                if (pair == HumanBodyBones.LastBone || !SaveAnimator.GetBoneTransform(pair))
+                {
+                    continue;
+                }
+
+                Transform boneTransform = SaveAnimator.GetBoneTransform(pair);
+                transformInfoList.TransformsByStrings.Add(new TransformsByString(boneTransform, pair));
+            }
 
 
-            string jsonString = JsonUtility.ToJson(temp, true);
+            string jsonString = JsonUtility.ToJson(transformInfoList, true);
             File.WriteAllText(string.Concat(path, $"\\{SaveJson}.json"), jsonString);
             AssetDatabase.Refresh();
-        }
-
-        private void GetAllChildrenRecursively(ref List<Transform>   transforms, Transform targetTransform,
-                                               ref TransformInfoList transformInfoList)
-        {
-            for (int i = 0; i < targetTransform.childCount; i++)
-            {
-                Transform child = targetTransform.GetChild(i);
-                if (!transforms.Contains(child))
-                {
-                    transforms.Add(child);
-                    transformInfoList.TransformsByStrings.Add(new TransformsByString(child));
-                }
-
-                if (child.childCount > 0)
-                {
-                    GetAllChildrenRecursively(ref transforms, child, ref transformInfoList);
-                }
-            }
         }
     }
 }
