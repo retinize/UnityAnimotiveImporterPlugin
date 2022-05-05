@@ -3,6 +3,7 @@ namespace AnimotiveImporterEditor
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using OdinSerializer;
     using UnityEditor;
     using UnityEditor.SceneManagement;
@@ -20,7 +21,7 @@ namespace AnimotiveImporterEditor
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
 
         private const string _binaryAnimPath =
-            @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/Frank Character Root_TransformClip_Take1";
+            @"/Assets/AnimotivePluginExampleStructure/Example Data/Animation/Binary/FrankErtanTest Character Root_TransformClip_Take1";
 
         private const string _blendShapeAnimCreatedPath =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/blenshapeAnim.anim";
@@ -51,7 +52,7 @@ namespace AnimotiveImporterEditor
             {
                 Tuple<GameObject, Animator> fbxTuple = LoadFbx();
 
-                Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>> clipTuple =
+                Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>> clipTuple =
                     PrepareAndGetAnimationData(fbxTuple);
 
 
@@ -198,7 +199,7 @@ namespace AnimotiveImporterEditor
             AssetDatabase.Refresh();
         }
 
-        private Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>>
+        private Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>>
             PrepareAndGetAnimationData(Tuple<GameObject, Animator> tuple)
         {
             string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(), _binaryAnimPath);
@@ -227,23 +228,23 @@ namespace AnimotiveImporterEditor
 
             IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
 
-            transformsByHumanBoneName = InitializeItAvatar(clip, itAvatar);
 
             animator.avatar = null;
 
 
             AssetDatabase.Refresh();
             return new
-                Tuple<IT_CharacterTransformAnimationClip, Dictionary<string, Transform>>(clip,
-                 transformsByHumanBoneName);
+                Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>>(clip,
+                 InitializeItAvatar(clip, itAvatar));
         }
 
-        private Dictionary<string, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
-                                                                 IT_Avatar                          avatar)
+        private Dictionary<HumanBodyBones, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
+                                                                         IT_Avatar                          avatar)
         {
             Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
-            Array humanBodyBones = Enum.GetValues(typeof(HumanBodyBones));
-            Dictionary<string, Transform> transformsByHumanBoneName = new Dictionary<string, Transform>(55);
+            Array       humanBodyBones             = Enum.GetValues(typeof(HumanBodyBones));
+            Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName =
+                new Dictionary<HumanBodyBones, Transform>(55);
 
             for (int transformsToCaptureIndex = 0;
                  transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
@@ -253,22 +254,50 @@ namespace AnimotiveImporterEditor
                 HumanBodyBones humanBodyBone      = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
                 Transform      boneTransform      = avatar.transformsByHumanBone[humanBodyBone];
                 physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
-                transformsByHumanBoneName.Add(humanBodyBone.ToString(), boneTransform);
+                transformsByHumanBoneName.Add(humanBodyBone, boneTransform);
             }
 
             return transformsByHumanBoneName;
         }
 
         private void CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
-                                                           Dictionary<string, Transform>
+                                                           Dictionary<HumanBodyBones, Transform>
                                                                transformsByHumanBoneName,
                                                            GameObject characterRoot)
         {
+            Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform =
+                new Dictionary<Transform, HumanBodyBones>(55);
+
+            foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
+            {
+                humanoidBoneByTransform.Add(pair.Value, pair.Key);
+            }
+
             AnimationClip animationClip = new AnimationClip();
 
 
             Dictionary<string, List<List<Keyframe>>> pathAndKeyframesDictionary =
                 new Dictionary<string, List<List<Keyframe>>>(55);
+
+
+            Dictionary<HumanBodyBones, List<Quaternion>> localQuaternionsByFrame =
+                GetLocalQuaternionsFromAnimFile(clip, transformsByHumanBoneName);
+
+            Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
+                GetGlobalRotationsFromAnimFile(transformsByHumanBoneName, humanoidBoneByTransform,
+                                               localQuaternionsByFrame,   clip);
+
+//HARDCODE !
+            string path = string.Concat(Directory.GetCurrentDirectory(),
+                                        @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses");
+
+            string animotiveTPoseText = File.ReadAllText(string.Concat(path, "\\AnimotiveTPoseFrank.json"));
+            string editorTPoseText    = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
+
+
+            TransformInfoList animotiveTPoseTransformInfoList =
+                JsonUtility.FromJson<TransformInfoList>(animotiveTPoseText);
+            TransformInfoList editorTPoseTransformInfoList = JsonUtility.FromJson<TransformInfoList>(editorTPoseText);
 
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
@@ -276,42 +305,73 @@ namespace AnimotiveImporterEditor
                 float time           = clip.fixedDeltaTime * frame;
 
 
-                foreach (KeyValuePair<string, Transform> pair in transformsByHumanBoneName)
+                foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
                 {
-                    int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
+                    if (pair.Key == HumanBodyBones.LastBone)
+                    {
+                        continue;
+                    }
+
+                    // int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
 
                     if (!pathAndKeyframesDictionary.ContainsKey(relativePath))
                     {
-                        pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>());
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //0
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //1
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //2
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //3
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //4
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //5
-                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>()); //6
+                        pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>(55));
+
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //0
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //1
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //2
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //3
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //4
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //5
+                        pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //6
                     }
 
-                    Quaternion keyframe = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
-                                                         clip.physicsKeyframesCurve4[indexInCurveOfKey],
-                                                         clip.physicsKeyframesCurve5[indexInCurveOfKey],
-                                                         clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+
+                    Quaternion boneGlobalRotationThisFrame = globalQuaternionsByFrame[pair.Key][frame];
+                    // Quaternion frameLocalRotation          = localQuaternionsByFrame[pair.Key][frame];
+                    Quaternion editorTPoseRotationForThisBone =
+                        editorTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
+                                                    .LocalRotation;
+
+                    Quaternion animotiveTPoseRotationForThisBone =
+                        animotiveTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
+                                                       .LocalRotation;
 
 
-                    Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
-                    Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
-                    Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+                    Quaternion inversedGlobalRotationFromTheParentBoneThisFrame = Quaternion.identity;
+                    if (pair.Value.parent != null && humanoidBoneByTransform.ContainsKey(pair.Value.parent))
+                    {
+                        HumanBodyBones bone = humanoidBoneByTransform[pair.Value.parent];
+                        inversedGlobalRotationFromTheParentBoneThisFrame =
+                            Quaternion.Inverse(globalQuaternionsByFrame[bone][frame]);
+                    }
 
-                    Keyframe localRotationX = new Keyframe(time, keyframe.x);
-                    Keyframe localRotationY = new Keyframe(time, keyframe.y);
-                    Keyframe localRotationZ = new Keyframe(time, keyframe.z);
-                    Keyframe localRotationW = new Keyframe(time, keyframe.w);
+                    Quaternion localRotationOfTheGlobalizedRotationFromClip =
+                        inversedGlobalRotationFromTheParentBoneThisFrame * boneGlobalRotationThisFrame;
 
-                    pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
-                    pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
-                    pathAndKeyframesDictionary[relativePath][2].Add(localPositionZ);
+
+                    // Quaternion.Inverse(globalRotationFromTheParentbone) *globalRotationOfTheBone
+
+                    Quaternion result =
+                        Quaternion.Inverse(animotiveTPoseRotationForThisBone) *
+                        localRotationOfTheGlobalizedRotationFromClip          *
+                        editorTPoseRotationForThisBone;
+
+                    // Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
+                    // Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
+                    // Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+
+                    Keyframe localRotationX = new Keyframe(time, result.x);
+                    Keyframe localRotationY = new Keyframe(time, result.y);
+                    Keyframe localRotationZ = new Keyframe(time, result.z);
+                    Keyframe localRotationW = new Keyframe(time, result.w);
+
+                    // pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
+                    // pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
+                    // pathAndKeyframesDictionary[relativePath][2].Add(localPositionZ);
 
                     pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
                     pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
@@ -327,18 +387,18 @@ namespace AnimotiveImporterEditor
             {
                 string relativePath = keyValuePair.Key;
 
-                AnimationCurve positionCurveX = new AnimationCurve(keyValuePair.Value[0].ToArray());
-                AnimationCurve positionCurveY = new AnimationCurve(keyValuePair.Value[1].ToArray());
-                AnimationCurve positionCurveZ = new AnimationCurve(keyValuePair.Value[2].ToArray());
+                // AnimationCurve positionCurveX = new AnimationCurve(keyValuePair.Value[0].ToArray());
+                // AnimationCurve positionCurveY = new AnimationCurve(keyValuePair.Value[1].ToArray());
+                // AnimationCurve positionCurveZ = new AnimationCurve(keyValuePair.Value[2].ToArray());
 
                 AnimationCurve rotationCurveX = new AnimationCurve(keyValuePair.Value[3].ToArray());
                 AnimationCurve rotationCurveY = new AnimationCurve(keyValuePair.Value[4].ToArray());
                 AnimationCurve rotationCurveZ = new AnimationCurve(keyValuePair.Value[5].ToArray());
                 AnimationCurve rotationCurveW = new AnimationCurve(keyValuePair.Value[6].ToArray());
 
-                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
-                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
-                animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
+                // animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.x", positionCurveX);
+                // animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.y", positionCurveY);
+                // animationClip.SetCurve(relativePath, typeof(Transform), "localPosition.z", positionCurveZ);
 
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.x", rotationCurveX);
                 animationClip.SetCurve(relativePath, typeof(Transform), "localRotation.y", rotationCurveY);
@@ -371,6 +431,91 @@ namespace AnimotiveImporterEditor
             {
                 AssetDatabase.DeleteAsset(path);
             }
+        }
+
+
+        private Dictionary<HumanBodyBones, List<Quaternion>> GetGlobalRotationsFromAnimFile(
+            Dictionary<HumanBodyBones, Transform> transformByHumanoidBone,
+            Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform,
+            Dictionary<HumanBodyBones, List<Quaternion>>
+                localQuaternionsByFrame,
+            IT_CharacterTransformAnimationClip clip)
+        {
+            Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
+                new Dictionary<HumanBodyBones, List<Quaternion>>(55);
+
+            for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
+            {
+                foreach (HumanBodyBones humanBone in Enum.GetValues(typeof(HumanBodyBones)))
+                {
+                    if (!transformByHumanoidBone.ContainsKey(humanBone))
+                    {
+                        continue;
+                    }
+
+                    Transform  boneTransform            = transformByHumanoidBone[humanBone];
+                    Quaternion globalRotationOfThisBone = Quaternion.identity;
+
+                    while (boneTransform != null)
+                    {
+                        if (humanoidBoneByTransform.ContainsKey(boneTransform))
+                        {
+                            HumanBodyBones bone = humanoidBoneByTransform[boneTransform];
+
+                            Quaternion localRotationInAnimFile =
+                                localQuaternionsByFrame[bone][frame];
+                            globalRotationOfThisBone = localRotationInAnimFile * globalRotationOfThisBone;
+                        }
+
+                        boneTransform = boneTransform.parent;
+                    }
+
+                    if (!globalQuaternionsByFrame.ContainsKey(humanBone))
+                    {
+                        globalQuaternionsByFrame.Add(humanBone, new List<Quaternion>(clip.lastFrame + 1));
+                    }
+
+                    globalQuaternionsByFrame[humanBone].Add(globalRotationOfThisBone);
+                }
+            }
+
+            return globalQuaternionsByFrame;
+        }
+
+        private Dictionary<HumanBodyBones, List<Quaternion>> GetLocalQuaternionsFromAnimFile(
+            IT_CharacterTransformAnimationClip    clip,
+            Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
+        {
+            Dictionary<HumanBodyBones, List<Quaternion>> localQuaternionsByFrame =
+                new Dictionary<HumanBodyBones, List<Quaternion>>(55);
+
+            for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
+            {
+                int   transformIndex = 0;
+                float time           = clip.fixedDeltaTime * frame;
+
+
+                foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
+                {
+                    int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
+
+
+                    Quaternion frameRotation = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
+                                                              clip.physicsKeyframesCurve4[indexInCurveOfKey],
+                                                              clip.physicsKeyframesCurve5[indexInCurveOfKey],
+                                                              clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+
+                    if (!localQuaternionsByFrame.ContainsKey(pair.Key))
+                    {
+                        localQuaternionsByFrame.Add(pair.Key, new List<Quaternion>(clip.lastFrame + 1));
+                    }
+
+                    localQuaternionsByFrame[pair.Key].Add(frameRotation);
+                    transformIndex++;
+                }
+            }
+
+            return localQuaternionsByFrame;
         }
     }
 }
