@@ -6,6 +6,7 @@
     [Serializable]
     public class TransformInfoList
     {
-        public List<TransformsByString> TransformsByStrings = new List<TransformsByString>();
+        public List<TransformsByString> TransformsByStrings =
+            new List<TransformsByString>();
     }
 }
