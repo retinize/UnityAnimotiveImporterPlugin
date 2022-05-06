@@ -1,6 +1,5 @@
 namespace AnimotiveImporterEditor
 {
-    using System;
     using System.Collections.Generic;
     using UnityEditor;
     using UnityEngine;
@@ -26,26 +25,12 @@ namespace AnimotiveImporterEditor
 
             if (GUILayout.Button("Test Animation Clip"))
             {
-                Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-
-                Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
-                    Dictionary<Transform, HumanBodyBones>>> clipAndDictionariesTuple =
-                    IT_TransformAnimationClipEditor.PrepareAndGetAnimationData(fbxTuple);
-
-                IT_AnimotiveImporterEditorUtilities
-                    .DeleteAssetIfExists(IT_AnimotiveImporterEditorConstants.TransformAnimPath,
-                                         typeof(AnimationClip));
-                IT_TransformAnimationClipEditor.CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
-                 fbxTuple.Item1);
+                IT_TransformAnimationClipEditor.HandleTransformAnimationClipOperations();
             }
 
             if (GUILayout.Button("Test Json BlendShape"))
             {
-                FacialAnimationExportWrapper wrapper =
-                    IT_BlendshapeAnimationClipEditor.HandleBlendShapeAnimationCreation();
-                IT_BlendshapeAnimationClipEditor.CreateBlendShapeAnimationClip(wrapper,
-                                                                               IT_AnimotiveImporterEditorUtilities
-                                                                                   .LoadFbx());
+                IT_BlendshapeAnimationClipEditor.HandleBlendShapeAnimationOperations();
             }
         }
 

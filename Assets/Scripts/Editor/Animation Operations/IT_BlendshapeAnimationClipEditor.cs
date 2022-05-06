@@ -4,6 +4,7 @@ namespace AnimotiveImporterEditor
     using System.Collections.Generic;
     using System.IO;
     using UnityEditor;
+    using UnityEditor.Animations;
     using UnityEngine;
 
     public static class IT_BlendshapeAnimationClipEditor
@@ -13,7 +14,7 @@ namespace AnimotiveImporterEditor
         ///     that
         /// </summary>
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
-        internal static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
+        private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
         {
             string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
                                                      IT_AnimotiveImporterEditorConstants.BlendshapeJsonPath);
@@ -35,8 +36,8 @@ namespace AnimotiveImporterEditor
         ///     Tuple of character to apply animation . Tuple contains GameObject which is root of the character
         ///     and the animator of the character.
         /// </param>
-        internal static void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
-                                                           Tuple<GameObject, Animator>  tuple)
+        private static AnimationClip CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
+                                                                   Tuple<GameObject, Animator>  tuple)
         {
             AnimationClip animationClip = new AnimationClip();
 
@@ -83,6 +84,25 @@ namespace AnimotiveImporterEditor
 
             tuple.Item2.avatar = null;
             AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.BlendShapeAnimCreatedPath);
+            AssetDatabase.Refresh();
+
+            return animationClip;
+        }
+
+        public static void HandleBlendShapeAnimationOperations()
+        {
+            FacialAnimationExportWrapper wrapper =
+                HandleBlendShapeAnimationCreation();
+
+            Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+            AnimationClip               clip     = CreateBlendShapeAnimationClip(wrapper, fbxTuple);
+
+
+            AnimatorController animatorController =
+                AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
+                                                                              .BlendshapeAnimController, clip);
+
+            fbxTuple.Item2.runtimeAnimatorController = animatorController;
             AssetDatabase.Refresh();
         }
     }

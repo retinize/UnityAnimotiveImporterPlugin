@@ -6,6 +6,7 @@ namespace AnimotiveImporterEditor
     using System.Linq;
     using OdinSerializer;
     using UnityEditor;
+    using UnityEditor.Animations;
     using UnityEngine;
 
     public static class IT_TransformAnimationClipEditor
@@ -18,7 +19,7 @@ namespace AnimotiveImporterEditor
         /// <param name="animator">Animator of the character</param>
         /// <param name="characterRoot">Root GameObject of the character</param>
         /// <returns></returns>
-        public static Tuple<Dictionary<HumanBodyBones, Transform>,
+        private static Tuple<Dictionary<HumanBodyBones, Transform>,
                 Dictionary<Transform, HumanBodyBones>>
             GetBoneTransformDictionaries(
                 Animator animator, GameObject characterRoot)
@@ -63,7 +64,7 @@ namespace AnimotiveImporterEditor
         /// </param>
         /// <param name="clip">Animation data that read from binary file and casted into 'IT_CharacterTransformAnimationClip' type.</param>
         /// <returns></returns>
-        public static Dictionary<HumanBodyBones, List<Quaternion>> GetGlobalRotationsFromAnimFile(
+        private static Dictionary<HumanBodyBones, List<Quaternion>> GetGlobalRotationsFromAnimFile(
             Dictionary<HumanBodyBones, Transform> transformByHumanoidBone,
             Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform,
             Dictionary<HumanBodyBones, List<Quaternion>>
@@ -117,7 +118,7 @@ namespace AnimotiveImporterEditor
         /// <param name="clip">Animation data that read from binary file and casted into 'IT_CharacterTransformAnimationClip' type.</param>
         /// <param name="transformsByHumanBoneName">Dictionary that contains 'Transform' by 'HumanBodyBones'</param>
         /// <returns></returns>
-        public static Dictionary<HumanBodyBones, List<Quaternion>> GetLocalQuaternionsFromAnimFile(
+        private static Dictionary<HumanBodyBones, List<Quaternion>> GetLocalQuaternionsFromAnimFile(
             IT_CharacterTransformAnimationClip    clip,
             Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
         {
@@ -165,7 +166,7 @@ namespace AnimotiveImporterEditor
         /// </summary>
         /// <param name="tuple">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        public static Tuple<IT_CharacterTransformAnimationClip,
+        private static Tuple<IT_CharacterTransformAnimationClip,
                 Tuple<Dictionary<HumanBodyBones, Transform>, Dictionary<Transform, HumanBodyBones>>>
             PrepareAndGetAnimationData(Tuple<GameObject, Animator> tuple)
         {
@@ -198,7 +199,7 @@ namespace AnimotiveImporterEditor
         /// </summary>
         /// <param name="clipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
         /// <param name="characterRoot">Root gameObject of the character to apply animation to.</param>
-        public static void CreateTransformMovementsAnimationClip(
+        private static AnimationClip CreateTransformMovementsAnimationClip(
             Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
                 Dictionary<Transform, HumanBodyBones>>> clipAndDictionariesTuple,
             GameObject characterRoot)
@@ -330,6 +331,34 @@ namespace AnimotiveImporterEditor
 
             AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.TransformAnimPath);
             AssetDatabase.Refresh();
+
+            return animationClip;
+        }
+
+
+        public static void HandleTransformAnimationClipOperations()
+        {
+            Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+
+            Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
+                Dictionary<Transform, HumanBodyBones>>> clipAndDictionariesTuple =
+                PrepareAndGetAnimationData(fbxTuple);
+
+            IT_AnimotiveImporterEditorUtilities
+                .DeleteAssetIfExists(IT_AnimotiveImporterEditorConstants.TransformAnimPath,
+                                     typeof(AnimationClip));
+            AnimationClip animationClip =
+                CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
+                                                      fbxTuple.Item1);
+
+
+            AnimatorController animatorController =
+                AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
+                                                                              .TransformsAnimController, animationClip);
+            AssetDatabase.Refresh();
+
+
+            fbxTuple.Item2.runtimeAnimatorController = animatorController;
         }
 
 #endregion
