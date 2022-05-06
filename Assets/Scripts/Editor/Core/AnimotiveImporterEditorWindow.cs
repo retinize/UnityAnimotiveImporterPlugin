@@ -57,7 +57,6 @@ namespace AnimotiveImporterEditor
 
 
                 DeleteAssetIfExists(_transformAnimPath, typeof(AnimationClip));
-                // IT_ZeroJointRotations.ZeroRotations(clipTuple.Item2.Select(i => i.Value).ToList(), fbxTuple.Item1);
                 CreateTransformMovementsAnimationClip(clipTuple.Item1, clipTuple.Item2, fbxTuple.Item1);
             }
 
@@ -299,6 +298,7 @@ namespace AnimotiveImporterEditor
                 JsonUtility.FromJson<TransformInfoList>(animotiveTPoseText);
             TransformInfoList editorTPoseTransformInfoList = JsonUtility.FromJson<TransformInfoList>(editorTPoseText);
 
+
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
                 int   transformIndex = 0;
@@ -330,44 +330,54 @@ namespace AnimotiveImporterEditor
                     }
 
 
-                    Quaternion boneGlobalRotationThisFrame = globalQuaternionsByFrame[pair.Key][frame];
-                    // Quaternion frameLocalRotation          = localQuaternionsByFrame[pair.Key][frame];
+                    Quaternion boneGlobalRotationThisFrameFromAnimFile = globalQuaternionsByFrame[pair.Key][frame];
+                    // Quaternion boneLocalRotationThisFrameFromAnimFile  = localQuaternionsByFrame[pair.Key][frame];
+
                     Quaternion editorTPoseRotationForThisBone =
                         editorTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
-                                                    .LocalRotation;
+                                                    .GlobalRotation;
 
                     Quaternion animotiveTPoseRotationForThisBone =
                         animotiveTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
-                                                       .LocalRotation;
+                                                       .GlobalRotation;
+
+                    Quaternion inverseAnimotiveTPoseRotationForThisBone =
+                        Quaternion.Inverse(animotiveTPoseRotationForThisBone);
 
 
-                    Quaternion inversedGlobalRotationFromTheParentBoneThisFrame = Quaternion.identity;
-                    if (pair.Value.parent != null && humanoidBoneByTransform.ContainsKey(pair.Value.parent))
+                    Quaternion globalRotationOfParentBoneThisFrameFromAnimFile = Quaternion.identity;
+                    Transform  parent                                          = pair.Value.parent;
+                    if (parent != null)
                     {
-                        HumanBodyBones bone = humanoidBoneByTransform[pair.Value.parent];
-                        inversedGlobalRotationFromTheParentBoneThisFrame =
-                            Quaternion.Inverse(globalQuaternionsByFrame[bone][frame]);
+                        while (!humanoidBoneByTransform.ContainsKey(parent))
+                        {
+                            parent = parent.parent;
+                        }
+
+                        HumanBodyBones bone = humanoidBoneByTransform[parent];
+                        globalRotationOfParentBoneThisFrameFromAnimFile =
+                            globalQuaternionsByFrame[bone][frame];
                     }
 
-                    Quaternion localRotationOfTheGlobalizedRotationFromClip =
-                        inversedGlobalRotationFromTheParentBoneThisFrame * boneGlobalRotationThisFrame;
+
+                    Quaternion boneRotation = inverseAnimotiveTPoseRotationForThisBone *
+                                              boneGlobalRotationThisFrameFromAnimFile  * editorTPoseRotationForThisBone;
+
+                    pair.Value.rotation = boneRotation;
+
+                    Quaternion inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
+                                                                                   ? Quaternion.identity
+                                                                                   : pair.Value.parent.rotation);
+
+                    Quaternion finalLocalRotation = inversedParentBoneRotation
+                                                    *
+                                                    boneRotation;
 
 
-                    // Quaternion.Inverse(globalRotationFromTheParentbone) *globalRotationOfTheBone
-
-                    Quaternion result =
-                        Quaternion.Inverse(animotiveTPoseRotationForThisBone) *
-                        localRotationOfTheGlobalizedRotationFromClip          *
-                        editorTPoseRotationForThisBone;
-
-                    // Keyframe localPositionX = new Keyframe(time, clip.physicsKeyframesCurve0[indexInCurveOfKey]);
-                    // Keyframe localPositionY = new Keyframe(time, clip.physicsKeyframesCurve1[indexInCurveOfKey]);
-                    // Keyframe localPositionZ = new Keyframe(time, clip.physicsKeyframesCurve2[indexInCurveOfKey]);
-
-                    Keyframe localRotationX = new Keyframe(time, result.x);
-                    Keyframe localRotationY = new Keyframe(time, result.y);
-                    Keyframe localRotationZ = new Keyframe(time, result.z);
-                    Keyframe localRotationW = new Keyframe(time, result.w);
+                    Keyframe localRotationX = new Keyframe(time, finalLocalRotation.x);
+                    Keyframe localRotationY = new Keyframe(time, finalLocalRotation.y);
+                    Keyframe localRotationZ = new Keyframe(time, finalLocalRotation.z);
+                    Keyframe localRotationW = new Keyframe(time, finalLocalRotation.w);
 
                     // pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
                     // pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
