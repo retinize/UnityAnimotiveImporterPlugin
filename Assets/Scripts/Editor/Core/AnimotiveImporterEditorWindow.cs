@@ -35,7 +35,8 @@ namespace AnimotiveImporterEditor
             {
                 Tuple<GameObject, Animator> fbxTuple = LoadFbx();
 
-                Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>> clipTuple =
+                Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
+                    Dictionary<Transform, HumanBodyBones>>> clipTuple =
                     PrepareAndGetAnimationData(fbxTuple);
 
 
@@ -217,7 +218,8 @@ namespace AnimotiveImporterEditor
         /// </summary>
         /// <param name="tuple">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        private Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>>
+        private Tuple<IT_CharacterTransformAnimationClip,
+                Tuple<Dictionary<HumanBodyBones, Transform>, Dictionary<Transform, HumanBodyBones>>>
             PrepareAndGetAnimationData(Tuple<GameObject, Animator> tuple)
         {
             string hardcodedAnimationDataPath = string.Concat(Directory.GetCurrentDirectory(), _binaryAnimPath);
@@ -229,69 +231,59 @@ namespace AnimotiveImporterEditor
 
 
             Animator animator = tuple.Item2;
-
-     
-
-            Dictionary<string, Transform> transformsByHumanBoneName =
-                new Dictionary<string, Transform>(animator.avatar.humanDescription.human.Length);
-
-            for (int i = 0; i < animator.avatar.humanDescription.human.Length; i++)
-            {
-                HumanBone bone          = animator.avatar.humanDescription.human[i];
-                Transform boneTransform = tuple.Item1.transform.FindChildRecursively(bone.boneName);
-                transformsByHumanBoneName.Add(bone.humanName, boneTransform);
-            }
-
-            transformsByHumanBoneName.Add("LastBone", tuple.Item1.transform);
-
-
-            IT_Avatar itAvatar = new IT_Avatar(animator.avatar, transformsByHumanBoneName);
-
+            Tuple<Dictionary<HumanBodyBones, Transform>, Dictionary<Transform, HumanBodyBones>>
+                boneTransformDictionaries = GetBoneTransformDictionaries(animator, tuple.Item1);
 
             animator.avatar = null;
 
 
             AssetDatabase.Refresh();
             return new
-                Tuple<IT_CharacterTransformAnimationClip, Dictionary<HumanBodyBones, Transform>>(clip,
-                 InitializeItAvatar(clip, itAvatar));
+                Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
+                    Dictionary<Transform, HumanBodyBones>>>(clip,
+                                                            boneTransformDictionaries);
         }
 
-        private Dictionary<HumanBodyBones, Transform> InitializeItAvatar(IT_CharacterTransformAnimationClip clip,
-                                                                         IT_Avatar                          avatar)
+        private Tuple<Dictionary<HumanBodyBones, Transform>,
+                Dictionary<Transform, HumanBodyBones>>
+            GetBoneTransformDictionaries(
+                Animator animator, GameObject characterRoot)
         {
-            Transform[] physicsTransformsToCapture = new Transform[clip.humanoidBonesEnumThatAreUsed.Length];
-            Array       humanBodyBones             = Enum.GetValues(typeof(HumanBodyBones));
-            Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName =
+            Array temp = Enum.GetValues(typeof(HumanBodyBones));
+            Dictionary<HumanBodyBones, Transform> humanBodyBonesByTransforms =
                 new Dictionary<HumanBodyBones, Transform>(55);
 
-            for (int transformsToCaptureIndex = 0;
-                 transformsToCaptureIndex < clip.humanoidBonesEnumThatAreUsed.Length;
-                 transformsToCaptureIndex++)
+            Dictionary<Transform, HumanBodyBones> transformsByHumanBodyBones =
+                new Dictionary<Transform, HumanBodyBones>(55);
+
+            foreach (HumanBodyBones humanBodyBone in temp)
             {
-                int            humanBodyBoneIndex = clip.humanoidBonesEnumThatAreUsed[transformsToCaptureIndex];
-                HumanBodyBones humanBodyBone      = (HumanBodyBones)humanBodyBones.GetValue(humanBodyBoneIndex);
-                Transform      boneTransform      = avatar.transformsByHumanBone[humanBodyBone];
-                physicsTransformsToCapture[transformsToCaptureIndex] = boneTransform;
-                transformsByHumanBoneName.Add(humanBodyBone, boneTransform);
+                if (humanBodyBone == HumanBodyBones.LastBone)
+                {
+                    continue;
+                }
+
+                Transform tr = animator.GetBoneTransform(humanBodyBone);
+                if (tr != null)
+                {
+                    humanBodyBonesByTransforms.Add(humanBodyBone, tr);
+                    transformsByHumanBodyBones.Add(tr, humanBodyBone);
+                }
             }
 
-            return transformsByHumanBoneName;
+            humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
+
+            return new
+                Tuple<Dictionary<HumanBodyBones, Transform>,
+                    Dictionary<Transform, HumanBodyBones>>(humanBodyBonesByTransforms, transformsByHumanBodyBones);
         }
 
         private void CreateTransformMovementsAnimationClip(IT_CharacterTransformAnimationClip clip,
-                                                           Dictionary<HumanBodyBones, Transform>
-                                                               transformsByHumanBoneName,
+                                                           Tuple<Dictionary<HumanBodyBones, Transform>,
+                                                                   Dictionary<Transform, HumanBodyBones>>
+                                                               humanBoneTransformDictionaries,
                                                            GameObject characterRoot)
         {
-            Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform =
-                new Dictionary<Transform, HumanBodyBones>(55);
-
-            foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
-            {
-                humanoidBoneByTransform.Add(pair.Value, pair.Key);
-            }
-
             AnimationClip animationClip = new AnimationClip();
 
 
@@ -300,11 +292,12 @@ namespace AnimotiveImporterEditor
 
 
             Dictionary<HumanBodyBones, List<Quaternion>> localQuaternionsByFrame =
-                GetLocalQuaternionsFromAnimFile(clip, transformsByHumanBoneName);
+                GetLocalQuaternionsFromAnimFile(clip, humanBoneTransformDictionaries.Item1);
 
             Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
-                GetGlobalRotationsFromAnimFile(transformsByHumanBoneName, humanoidBoneByTransform,
-                                               localQuaternionsByFrame,   clip);
+                GetGlobalRotationsFromAnimFile(humanBoneTransformDictionaries.Item1,
+                                               humanBoneTransformDictionaries.Item2,
+                                               localQuaternionsByFrame, clip);
 
 //HARDCODE !
             string path = string.Concat(Directory.GetCurrentDirectory(),
@@ -325,7 +318,7 @@ namespace AnimotiveImporterEditor
                 float time           = clip.fixedDeltaTime * frame;
 
 
-                foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
+                foreach (KeyValuePair<HumanBodyBones, Transform> pair in humanBoneTransformDictionaries.Item1)
                 {
                     if (pair.Key == HumanBodyBones.LastBone)
                     {
