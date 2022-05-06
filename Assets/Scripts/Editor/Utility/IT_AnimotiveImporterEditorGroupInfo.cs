@@ -1,6 +1,6 @@
 ﻿namespace AnimotiveImporterEditor
 {
-    public struct AnimotiveImporterGroupInfo
+    public struct IT_AnimotiveImporterEditorGroupInfo
     {
         //TODO: Group infos will be added here
     }
