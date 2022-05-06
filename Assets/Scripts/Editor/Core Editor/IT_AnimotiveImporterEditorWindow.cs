@@ -39,7 +39,6 @@ namespace AnimotiveImporterEditor
                  fbxTuple.Item1);
             }
 
-
             if (GUILayout.Button("Test Json BlendShape"))
             {
                 FacialAnimationExportWrapper wrapper =
