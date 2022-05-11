@@ -43,24 +43,24 @@ namespace AnimotiveImporterEditor
             GroupTrack groupTrack = asset.CreateTrack<GroupTrack>();
             groupTrack.name = "GROUP_NAME_HERE";
 
-            AnimatorTrack facialPerformanceAnimationTrack = asset.CreateTrack<AnimatorTrack>();
+            IT_AnimatorTrack facialPerformanceAnimationTrack = asset.CreateTrack<IT_AnimatorTrack>();
             facialPerformanceAnimationTrack.SetGroup(groupTrack);
-            TimelineClip facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip<AnimatorClip>();
+            TimelineClip facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip<IT_AnimatorClip>();
             facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
             playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
 
-            AnimatorTrack bodyPerformanceAnimationTrack = asset.CreateTrack<AnimatorTrack>();
+            IT_AnimatorTrack bodyPerformanceAnimationTrack = asset.CreateTrack<IT_AnimatorTrack>();
             bodyPerformanceAnimationTrack.SetGroup(groupTrack);
-            TimelineClip bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip<AnimatorClip>();
+            TimelineClip bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip<IT_AnimatorClip>();
             bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
             playableDirector.SetGenericBinding(bodyPerformanceAnimationTrack, objToBind);
 
 
-            SoundTrack soundTrack = asset.CreateTrack<SoundTrack>();
-            soundTrack.SetGroup(groupTrack);
-            TimelineClip soundClip = soundTrack.CreateClip<SoundClip>();
+            IT_SoundTrack itSoundTrack = asset.CreateTrack<IT_SoundTrack>();
+            itSoundTrack.SetGroup(groupTrack);
+            TimelineClip soundClip = itSoundTrack.CreateClip<IT_SoundClip>();
             soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(soundTrack, objToBind);
+            playableDirector.SetGenericBinding(itSoundTrack, objToBind);
 
             AssetDatabase.Refresh();
 
