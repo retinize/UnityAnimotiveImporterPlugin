@@ -15,9 +15,16 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="type">Type of the asset to look for and delete.</param>
         public static void DeleteAssetIfExists(string path, Type type)
         {
-            if (AssetDatabase.LoadAssetAtPath(path, type) != null)
+            if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(path)))
             {
-                AssetDatabase.DeleteAsset(path);
+                if (AssetDatabase.LoadAssetAtPath(path, type) != null)
+                {
+                    AssetDatabase.DeleteAsset(path);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Asset path can not be null !");
             }
         }
 

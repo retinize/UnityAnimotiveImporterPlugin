@@ -10,7 +10,6 @@ namespace Retinize.Editor.AnimotiveImporter
     using UnityEditor.Animations;
     using UnityEngine;
 
-
     public static class IT_TransformAnimationClipEditor
     {
     #region Dictionary Operations
@@ -234,9 +233,10 @@ namespace Retinize.Editor.AnimotiveImporter
             string editorTPoseText    = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
 
 
-            TransformInfoList animotiveTPoseTransformInfoList =
-                JsonUtility.FromJson<TransformInfoList>(animotiveTPoseText);
-            TransformInfoList editorTPoseTransformInfoList = JsonUtility.FromJson<TransformInfoList>(editorTPoseText);
+            IT_TransformInfoList animotiveTPoseTransformInfoList =
+                JsonUtility.FromJson<IT_TransformInfoList>(animotiveTPoseText);
+            IT_TransformInfoList editorTPoseTransformInfoList =
+                JsonUtility.FromJson<IT_TransformInfoList>(editorTPoseText);
 
 
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
@@ -251,8 +251,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         continue;
                     }
-
-                    // int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
 
                     string relativePath = AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
 
@@ -269,24 +267,20 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //6
                     }
 
-
                     Quaternion boneGlobalRotationThisFrameFromAnimFile = globalQuaternionsByFrame[pair.Key][frame];
                     // Quaternion boneLocalRotationThisFrameFromAnimFile  = localQuaternionsByFrame[pair.Key][frame];
 
-                    Quaternion editorTPoseRotationForThisBone =
-                        editorTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
-                                                    .GlobalRotation;
+                    List<IT_TransformsByString> editorTPoseList = editorTPoseTransformInfoList.TransformsByStrings
+                        .Where(a => a.Name == pair.Key).ToList();
+                    List<IT_TransformsByString> animotiveTPoseList = animotiveTPoseTransformInfoList.TransformsByStrings
+                        .Where(a => a.Name == pair.Key).ToList();
 
-                    Quaternion animotiveTPoseRotationForThisBone =
-                        animotiveTPoseTransformInfoList.TransformsByStrings.Where(a => a.Name == pair.Key).ToList()[0]
-                                                       .GlobalRotation;
+                    Quaternion editorTPoseRotationForThisBone    = editorTPoseList[0].GlobalRotation;
+                    Quaternion animotiveTPoseRotationThisBone    = animotiveTPoseList[0].GlobalRotation;
+                    Quaternion invAnimotiveTPoseRotationThisBone = Quaternion.Inverse(animotiveTPoseRotationThisBone);
 
-                    Quaternion inverseAnimotiveTPoseRotationForThisBone =
-                        Quaternion.Inverse(animotiveTPoseRotationForThisBone);
-
-
-                    Quaternion boneRotation = inverseAnimotiveTPoseRotationForThisBone *
-                                              boneGlobalRotationThisFrameFromAnimFile  * editorTPoseRotationForThisBone;
+                    Quaternion boneRotation = invAnimotiveTPoseRotationThisBone       *
+                                              boneGlobalRotationThisFrameFromAnimFile * editorTPoseRotationForThisBone;
 
                     pair.Value.rotation = boneRotation;
 
@@ -294,11 +288,9 @@ namespace Retinize.Editor.AnimotiveImporter
                                                                                    ? Quaternion.identity
                                                                                    : pair.Value.parent.rotation);
 
-                    Quaternion finalLocalRotation = inversedParentBoneRotation
-                                                    *
-                                                    boneRotation;
+                    Quaternion finalLocalRotation = inversedParentBoneRotation * boneRotation;
 
-
+                    Debug.Log(pair.Value + " " + pair.Key);
                     Keyframe localRotationX = new Keyframe(time, finalLocalRotation.x);
                     Keyframe localRotationY = new Keyframe(time, finalLocalRotation.y);
                     Keyframe localRotationZ = new Keyframe(time, finalLocalRotation.z);

@@ -3,8 +3,11 @@
     using System;
     using UnityEngine;
 
+    /// <summary>
+    ///     This struct is a data container for serialized json pose.
+    /// </summary>
     [Serializable]
-    public class TransformsByString
+    public struct IT_TransformsByString
     {
         public HumanBodyBones Name;
         public Vector3        LocalPosition;
@@ -13,7 +16,7 @@
         public Vector3        LocalEulerAngles;
         public Quaternion     GlobalRotation;
 
-        public TransformsByString(Transform tr, HumanBodyBones humanBodyBones)
+        public IT_TransformsByString(Transform tr, HumanBodyBones humanBodyBones)
         {
             Name             = humanBodyBones;
             LocalPosition    = tr.localPosition;

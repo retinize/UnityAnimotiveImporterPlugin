@@ -17,8 +17,9 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             for (int i = 0; i < group.Count; i++)
             {
-                GameObject obj = new GameObject(string.Format("<group name here : {0}>", i));
-                obj.AddComponent<AudioSource>();
+                GameObject  obj         = new GameObject(string.Format("<group name here : {0}>", i));
+                AudioSource audioSource = obj.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
                 obj.AddComponent<Animator>();
                 PlayableDirector playableDirector = obj.AddComponent<PlayableDirector>();
                 playableDirector.playableAsset = CreatePlayableAsset(obj, playableDirector);

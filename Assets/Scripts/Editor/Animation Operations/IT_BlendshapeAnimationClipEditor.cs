@@ -3,11 +3,11 @@ namespace Retinize.Editor.AnimotiveImporter
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using AnimotiveImporterDLL;
     using UnityEditor;
     using UnityEditor.Animations;
     using UnityEngine;
-    using AnimotiveImporterDLL;
-    
+
     public static class IT_BlendshapeAnimationClipEditor
     {
         /// <summary>
@@ -17,7 +17,6 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
         private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
         {
-            
             string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
                                                      IT_AnimotiveImporterEditorConstants.BlendshapeJsonPath);
 
@@ -63,19 +62,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     string skinnedMeshRendererName = characterGeoDescriptor.name;
 
-                    Transform           tr = tuple.Item1.transform.FindChildRecursively(skinnedMeshRendererName);
+                    Transform tr = tuple.Item1.transform.FindChildRecursively(skinnedMeshRendererName);
                     SkinnedMeshRenderer skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
+                    string blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
+                    float blendshapeValue = blendShapeData.value;
+                    Keyframe keyframe = new Keyframe(time, blendshapeValue);
 
-                    string   blendshapeName  = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
-                    float    blendshapeValue = blendShapeData.value;
-                    Keyframe keyframe        = new Keyframe(time, blendshapeValue);
-
-                    string relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
-
-
-                    AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
+                    string         relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
+                    AnimationCurve curve        = blendshapeCurves[skinnedMeshRendererName];
                     curve.AddKey(keyframe);
-
 
                     string propertyName = string.Concat("blendShape.", blendshapeName);
                     animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
@@ -98,8 +93,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
             AnimationClip               clip     = CreateBlendShapeAnimationClip(wrapper, fbxTuple);
-
-
             AnimatorController animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
                                                                               .BlendshapeAnimController, clip);

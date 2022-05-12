@@ -5,7 +5,15 @@ namespace Retinize.Editor.AnimotiveImporter
     using UnityEditor;
     using UnityEngine;
 
-    public class Pose : MonoBehaviour
+    /// <summary>
+    ///     Pose: All bone's rotation,position,scale values for one frame.
+    ///     The main reason for this class to exist is to test if we can have the same visual pose of a character on another
+    ///     regardless of their base rotation('orient' in maya) values. The reason why we needed to test this is because in
+    ///     Animotive there's a bindpose reset process taking place before character import and we don't have it here so
+    ///     the base characters doesn't have same t-pose and other frame values which disrupts the animation.
+    ///     NOTE ! : This is temporary because bindpose reset process will be lifted in the future versions of Animotive.
+    /// </summary>
+    public class IT_PoseTestManager : MonoBehaviour
     {
         private static readonly string _posesBase =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses";
@@ -23,18 +31,20 @@ namespace Retinize.Editor.AnimotiveImporter
         public string AnimotiveTPose = "";
         public string pose           = "";
 
-
+        /// <summary>
+        ///     Loads the current values of the animator bone's recursively from a JSON file
+        /// </summary>
         [ContextMenu("Load Pose")]
-        public void LoadPose()
+        public void LoadPoseFromJson()
         {
             string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
             string text = File.ReadAllText(string.Concat(path, $"\\{LoadJson}.json"));
 
 
-            TransformInfoList transformInfoList = JsonUtility.FromJson<TransformInfoList>(text);
+            IT_TransformInfoList transformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(text);
 
-            foreach (TransformsByString pair in transformInfoList.TransformsByStrings)
+            foreach (IT_TransformsByString pair in transformInfoList.TransformsByStrings)
             {
                 Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
                 if (tr != null)
@@ -46,9 +56,12 @@ namespace Retinize.Editor.AnimotiveImporter
             }
         }
 
-
+        /// <summary>
+        ///     Loads the current values of the animator bone's recursively from a JSON file.and adds the t-pose
+        ///     rotations to them.
+        /// </summary>
         [ContextMenu("Fix And Load Pose")]
-        public void FixAndLoad()
+        public void LoadPoseFromJsonAdditively()
         {
             string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
@@ -57,18 +70,18 @@ namespace Retinize.Editor.AnimotiveImporter
             string frankAnimotiveGestureText =
                 File.ReadAllText(string.Concat(path, $"\\{pose}.json"));
 
-            TransformInfoList pluginTPoseTransformInfoList = JsonUtility.FromJson<TransformInfoList>(pluginTpose);
-            TransformInfoList animotiveTPoseTransformInfoList =
-                JsonUtility.FromJson<TransformInfoList>(animotiveTposeText);
-            TransformInfoList frankGestureAnimotiveTransformInfoList =
-                JsonUtility.FromJson<TransformInfoList>(frankAnimotiveGestureText);
+            IT_TransformInfoList pluginTPoseTransformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(pluginTpose);
+            IT_TransformInfoList animotiveTPoseTransformInfoList =
+                JsonUtility.FromJson<IT_TransformInfoList>(animotiveTposeText);
+            IT_TransformInfoList frankGestureAnimotiveTransformInfoList =
+                JsonUtility.FromJson<IT_TransformInfoList>(frankAnimotiveGestureText);
 
             for (int i = 0;
                  i < pluginTPoseTransformInfoList
                      .TransformsByStrings.Count;
                  i++)
             {
-                TransformsByString pair = pluginTPoseTransformInfoList
+                IT_TransformsByString pair = pluginTPoseTransformInfoList
                     .TransformsByStrings[i];
                 Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
 
@@ -91,14 +104,16 @@ namespace Retinize.Editor.AnimotiveImporter
             }
         }
 
-
+        /// <summary>
+        ///     Saves the current values of the animator bone's recursively to a JSON file.
+        /// </summary>
         [ContextMenu("Save Pose")]
-        public void SaveThisPose()
+        public void SavePoseToJson()
         {
             string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
 
-            TransformInfoList transformInfoList = new TransformInfoList();
+            IT_TransformInfoList transformInfoList = new IT_TransformInfoList();
 
             foreach (HumanBodyBones pair in Enum.GetValues(typeof(HumanBodyBones)))
             {
@@ -108,7 +123,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 }
 
                 Transform boneTransform = SaveAnimator.GetBoneTransform(pair);
-                transformInfoList.TransformsByStrings.Add(new TransformsByString(boneTransform, pair));
+                transformInfoList.TransformsByStrings.Add(new IT_TransformsByString(boneTransform, pair));
             }
 
 
