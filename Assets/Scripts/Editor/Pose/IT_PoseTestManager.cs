@@ -68,7 +68,7 @@ namespace Retinize.Editor.AnimotiveImporter
             string pluginTpose        = File.ReadAllText(string.Concat(path, $"\\{EditorTPose}.json"));
             string animotiveTposeText = File.ReadAllText(string.Concat(path, $"\\{AnimotiveTPose}.json"));
             string frankAnimotiveGestureText =
-                File.ReadAllText(string.Concat(path, $"\\{pose}.json"));
+                File.ReadAllText(string.Concat(path, $"\\{Pose}.json"));
 
             IT_TransformInfoList pluginTPoseTransformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(pluginTpose);
             IT_TransformInfoList animotiveTPoseTransformInfoList =
