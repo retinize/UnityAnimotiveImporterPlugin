@@ -1,4 +1,4 @@
-namespace AnimotiveImporterEditor
+namespace Retinize.Editor.AnimotiveImporter
 {
     using UnityEngine;
     using UnityEngine.Timeline;

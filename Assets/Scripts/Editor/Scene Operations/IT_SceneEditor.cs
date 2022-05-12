@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AnimotiveImporterEditor
+namespace Retinize.Editor.AnimotiveImporter
 {
     using System.IO;
     using UnityEditor;

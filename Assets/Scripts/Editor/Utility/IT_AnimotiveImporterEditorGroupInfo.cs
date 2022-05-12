@@ -1,4 +1,4 @@
-﻿namespace AnimotiveImporterEditor
+﻿namespace Retinize.Editor.AnimotiveImporter
 {
     public struct IT_AnimotiveImporterEditorGroupInfo
     {

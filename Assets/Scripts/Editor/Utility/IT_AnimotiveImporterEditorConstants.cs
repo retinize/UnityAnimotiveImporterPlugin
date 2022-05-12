@@ -1,4 +1,4 @@
-﻿namespace AnimotiveImporterEditor
+﻿namespace Retinize.Editor.AnimotiveImporter
 {
     public static class IT_AnimotiveImporterEditorConstants
     {

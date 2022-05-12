@@ -1,4 +1,4 @@
-﻿namespace AnimotiveImporterEditor
+﻿namespace Retinize.Editor.AnimotiveImporter
 {
     using System;
     using System.Collections.Generic;
