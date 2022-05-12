@@ -6,7 +6,8 @@ namespace AnimotiveImporterEditor
     using UnityEditor;
     using UnityEditor.Animations;
     using UnityEngine;
-
+    using AnimotiveImporterDLL;
+    
     public static class IT_BlendshapeAnimationClipEditor
     {
         /// <summary>
@@ -16,6 +17,7 @@ namespace AnimotiveImporterEditor
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
         private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
         {
+            
             string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
                                                      IT_AnimotiveImporterEditorConstants.BlendshapeJsonPath);
 

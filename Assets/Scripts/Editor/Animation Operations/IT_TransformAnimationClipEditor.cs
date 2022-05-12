@@ -4,14 +4,16 @@ namespace AnimotiveImporterEditor
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using AnimotiveImporterDLL;
     using OdinSerializer;
     using UnityEditor;
     using UnityEditor.Animations;
     using UnityEngine;
 
+
     public static class IT_TransformAnimationClipEditor
     {
-#region Dictionary Operations
+    #region Dictionary Operations
 
         /// <summary>
         ///     Creates and returns two dictionary where 'HumanBodyBones' and 'Transform' types are key/value and vice versa.
@@ -154,10 +156,10 @@ namespace AnimotiveImporterEditor
             return localQuaternionsByFrame;
         }
 
-#endregion
+    #endregion
 
 
-#region Animation Operations
+    #region Animation Operations
 
         /// <summary>
         ///     Reads the binary file that contains animation data from it's designated path. Creates a dictionary with the key of
@@ -361,6 +363,6 @@ namespace AnimotiveImporterEditor
             fbxTuple.Item2.runtimeAnimatorController = animatorController;
         }
 
-#endregion
+    #endregion
     }
 }

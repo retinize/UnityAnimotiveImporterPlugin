@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace AnimotiveImporterEditor
 {
     using System.IO;
@@ -7,6 +9,7 @@ namespace AnimotiveImporterEditor
 
     public static class IT_SceneEditor
     {
+        
         /// <summary>
         ///     Creates scene at the designated location.
         /// </summary>
@@ -16,11 +19,11 @@ namespace AnimotiveImporterEditor
             string hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
             Scene  scene         = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-
             EditorSceneManager.SaveScene(scene,
                                          string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,
                                                        IT_AnimotiveImporterEditorConstants.UnitySceneExtension));
             AssetDatabase.Refresh();
         }
+        
     }
 }
