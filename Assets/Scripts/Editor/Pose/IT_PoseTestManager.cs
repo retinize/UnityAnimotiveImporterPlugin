@@ -29,7 +29,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public string EditorTPose = "";
 
         public string AnimotiveTPose = "";
-        public string pose           = "";
+        public string Pose           = "";
 
         /// <summary>
         ///     Loads the current values of the animator bone's recursively from a JSON file
