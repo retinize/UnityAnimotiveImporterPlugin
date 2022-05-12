@@ -1,15 +1,18 @@
-using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
-
-public class IT_SoundClip : PlayableAsset, ITimelineClipAsset
+namespace AnimotiveImporterEditor
 {
-    [SerializeField] private IT_SoundBehaviour _behaviour = new IT_SoundBehaviour();
+    using UnityEngine;
+    using UnityEngine.Playables;
+    using UnityEngine.Timeline;
 
-    public ClipCaps clipCaps { get; }
-
-    public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
+    public class IT_SoundClip : PlayableAsset, ITimelineClipAsset
     {
-        return ScriptPlayable<IT_SoundBehaviour>.Create(graph, _behaviour);
+        [SerializeField] private IT_SoundBehaviour _behaviour = new IT_SoundBehaviour();
+
+        public ClipCaps clipCaps => ClipCaps.None;
+
+        public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
+        {
+            return ScriptPlayable<IT_SoundBehaviour>.Create(graph, _behaviour);
+        }
     }
 }

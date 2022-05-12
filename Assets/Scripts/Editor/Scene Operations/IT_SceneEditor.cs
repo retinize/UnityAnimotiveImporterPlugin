@@ -14,8 +14,7 @@ namespace AnimotiveImporterEditor
         public static void CreateScene(string sceneName)
         {
             string hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
-
-            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Scene  scene         = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
 
             EditorSceneManager.SaveScene(scene,

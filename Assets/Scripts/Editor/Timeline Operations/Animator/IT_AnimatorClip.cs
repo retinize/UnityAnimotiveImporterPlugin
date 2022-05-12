@@ -1,15 +1,18 @@
-using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
-
-public class IT_AnimatorClip : PlayableAsset, ITimelineClipAsset
+namespace AnimotiveImporterEditor
 {
-    public ClipCaps clipCaps { get; }
+    using UnityEngine;
+    using UnityEngine.Playables;
+    using UnityEngine.Timeline;
 
-    public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
+    public class IT_AnimatorClip : PlayableAsset, ITimelineClipAsset
     {
-        Playable playable = Playable.Create(graph);
+        public ClipCaps clipCaps => ClipCaps.None;
 
-        return playable;
+        public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
+        {
+            Playable playable = Playable.Create(graph);
+
+            return playable;
+        }
     }
 }
