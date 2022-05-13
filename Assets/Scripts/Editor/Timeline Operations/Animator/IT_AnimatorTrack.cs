@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace Retinize.Editor.AnimotiveImporter
 {
     using UnityEngine;
@@ -10,22 +8,5 @@ namespace Retinize.Editor.AnimotiveImporter
     [TrackClipType(typeof(IT_AnimatorClip))]
     public class IT_AnimatorTrack : TrackAsset
     {
-    }
-}
-
-public class TempClass
-{
-    public int someName;
-
-    private void someFunction(int value)
-    {
-        someName++;
-        int temp = 5;
-        switch (value)
-        {
-            default:
-                Debug.Log("aaa");
-                break;
-        }
     }
 }
