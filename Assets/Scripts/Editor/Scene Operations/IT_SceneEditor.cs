@@ -14,10 +14,12 @@ namespace Retinize.Editor.AnimotiveImporter
         public static void CreateScene(string sceneName)
         {
             string hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
-            Scene  scene         = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             EditorSceneManager.SaveScene(scene,
-                                         string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,
-                                                       IT_AnimotiveImporterEditorConstants.UnitySceneExtension));
+                string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,
+                    IT_AnimotiveImporterEditorConstants.UnitySceneExtension));
+
+
             AssetDatabase.Refresh();
         }
     }

@@ -35,8 +35,8 @@ namespace Retinize.Editor.AnimotiveImporter
         public static Tuple<GameObject, Animator> LoadFbx()
         {
             GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
-                                                                     IT_AnimotiveImporterEditorConstants.FBXPath,
-                                                                     typeof(GameObject)) as GameObject;
+                IT_AnimotiveImporterEditorConstants.FBXPath,
+                typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);
 

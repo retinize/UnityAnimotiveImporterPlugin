@@ -9,18 +9,20 @@ namespace Retinize.Editor.AnimotiveImporter
         private void OnGUI()
         {
             if (GUILayout.Button("Create scene and playables"))
+
             {
                 IT_SceneEditor.CreateScene("___scene_name_here___");
+
                 IT_AnimotiveImporterEditorTimeline.HandleGroups(new List<IT_AnimotiveImporterEditorGroupInfo>
-                                                                {
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo(),
-                                                                    new IT_AnimotiveImporterEditorGroupInfo()
-                                                                });
+                {
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo(),
+                    new IT_AnimotiveImporterEditorGroupInfo()
+                });
             }
 
             if (GUILayout.Button("Test Animation Clip"))

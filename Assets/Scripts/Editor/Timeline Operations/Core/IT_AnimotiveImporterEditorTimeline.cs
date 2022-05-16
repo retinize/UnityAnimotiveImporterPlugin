@@ -15,14 +15,14 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="group">List of group info</param>
         public static void HandleGroups(List<IT_AnimotiveImporterEditorGroupInfo> group)
         {
-            for (int i = 0 ; i < group.Count ; i++)
+            for (int i = 0; i < group.Count; i++)
             {
-                GameObject  obj         = new GameObject(string.Format("<group name here : {0}>" , i));
+                GameObject obj = new GameObject(string.Format("<group name here : {0}>", i));
                 AudioSource audioSource = obj.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 obj.AddComponent<Animator>();
                 PlayableDirector playableDirector = obj.AddComponent<PlayableDirector>();
-                playableDirector.playableAsset = CreatePlayableAsset(obj , playableDirector);
+                playableDirector.playableAsset = CreatePlayableAsset(obj, playableDirector);
             }
         }
 
@@ -32,14 +32,15 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="objToBind">gameObject to bind the playable director to.</param>
         /// <param name="playableDirector">Playable object to bind playable asset and gameobject to. </param>
         /// <returns></returns>
-        public static PlayableAsset CreatePlayableAsset(GameObject objToBind , PlayableDirector playableDirector)
+        public static PlayableAsset CreatePlayableAsset(GameObject objToBind, PlayableDirector playableDirector)
         {
-            string assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath ,
-                                             objToBind.GetInstanceID().ToString() ,
-                                             ".playable");
+            string assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath,
+                objToBind.GetInstanceID().ToString(),
+                ".playable");
+
 
             TimelineAsset asset = ScriptableObject.CreateInstance<TimelineAsset>();
-            AssetDatabase.CreateAsset(asset , assetPath);
+            AssetDatabase.CreateAsset(asset, assetPath);
 
             GroupTrack groupTrack = asset.CreateTrack<GroupTrack>();
             groupTrack.name = "GROUP_NAME_HERE";
@@ -48,10 +49,11 @@ namespace Retinize.Editor.AnimotiveImporter
             facialPerformanceAnimationTrack.SetGroup(groupTrack);
             AnimationClip blendshapeAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
-                                                                 .BlendShapeAnimCreatedPath);
+                    .BlendShapeAnimCreatedPath);
             TimelineClip facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
+            facialPerformanceClip.start = 0;
             // facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(facialPerformanceAnimationTrack , objToBind);
+            playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
 
             AnimationTrack bodyPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
             bodyPerformanceAnimationTrack.SetGroup(groupTrack);
@@ -60,19 +62,19 @@ namespace Retinize.Editor.AnimotiveImporter
             TimelineClip bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip(bodyAnimationClip);
             bodyPerformanceClip.start = 0;
             // bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(bodyPerformanceAnimationTrack , objToBind);
+            playableDirector.SetGenericBinding(bodyPerformanceAnimationTrack, objToBind);
 
 
             IT_SoundTrack itSoundTrack = asset.CreateTrack<IT_SoundTrack>();
             itSoundTrack.SetGroup(groupTrack);
             TimelineClip soundClip = itSoundTrack.CreateClip<IT_SoundClip>();
             soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(itSoundTrack , objToBind);
+            playableDirector.SetGenericBinding(itSoundTrack, objToBind);
 
             AssetDatabase.Refresh();
 
             PlayableAsset playableAsset =
-                AssetDatabase.LoadAssetAtPath(assetPath , typeof(PlayableAsset)) as PlayableAsset;
+                AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
 
 
             return playableAsset;

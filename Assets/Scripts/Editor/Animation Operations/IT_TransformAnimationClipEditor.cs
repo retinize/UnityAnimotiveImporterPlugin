@@ -12,7 +12,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
     public static class IT_TransformAnimationClipEditor
     {
-    #region Dictionary Operations
+        #region Dictionary Operations
 
         /// <summary>
         ///     Creates and returns two dictionary where 'HumanBodyBones' and 'Transform' types are key/value and vice versa.
@@ -84,7 +84,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         continue;
                     }
 
-                    Transform  boneTransform            = transformByHumanoidBone[humanBone];
+                    Transform boneTransform = transformByHumanoidBone[humanBone];
                     Quaternion globalRotationOfThisBone = Quaternion.identity;
 
                     while (boneTransform != null)
@@ -119,17 +119,18 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="clip">Animation data that read from binary file and casted into 'IT_CharacterTransformAnimationClip' type.</param>
         /// <param name="transformsByHumanBoneName">Dictionary that contains 'Transform' by 'HumanBodyBones'</param>
         /// <returns></returns>
-        private static Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>> GetLocalTransformValuesFromAnimFile(
-            IT_CharacterTransformAnimationClip    clip,
-            Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
+        private static Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>>
+            GetLocalTransformValuesFromAnimFile(
+                IT_CharacterTransformAnimationClip clip,
+                Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
         {
             Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>> localQuaternionsByFrame =
                 new Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>>(55);
 
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
-                int   transformIndex = 0;
-                float time           = clip.fixedDeltaTime * frame;
+                int transformIndex = 0;
+                float time = clip.fixedDeltaTime * frame;
 
 
                 foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBoneName)
@@ -138,20 +139,22 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                     Quaternion frameRotation = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
-                                                              clip.physicsKeyframesCurve4[indexInCurveOfKey],
-                                                              clip.physicsKeyframesCurve5[indexInCurveOfKey],
-                                                              clip.physicsKeyframesCurve6[indexInCurveOfKey]);
+                        clip.physicsKeyframesCurve4[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve5[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve6[indexInCurveOfKey]);
 
                     Vector3 framePosition = new Vector3(clip.physicsKeyframesCurve0[indexInCurveOfKey],
-                                                        clip.physicsKeyframesCurve1[indexInCurveOfKey],
-                                                        clip.physicsKeyframesCurve2[indexInCurveOfKey]);
+                        clip.physicsKeyframesCurve1[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve2[indexInCurveOfKey]);
 
                     if (!localQuaternionsByFrame.ContainsKey(pair.Key))
                     {
-                        localQuaternionsByFrame.Add(pair.Key, new List<Tuple<Quaternion, Vector3>>(clip.lastFrame + 1));
+                        localQuaternionsByFrame.Add(pair.Key,
+                            new List<Tuple<Quaternion, Vector3>>(clip.lastFrame + 1));
                     }
 
-                    localQuaternionsByFrame[pair.Key].Add(new Tuple<Quaternion, Vector3>(frameRotation, framePosition));
+                    localQuaternionsByFrame[pair.Key]
+                        .Add(new Tuple<Quaternion, Vector3>(frameRotation, framePosition));
                     transformIndex++;
                 }
             }
@@ -159,10 +162,10 @@ namespace Retinize.Editor.AnimotiveImporter
             return localQuaternionsByFrame;
         }
 
-    #endregion
+        #endregion
 
 
-    #region Animation Operations
+        #region Animation Operations
 
         /// <summary>
         ///     Reads the binary file that contains animation data from it's designated path. Creates a dictionary with the key of
@@ -180,8 +183,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
             IT_CharacterTransformAnimationClip clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
-                 File.ReadAllBytes(hardcodedAnimationDataPath),
-                 DataFormat.Binary);
+                    File.ReadAllBytes(hardcodedAnimationDataPath),
+                    DataFormat.Binary);
 
 
             Animator animator = tuple.Item2;
@@ -190,12 +193,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
             animator.avatar = null;
 
-
             AssetDatabase.Refresh();
             return new
                 Tuple<IT_CharacterTransformAnimationClip, Tuple<Dictionary<HumanBodyBones, Transform>,
                     Dictionary<Transform, HumanBodyBones>>>(clip,
-                                                            boneTransformDictionaries);
+                    boneTransformDictionaries);
         }
 
         /// <summary>
@@ -209,10 +211,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 Dictionary<Transform, HumanBodyBones>>> clipAndDictionariesTuple,
             GameObject characterRoot)
         {
-            IT_CharacterTransformAnimationClip    clip                       = clipAndDictionariesTuple.Item1;
+            IT_CharacterTransformAnimationClip clip = clipAndDictionariesTuple.Item1;
             Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones = clipAndDictionariesTuple.Item2.Item1;
             Dictionary<Transform, HumanBodyBones> HumanBodyBonesBytransforms = clipAndDictionariesTuple.Item2.Item2;
-
 
             AnimationClip animationClip = new AnimationClip();
 
@@ -227,15 +228,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
             Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
                 GetGlobalRotationsFromAnimFile(transformsByHumanBodyBones,
-                                               HumanBodyBonesBytransforms,
-                                               localTransformValuesFromAnimFile, clip);
+                    HumanBodyBonesBytransforms,
+                    localTransformValuesFromAnimFile, clip);
 
-//HARDCODE !
+            //HARDCODE !
             string path = string.Concat(Directory.GetCurrentDirectory(),
-                                        @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses");
+                @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses");
 
             string animotiveTPoseText = File.ReadAllText(string.Concat(path, "\\AnimotiveTPoseFrank.json"));
-            string editorTPoseText    = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
+            string editorTPoseText = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
 
 
             IT_TransformInfoList animotiveTPoseTransformInfoList =
@@ -246,8 +247,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
-                int   transformIndex = 0;
-                float time           = clip.fixedDeltaTime * frame;
+                int transformIndex = 0;
+                float time = clip.fixedDeltaTime * frame;
 
 
                 foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBodyBones)
@@ -275,15 +276,15 @@ namespace Retinize.Editor.AnimotiveImporter
                         List<IT_TransformsByString> editorTPoseList = editorTPoseTransformInfoList.TransformsByStrings
                             .Where(a => a.Name == pair.Key).ToList();
                         List<IT_TransformsByString> animotiveTPoseList = animotiveTPoseTransformInfoList
-                                                                         .TransformsByStrings
-                                                                         .Where(a => a.Name == pair.Key).ToList();
+                            .TransformsByStrings
+                            .Where(a => a.Name == pair.Key).ToList();
 
                         Quaternion editorTPoseRotationForThisBone = editorTPoseList[0].GlobalRotation;
                         Quaternion animotiveTPoseRotationThisBone = animotiveTPoseList[0].GlobalRotation;
                         Quaternion invAnimotiveTPoseRotationThisBone =
                             Quaternion.Inverse(animotiveTPoseRotationThisBone);
 
-                        Quaternion boneRotation = invAnimotiveTPoseRotationThisBone       *
+                        Quaternion boneRotation = invAnimotiveTPoseRotationThisBone *
                                                   boneGlobalRotationThisFrameFromAnimFile *
                                                   editorTPoseRotationForThisBone;
 
@@ -306,9 +307,10 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
-                    else
+
+                    if (pair.Key == HumanBodyBones.Hips || pair.Key == HumanBodyBones.LastBone)
                     {
-                        Vector3  position       = localTransformValuesFromAnimFile[pair.Key][frame].Item2;
+                        Vector3 position = localTransformValuesFromAnimFile[pair.Key][frame].Item2;
                         Keyframe localPositionX = new Keyframe(time, position.x);
                         Keyframe localPositionY = new Keyframe(time, position.y);
                         Keyframe localPositionZ = new Keyframe(time, position.z);
@@ -368,21 +370,21 @@ namespace Retinize.Editor.AnimotiveImporter
 
             IT_AnimotiveImporterEditorUtilities
                 .DeleteAssetIfExists(IT_AnimotiveImporterEditorConstants.TransformAnimPath,
-                                     typeof(AnimationClip));
+                    typeof(AnimationClip));
             AnimationClip animationClip =
                 CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
-                                                      fbxTuple.Item1);
+                    fbxTuple.Item1);
 
 
             AnimatorController animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-                                                                              .TransformsAnimController, animationClip);
+                    .TransformsAnimController, animationClip);
             AssetDatabase.Refresh();
 
 
             fbxTuple.Item2.runtimeAnimatorController = animatorController;
         }
 
-    #endregion
+        #endregion
     }
 }
