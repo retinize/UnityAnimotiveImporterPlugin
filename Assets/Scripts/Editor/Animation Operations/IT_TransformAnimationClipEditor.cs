@@ -172,14 +172,15 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     'HumanBodyBones' and Transform that corresponds to the enum value. Note that this function assumes that the
         ///     character is 'Humanoid' .
         /// </summary>
-        /// <param name="tuple">Tuple of loaded character.</param>
+        /// <param name="loadedFbXofCharacter">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
         private static Tuple<IT_CharacterTransformAnimationClip,
                 Tuple<Dictionary<HumanBodyBones, Transform>, Dictionary<Transform, HumanBodyBones>>>
-            PrepareAndGetAnimationData(Tuple<GameObject, Animator> tuple)
+            PrepareAndGetAnimationData(Tuple<GameObject, Animator> loadedFbXofCharacter)
         {
             string hardcodedAnimationDataPath =
-                string.Concat(Directory.GetCurrentDirectory(), IT_AnimotiveImporterEditorConstants.BinaryAnimPath);
+                string.Concat(Directory.GetCurrentDirectory(),
+                    IT_AnimotiveImporterEditorConstants.BodyAnimationSourcePath);
 
             IT_CharacterTransformAnimationClip clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
@@ -187,9 +188,9 @@ namespace Retinize.Editor.AnimotiveImporter
                     DataFormat.Binary);
 
 
-            Animator animator = tuple.Item2;
+            Animator animator = loadedFbXofCharacter.Item2;
             Tuple<Dictionary<HumanBodyBones, Transform>, Dictionary<Transform, HumanBodyBones>>
-                boneTransformDictionaries = GetBoneTransformDictionaries(animator, tuple.Item1);
+                boneTransformDictionaries = GetBoneTransformDictionaries(animator, loadedFbXofCharacter.Item1);
 
             animator.avatar = null;
 
@@ -217,7 +218,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AnimationClip animationClip = new AnimationClip();
 
-
+            // this dictionary is used to store the values of bones at every frame to be applied to animation clip later.
             Dictionary<string, List<List<Keyframe>>> pathAndKeyframesDictionary =
                 new Dictionary<string, List<List<Keyframe>>>(55);
 
@@ -244,19 +245,20 @@ namespace Retinize.Editor.AnimotiveImporter
             IT_TransformInfoList editorTPoseTransformInfoList =
                 JsonUtility.FromJson<IT_TransformInfoList>(editorTPoseText);
 
-
+            //loop as long as the frame count from the binary file (exported from Animotive)
             for (int frame = clip.initFrame; frame <= clip.lastFrame; frame++)
             {
                 int transformIndex = 0;
                 float time = clip.fixedDeltaTime * frame;
 
-
+                //loop through every bone at every frame
                 foreach (KeyValuePair<HumanBodyBones, Transform> pair in transformsByHumanBodyBones)
                 {
                     string relativePath =
                         AnimationUtility.CalculateTransformPath(pair.Value, characterRoot.transform);
                     if (!pathAndKeyframesDictionary.ContainsKey(relativePath))
                     {
+                        //initialize a new list of keyframes for the
                         pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>(55));
 
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //0
@@ -268,7 +270,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(clip.lastFrame + 1)); //6
                     }
 
-
+                    // do not add the rotations of the root transform to animation clip
                     if (pair.Key != HumanBodyBones.LastBone)
                     {
                         Quaternion boneGlobalRotationThisFrameFromAnimFile = globalQuaternionsByFrame[pair.Key][frame];
@@ -308,6 +310,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
+                    //add the position of selected bones to animationclip
                     if (pair.Key == HumanBodyBones.Hips || pair.Key == HumanBodyBones.LastBone)
                     {
                         Vector3 position = localTransformValuesFromAnimFile[pair.Key][frame].Item2;
@@ -353,14 +356,16 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
 
-            AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.TransformAnimPath);
+            AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.BodyAnimationPath);
             AssetDatabase.Refresh();
 
             return animationClip;
         }
 
-
-        public static void HandleTransformAnimationClipOperations()
+        /// <summary>
+        ///     Triggers all the necessary methods for the related animation clip creation PoC
+        /// </summary>
+        public static void HandleBodyAnimationClipOperations()
         {
             Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
 
@@ -369,7 +374,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 PrepareAndGetAnimationData(fbxTuple);
 
             IT_AnimotiveImporterEditorUtilities
-                .DeleteAssetIfExists(IT_AnimotiveImporterEditorConstants.TransformAnimPath,
+                .DeleteAssetIfExists(IT_AnimotiveImporterEditorConstants.BodyAnimationPath,
                     typeof(AnimationClip));
             AnimationClip animationClip =
                 CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
@@ -378,7 +383,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AnimatorController animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-                    .TransformsAnimController, animationClip);
+                    .BodyAnimationController, animationClip);
             AssetDatabase.Refresh();
 
 

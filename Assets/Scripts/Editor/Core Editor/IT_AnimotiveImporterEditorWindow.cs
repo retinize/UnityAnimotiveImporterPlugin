@@ -27,12 +27,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Test Animation Clip"))
             {
-                IT_TransformAnimationClipEditor.HandleTransformAnimationClipOperations();
+                IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations();
             }
 
             if (GUILayout.Button("Test Json BlendShape"))
             {
-                IT_BlendshapeAnimationClipEditor.HandleBlendShapeAnimationOperations();
+                IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations();
             }
         }
 

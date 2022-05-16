@@ -18,10 +18,10 @@ namespace Retinize.Editor.AnimotiveImporter
         private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
         {
             string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
-                                                     IT_AnimotiveImporterEditorConstants.BlendshapeJsonPath);
+                IT_AnimotiveImporterEditorConstants.FacialAnimationSourcePath);
 
-            StreamReader reader   = new StreamReader(hardCodedJsonPath);
-            string       jsonData = reader.ReadToEnd();
+            StreamReader reader = new StreamReader(hardCodedJsonPath);
+            string jsonData = reader.ReadToEnd();
 
             reader.Close();
             reader.Dispose();
@@ -38,7 +38,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     and the animator of the character.
         /// </param>
         private static AnimationClip CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
-                                                                   Tuple<GameObject, Animator>  tuple)
+            Tuple<GameObject, Animator> tuple)
         {
             AnimationClip animationClip = new AnimationClip();
 
@@ -68,34 +68,37 @@ namespace Retinize.Editor.AnimotiveImporter
                     float blendshapeValue = blendShapeData.value;
                     Keyframe keyframe = new Keyframe(time, blendshapeValue);
 
-                    string         relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
-                    AnimationCurve curve        = blendshapeCurves[skinnedMeshRendererName];
+                    string relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
+                    AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
                     curve.AddKey(keyframe);
 
                     string propertyName = string.Concat("blendShape.", blendshapeName);
                     animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
-                                           curve);
+                        curve);
                 }
             }
 
 
             tuple.Item2.avatar = null;
-            AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.BlendShapeAnimCreatedPath);
+            AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.FacialAnimationCreatedPath);
             AssetDatabase.Refresh();
 
             return animationClip;
         }
 
-        public static void HandleBlendShapeAnimationOperations()
+        /// <summary>
+        ///     Triggers all the necessary methods for the related animation clip creation PoC
+        /// </summary>
+        public static void HandleFacialAnimationOperations()
         {
             FacialAnimationExportWrapper wrapper =
                 HandleBlendShapeAnimationCreation();
 
             Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-            AnimationClip               clip     = CreateBlendShapeAnimationClip(wrapper, fbxTuple);
+            AnimationClip clip = CreateBlendShapeAnimationClip(wrapper, fbxTuple);
             AnimatorController animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-                                                                              .BlendshapeAnimController, clip);
+                    .FacialAnimationController, clip);
 
             fbxTuple.Item2.runtimeAnimatorController = animatorController;
             AssetDatabase.Refresh();

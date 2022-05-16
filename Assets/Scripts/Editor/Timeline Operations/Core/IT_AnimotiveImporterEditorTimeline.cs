@@ -49,7 +49,7 @@ namespace Retinize.Editor.AnimotiveImporter
             facialPerformanceAnimationTrack.SetGroup(groupTrack);
             AnimationClip blendshapeAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
-                    .BlendShapeAnimCreatedPath);
+                    .FacialAnimationCreatedPath);
             TimelineClip facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
             facialPerformanceClip.start = 0;
             // facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
@@ -58,7 +58,7 @@ namespace Retinize.Editor.AnimotiveImporter
             AnimationTrack bodyPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
             bodyPerformanceAnimationTrack.SetGroup(groupTrack);
             AnimationClip bodyAnimationClip =
-                AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants.TransformAnimPath);
+                AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants.BodyAnimationPath);
             TimelineClip bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip(bodyAnimationClip);
             bodyPerformanceClip.start = 0;
             // bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
