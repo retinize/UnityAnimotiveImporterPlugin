@@ -314,8 +314,10 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (pair.Key == HumanBodyBones.Hips || pair.Key == HumanBodyBones.LastBone)
                     {
                         Vector3 position = localTransformValuesFromAnimFile[pair.Key][frame].Item2;
+                        Vector3 inversedPosition = pair.Value.InverseTransformPoint(position);
+
                         Keyframe localPositionX = new Keyframe(time, position.x);
-                        Keyframe localPositionY = new Keyframe(time, position.y);
+                        Keyframe localPositionY = new Keyframe(time, inversedPosition.y);
                         Keyframe localPositionZ = new Keyframe(time, position.z);
 
                         pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
