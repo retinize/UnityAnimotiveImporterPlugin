@@ -1,39 +1,85 @@
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System.Collections.Generic;
+    using System.IO;
     using UnityEditor;
     using UnityEngine;
 
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
+        private static bool _DisableImport = true;
+        private static string _UserChosenDirectoryToImport = "";
+
         private void OnGUI()
         {
-            if (GUILayout.Button("Create scene and playables"))
+            // if (GUILayout.Button("Create scene and playables"))
+            //
+            // {
+            //     IT_SceneEditor.CreateScene("___scene_name_here___");
+            //
+            //     IT_AnimotiveImporterEditorTimeline.HandleGroups(new List<IT_AnimotiveImporterEditorGroupInfo>
+            //     {
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo(),
+            //         new IT_AnimotiveImporterEditorGroupInfo()
+            //     });
+            // }
 
+            GUILayout.BeginHorizontal();
+
+
+            EditorGUILayout.TextField("Animotive Export Folder :", _UserChosenDirectoryToImport);
+
+            if (GUILayout.Button("Choose Folder to Import"))
             {
-                IT_SceneEditor.CreateScene("___scene_name_here___");
+                _UserChosenDirectoryToImport = EditorUtility.OpenFolderPanel("Open Animotive ",
+                    string.Concat(Directory.GetCurrentDirectory(), @"\Assets\"), "");
 
-                IT_AnimotiveImporterEditorTimeline.HandleGroups(new List<IT_AnimotiveImporterEditorGroupInfo>
+                if (!string.IsNullOrEmpty(_UserChosenDirectoryToImport))
                 {
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo(),
-                    new IT_AnimotiveImporterEditorGroupInfo()
-                });
+                    if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(
+                            _UserChosenDirectoryToImport))
+                        _DisableImport = false;
+                    else
+                    {
+                        _DisableImport = true;
+                        Debug.LogWarning("The folder you chose is not a valid Animotive Export folder ! ");
+                    }
+                }
+                else
+                {
+                    _DisableImport = true;
+                    Debug.LogWarning("Please choose a folder to import !");
+                }
             }
 
-            if (GUILayout.Button("Test Animation Clip"))
+            GUILayout.EndHorizontal();
+
+            EditorGUI.BeginDisabledGroup(_DisableImport);
+
+            if (GUILayout.Button("Import Animotive"))
             {
-                IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations();
+                var clipsPath = Path.Combine(_UserChosenDirectoryToImport, "Clips");
+                var animationClipDataPath =
+                    IT_AnimotiveImporterEditorUtilities.ReturnClipDataFromPath(clipsPath);
+
+                IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(animationClipDataPath);
             }
 
-            if (GUILayout.Button("Test Json BlendShape"))
-            {
-                IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations();
-            }
+
+            EditorGUI.EndDisabledGroup();
+
+            // if (GUILayout.Button("Test Animation Clip"))
+            // {
+            // }
+            //
+            // if (GUILayout.Button("Test Json BlendShape"))
+            // {
+            //     IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations();
+            // }
         }
 
         /// <summary>
@@ -42,7 +88,7 @@ namespace Retinize.Editor.AnimotiveImporter
         [MenuItem("Animotive/Importer")]
         public static void ShowWindow()
         {
-            IT_AnimotiveImporterEditorWindow window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
+            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
             window.Show();
         }
     }

@@ -1,6 +1,8 @@
 namespace Retinize.Editor.AnimotiveImporter
 {
     using System;
+    using System.IO;
+    using System.Linq;
     using UnityEditor;
     using UnityEngine;
     using Object = UnityEngine.Object;
@@ -16,16 +18,8 @@ namespace Retinize.Editor.AnimotiveImporter
         public static void DeleteAssetIfExists(string path, Type type)
         {
             if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(path)))
-            {
                 if (AssetDatabase.LoadAssetAtPath(path, type) != null)
-                {
                     AssetDatabase.DeleteAsset(path);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Asset path can not be null !");
-            }
         }
 
         /// <summary>
@@ -34,15 +28,36 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>Tuple that contains instantiated character's root gameObject and it's Animator</returns>
         public static Tuple<GameObject, Animator> LoadFbx()
         {
-            GameObject characterRoot = AssetDatabase.LoadAssetAtPath(
+            var characterRoot = AssetDatabase.LoadAssetAtPath(
                 IT_AnimotiveImporterEditorConstants.FBXPath,
                 typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);
 
-            Animator animator = characterRoot.GetComponent<Animator>();
+            var animator = characterRoot.GetComponent<Animator>();
 
             return new Tuple<GameObject, Animator>(characterRoot, animator);
+        }
+
+        public static bool IsFolderInCorrectFormatToImport(string path)
+        {
+            var dirs = Directory.GetDirectories(path);
+
+            var result = dirs.Any(a => a.EndsWith("Clips")) && dirs.Any(a => a.EndsWith("SetAssets")) &&
+                         dirs.Any(a => a.EndsWith("EntityAssets"));
+            return result;
+        }
+
+        public static string ReturnClipDataFromPath(string clipsPath)
+        {
+            var files = Directory.GetFiles(clipsPath);
+
+            for (var i = 0; i < files.Length; i++)
+            {
+                if (files[i].Contains(IT_AnimotiveImporterEditorConstants.TransformClipName)) return files[i];
+            }
+
+            return "";
         }
     }
 
