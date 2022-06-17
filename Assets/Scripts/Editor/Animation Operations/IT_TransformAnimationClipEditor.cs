@@ -15,6 +15,8 @@ namespace Retinize.Editor.AnimotiveImporter
         private static string _AnimationClipDataPath = "";
 
         public static string bodyAnimationPath = "";
+        public static string bodyAnimatorPath = "";
+        public static string bodyAnimationName = "";
 
         #region Dictionary Operations
 
@@ -359,14 +361,20 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
-        public static void HandleBodyAnimationClipOperations(string animationClipDataPath)
+        public static GameObject HandleBodyAnimationClipOperations(string animationClipDataPath)
         {
             _AnimationClipDataPath = animationClipDataPath;
-            bodyAnimationPath = IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory +
-                                Path.GetFileNameWithoutExtension(animationClipDataPath) + ".anim";
+            var baseBodyPathWithNameWithoutExtension = string.Concat(
+                IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                Path.GetFileNameWithoutExtension(animationClipDataPath));
+
+            bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
+
+            bodyAnimatorPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".controller");
+
+            bodyAnimationName = Path.GetFileName(animationClipDataPath);
 
             var fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-
 
             var clipAndDictionariesTuple =
                 PrepareAndGetAnimationData(fbxTuple);
@@ -380,13 +388,13 @@ namespace Retinize.Editor.AnimotiveImporter
                     fbxTuple.Item1);
 
             var animatorController =
-                AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-                    .BodyAnimationController, animationClip);
+                AnimatorController.CreateAnimatorControllerAtPathWithClip(bodyAnimatorPath, animationClip);
 
             AssetDatabase.Refresh();
 
-
             fbxTuple.Item2.runtimeAnimatorController = animatorController;
+
+            return fbxTuple.Item1;
         }
 
         #endregion

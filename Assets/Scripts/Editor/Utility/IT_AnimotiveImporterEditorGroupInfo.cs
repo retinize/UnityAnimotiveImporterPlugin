@@ -1,7 +1,16 @@
 ﻿namespace Retinize.Editor.AnimotiveImporter
 {
-    public struct IT_AnimotiveImporterEditorGroupInfo
+    using UnityEngine;
+
+    public class IT_AnimotiveImporterEditorGroupInfo
     {
-        //TODO: Group infos will be added here
+        public string name { get; }
+        public GameObject fbx { get; }
+
+        public IT_AnimotiveImporterEditorGroupInfo(string name, GameObject fbx)
+        {
+            this.name = name;
+            this.fbx = fbx;
+        }
     }
 }

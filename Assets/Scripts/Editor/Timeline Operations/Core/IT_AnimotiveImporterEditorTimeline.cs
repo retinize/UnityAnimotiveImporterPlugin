@@ -17,10 +17,10 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             for (var i = 0; i < group.Count; i++)
             {
-                var obj = new GameObject(string.Format("<group name here : {0}>", i));
+                var obj = group[i].fbx;
+                obj.name = group[i].name;
                 var audioSource = obj.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
-                obj.AddComponent<Animator>();
                 var playableDirector = obj.AddComponent<PlayableDirector>();
                 playableDirector.playableAsset = CreatePlayableAsset(obj, playableDirector);
             }
@@ -50,10 +50,15 @@ namespace Retinize.Editor.AnimotiveImporter
             var blendshapeAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
                     .FacialAnimationCreatedPath);
-            var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
-            facialPerformanceClip.start = 0;
+            if (blendshapeAnimationClip)
+            {
+                var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
+                facialPerformanceClip.start = 0;
+                playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
+            }
+
+
             // facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
 
             var bodyPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
             bodyPerformanceAnimationTrack.SetGroup(groupTrack);

@@ -1,5 +1,6 @@
 namespace Retinize.Editor.AnimotiveImporter
 {
+    using System.Collections.Generic;
     using System.IO;
     using UnityEditor;
     using UnityEngine;
@@ -9,25 +10,8 @@ namespace Retinize.Editor.AnimotiveImporter
         private static bool _DisableImport = true;
         private static string _UserChosenDirectoryToImport = "";
 
-        private void OnGUI()
+        private async void OnGUI()
         {
-            // if (GUILayout.Button("Create scene and playables"))
-            //
-            // {
-            //     IT_SceneEditor.CreateScene("___scene_name_here___");
-            //
-            //     IT_AnimotiveImporterEditorTimeline.HandleGroups(new List<IT_AnimotiveImporterEditorGroupInfo>
-            //     {
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo(),
-            //         new IT_AnimotiveImporterEditorGroupInfo()
-            //     });
-            // }
-
             GUILayout.BeginHorizontal();
 
 
@@ -62,11 +46,25 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Import Animotive"))
             {
+                IT_SceneEditor.CreateScene("___scene_name_here___");
+
                 var clipsPath = Path.Combine(_UserChosenDirectoryToImport, "Clips");
                 var animationClipDataPath =
                     IT_AnimotiveImporterEditorUtilities.ReturnClipDataFromPath(clipsPath);
 
-                IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(animationClipDataPath);
+
+                var groupInfos = new List<IT_AnimotiveImporterEditorGroupInfo>(1);
+                var animationClipObj =
+                    IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(animationClipDataPath);
+
+                var animationGroup =
+                    new IT_AnimotiveImporterEditorGroupInfo(IT_TransformAnimationClipEditor.bodyAnimationName,
+                        animationClipObj);
+
+                groupInfos.Add(animationGroup);
+
+
+                IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
             }
 
 

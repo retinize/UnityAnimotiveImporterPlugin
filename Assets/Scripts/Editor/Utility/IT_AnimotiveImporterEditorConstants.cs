@@ -23,7 +23,6 @@
         public const string BodyAnimationDirectory =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/";
 
-        public const string BodyAnimationController = BodyAnimationDirectory + "transforms.controller";
         public const string FacialAnimationController = FacialAnimationDirectory + "blenshapes.controller";
 
         public const string PlayablesCreationPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\";

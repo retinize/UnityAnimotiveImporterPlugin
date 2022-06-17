@@ -18,8 +18,10 @@ namespace Retinize.Editor.AnimotiveImporter
         public static void DeleteAssetIfExists(string path, Type type)
         {
             if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(path)))
+            {
                 if (AssetDatabase.LoadAssetAtPath(path, type) != null)
                     AssetDatabase.DeleteAsset(path);
+            }
         }
 
         /// <summary>
@@ -33,7 +35,6 @@ namespace Retinize.Editor.AnimotiveImporter
                 typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);
-
             var animator = characterRoot.GetComponent<Animator>();
 
             return new Tuple<GameObject, Animator>(characterRoot, animator);
