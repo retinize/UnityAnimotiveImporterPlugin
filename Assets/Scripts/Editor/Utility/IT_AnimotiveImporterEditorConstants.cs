@@ -5,6 +5,8 @@
         public const string UnitySceneExtension = ".unity";
         public const string TransformClipName = "TransformClip";
 
+        public const string WarningTitle = " Animotive Reader Plugin : WARNING";
+
         #region Hardcoded PoC Paths
 
         public const string FBXPath =
