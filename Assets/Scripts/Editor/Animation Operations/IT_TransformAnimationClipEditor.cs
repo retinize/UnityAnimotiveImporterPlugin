@@ -10,36 +10,7 @@ namespace Retinize.Editor.AnimotiveImporter
     using UnityEditor.Animations;
     using UnityEngine;
 
-    
-    public struct DictionaryTuple
-    {
-        public Dictionary<HumanBodyBones, Transform> TransformsByHumanBodyBones{ get;  }
-        public Dictionary<Transform, HumanBodyBones> HumanBodyBonesByTransform { get;  }
 
-        public DictionaryTuple(Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones, Dictionary<Transform, HumanBodyBones> humanBodyBonesByTransform)
-        {
-            TransformsByHumanBodyBones = transformsByHumanBodyBones;
-            HumanBodyBonesByTransform = humanBodyBonesByTransform;
-        }
-
-        public DictionaryTuple(int a=0)
-        {
-            TransformsByHumanBodyBones = new Dictionary<HumanBodyBones, Transform>();
-            HumanBodyBonesByTransform = new Dictionary<Transform, HumanBodyBones>();
-        }
-    }
-
-    public struct ClipByDictionaryTuple
-    {
-        public IT_CharacterTransformAnimationClip Clip { get; private set; }
-        public DictionaryTuple DictTuple { get; private set; }
-
-        public ClipByDictionaryTuple(IT_CharacterTransformAnimationClip clip, DictionaryTuple dictTuple)
-        {
-            Clip = clip;
-            DictTuple = dictTuple;
-        }
-    }
     public static class IT_TransformAnimationClipEditor
     {
         
