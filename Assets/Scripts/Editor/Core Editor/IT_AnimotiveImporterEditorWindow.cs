@@ -107,6 +107,9 @@ namespace Retinize.Editor.AnimotiveImporter
                     IT_AnimotiveImporterEditorUtilities.ReturnClipDataFromPath(clipsPath);
 
 
+                var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
+                Debug.Log(sceneData.currentSetName);
+
                 var groupInfos = new List<IT_AnimotiveImporterEditorGroupInfo>(1);
                 var animationClipObj =
                     IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(animationClipDataPath);
