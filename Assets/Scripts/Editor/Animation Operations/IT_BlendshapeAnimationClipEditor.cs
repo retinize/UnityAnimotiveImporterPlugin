@@ -33,12 +33,12 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates blendShape Animation Clip at the designated directory.
         /// </summary>
         /// <param name="clip">clip data read from json and casted to 'FacialAnimationExportWrapper'</param>
-        /// <param name="tuple">
+        /// <param name="fbxData">
         ///     Tuple of character to apply animation . Tuple contains GameObject which is root of the character
         ///     and the animator of the character.
         /// </param>
         private static AnimationClip CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
-            Tuple<GameObject, Animator> tuple)
+          FbxData fbxData)
         {
             AnimationClip animationClip = new AnimationClip();
 
@@ -62,13 +62,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     string skinnedMeshRendererName = characterGeoDescriptor.name;
 
-                    Transform tr = tuple.Item1.transform.FindChildRecursively(skinnedMeshRendererName);
+                    Transform tr = fbxData.FbxGameObject.transform.FindChildRecursively(skinnedMeshRendererName);
                     SkinnedMeshRenderer skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
                     string blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
                     float blendshapeValue = blendShapeData.value;
                     Keyframe keyframe = new Keyframe(time, blendshapeValue);
 
-                    string relativePath = AnimationUtility.CalculateTransformPath(tr, tuple.Item1.transform);
+                    string relativePath = AnimationUtility.CalculateTransformPath(tr, fbxData.FbxGameObject.transform);
                     AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
                     curve.AddKey(keyframe);
 
@@ -79,7 +79,7 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
 
-            tuple.Item2.avatar = null;
+            fbxData.FbxAnimator.avatar = null;
             AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.FacialAnimationCreatedPath);
             AssetDatabase.Refresh();
 
@@ -94,13 +94,13 @@ namespace Retinize.Editor.AnimotiveImporter
             FacialAnimationExportWrapper wrapper =
                 HandleBlendShapeAnimationCreation();
 
-            Tuple<GameObject, Animator> fbxTuple = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-            AnimationClip clip = CreateBlendShapeAnimationClip(wrapper, fbxTuple);
+            FbxData fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+            AnimationClip clip = CreateBlendShapeAnimationClip(wrapper, fbxData);
             AnimatorController animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
                     .FacialAnimationController, clip);
 
-            fbxTuple.Item2.runtimeAnimatorController = animatorController;
+            fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
             AssetDatabase.Refresh();
         }
     }
