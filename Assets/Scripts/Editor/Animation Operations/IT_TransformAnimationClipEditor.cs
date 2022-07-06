@@ -29,7 +29,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="animator">Animator of the character</param>
         /// <param name="characterRoot">Root GameObject of the character</param>
         /// <returns></returns>
-        private static DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot)
+        private static IT_DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot)
         {
             var temp = Enum.GetValues(typeof(HumanBodyBones));
             var humanBodyBonesByTransforms =
@@ -52,7 +52,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
             transformsByHumanBodyBones.Add(characterRoot.transform, HumanBodyBones.LastBone);
-            return new DictionaryTuple(humanBodyBonesByTransforms, transformsByHumanBodyBones);
+            return new IT_DictionaryTuple(humanBodyBonesByTransforms, transformsByHumanBodyBones);
         }
 
         /// <summary>
@@ -170,8 +170,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="loadedFbXofCharacter">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        private static ClipByDictionaryTuple
-            PrepareAndGetAnimationData(FbxData loadedFbXofCharacter)
+        private static IT_ClipByDictionaryTuple
+            PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter)
         {
             var clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
@@ -186,21 +186,21 @@ namespace Retinize.Editor.AnimotiveImporter
             animator.avatar = null;
 
             AssetDatabase.Refresh();
-            return new ClipByDictionaryTuple(clip, boneTransformDictionaries);
+            return new IT_ClipByDictionaryTuple(clip, boneTransformDictionaries);
         }
 
         /// <summary>
         ///     Creates the Animation clip according to the given data contains clip info read from json and
         ///     BoneTransformDictionaries
         /// </summary>
-        /// <param name="clipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
+        /// <param name="itClipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
         /// <param name="characterRoot">Root gameObject of the character to apply animation to.</param>
-        private static AnimationClip CreateTransformMovementsAnimationClip(ClipByDictionaryTuple clipAndDictionariesTuple,
+        private static AnimationClip CreateTransformMovementsAnimationClip(IT_ClipByDictionaryTuple itClipAndDictionariesTuple,
             GameObject characterRoot)
         {
-            var clip = clipAndDictionariesTuple.Clip;
-            var transformsByHumanBodyBones = clipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
-            var humanBodyBonesBytransforms = clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
+            var clip = itClipAndDictionariesTuple.Clip;
+            var transformsByHumanBodyBones = itClipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
+            var humanBodyBonesBytransforms = itClipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
 
             var animationClip = new AnimationClip();
 

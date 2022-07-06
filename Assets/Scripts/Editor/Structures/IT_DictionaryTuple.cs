@@ -3,18 +3,18 @@ using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
-    public struct DictionaryTuple
+    public struct IT_DictionaryTuple
     {
         public Dictionary<HumanBodyBones, Transform> TransformsByHumanBodyBones{ get;  }
         public Dictionary<Transform, HumanBodyBones> HumanBodyBonesByTransform { get;  }
 
-        public DictionaryTuple(Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones, Dictionary<Transform, HumanBodyBones> humanBodyBonesByTransform)
+        public IT_DictionaryTuple(Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones, Dictionary<Transform, HumanBodyBones> humanBodyBonesByTransform)
         {
             TransformsByHumanBodyBones = transformsByHumanBodyBones;
             HumanBodyBonesByTransform = humanBodyBonesByTransform;
         }
 
-        public DictionaryTuple(int a=0)
+        public IT_DictionaryTuple(int a=0)
         {
             TransformsByHumanBodyBones = new Dictionary<HumanBodyBones, Transform>();
             HumanBodyBonesByTransform = new Dictionary<Transform, HumanBodyBones>();

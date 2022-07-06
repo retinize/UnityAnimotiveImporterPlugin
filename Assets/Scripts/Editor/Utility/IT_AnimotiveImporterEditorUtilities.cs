@@ -28,7 +28,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Loads FBX from it's designated path and instantiates it to the current scene in the editor
         /// </summary>
         /// <returns>Tuple that contains instantiated character's root gameObject and it's Animator</returns>
-        public static FbxData LoadFbx()
+        public static IT_FbxData LoadFbx()
         {
             var characterRoot = AssetDatabase.LoadAssetAtPath(
                 IT_AnimotiveImporterEditorConstants.FBXPath,
@@ -37,7 +37,7 @@ namespace Retinize.Editor.AnimotiveImporter
             characterRoot = Object.Instantiate(characterRoot);
             var animator = characterRoot.GetComponent<Animator>();
 
-            return new FbxData(characterRoot, animator);
+            return new IT_FbxData(characterRoot, animator);
         }
 
         public static bool IsFolderInCorrectFormatToImport(string path)
@@ -59,18 +59,6 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
             return "";
-        }
-    }
-
-    public struct FbxData
-    {
-        public GameObject FbxGameObject { get; private set; }
-        public Animator FbxAnimator { get; private set; }
-
-        public FbxData(GameObject fbxGameObject, Animator fbxAnimator)
-        {
-            FbxGameObject = fbxGameObject;
-            FbxAnimator = fbxAnimator;
         }
     }
 
