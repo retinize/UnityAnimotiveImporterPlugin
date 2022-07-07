@@ -49,17 +49,32 @@ namespace Retinize.Editor.AnimotiveImporter
             return result;
         }
 
-        public static string ReturnClipDataFromPath(string clipsPath)
+        public static string ReturnClipDataFromPath(string clipsPath,string clipName)
         {
             var files = Directory.GetFiles(clipsPath);
-
+            
             for (var i = 0; i < files.Length; i++)
             {
-                if (files[i].Contains(IT_AnimotiveImporterEditorConstants.TransformClipName)) return files[i];
+                if (files[i].Contains(clipName)) return files[i];
             }
 
             return "";
         }
+
+        public static IT_ClipType GetClipTypeFromClipName(string clipName)
+        {
+            foreach (var pair in IT_AnimotiveImporterEditorConstants.ClipNamesByType)
+            {
+                if (clipName.Contains(pair.Value))
+                {
+                    return pair.Key;
+                }
+            }
+
+            return IT_ClipType.None;
+        }
+        
+        
     }
 
 #endif
