@@ -12,7 +12,6 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public static class IT_TransformAnimationClipEditor
     {
-
         public static string bodyAnimationPath = "";
         public static string bodyAnimatorPath = "";
         public static string bodyAnimationName = "";
@@ -70,13 +69,16 @@ namespace Retinize.Editor.AnimotiveImporter
             Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform,
             Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>>
                 localQuaternionsByFrame,
-            IT_CharacterTransformAnimationClip clip)
+            IT_CharacterTransformAnimationClip clip,IT_ClipData clipData)
         {
             Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
                 new Dictionary<HumanBodyBones, List<Quaternion>>(55);
 
-            for (int frame = clip.startFrameInTimelineWhenItWasCaptured;
-                 frame <= clip.lastFrameInTimelineWhenItWasCaptured;
+            int startFrame = clip.startFrameInTimelineWhenItWasCaptured;
+            int lastFrame = clip.lastFrameInTimelineWhenItWasCaptured;
+            
+            for (int frame =startFrame;
+                 frame <= lastFrame;
                  frame++)
             {
                 foreach (HumanBodyBones humanBone in Enum.GetValues(typeof(HumanBodyBones)))
@@ -106,7 +108,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (!globalQuaternionsByFrame.ContainsKey(humanBone))
                     {
                         globalQuaternionsByFrame.Add(humanBone,
-                            new List<Quaternion>(clip.lastFrameInTimelineWhenItWasCaptured + 1));
+                            new List<Quaternion>(lastFrame + 1));
                     }
 
                     globalQuaternionsByFrame[humanBone].Add(globalRotationOfThisBone);
@@ -123,15 +125,20 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="transformsByHumanBoneName">Dictionary that contains 'Transform' by 'HumanBodyBones'</param>
         /// <returns></returns>
         private static Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>>
-            GetLocalTransformValuesFromAnimFile(
-                IT_CharacterTransformAnimationClip clip,
-                Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
+            GetLocalTransformValuesFromAnimFile(IT_CharacterTransformAnimationClip clip, 
+                Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName , IT_ClipData clipData)
         {
             Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>> localQuaternionsByFrame =
                 new Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>>(55);
 
-            for (int frame = clip.startFrameInTimelineWhenItWasCaptured;
-                 frame <= clip.lastFrameInTimelineWhenItWasCaptured;
+            int startFrame = clip.startFrameInTimelineWhenItWasCaptured;
+            int lastFrame =  clip.lastFrameInTimelineWhenItWasCaptured;
+            
+            // clip.startFrameInTimelineWhenItWasCaptured
+            // clip.lastFrameInTimelineWhenItWasCaptured
+            
+            for (int frame = startFrame;
+                 frame <= lastFrame;
                  frame++)
             {
                 int transformIndex = 0;
@@ -142,9 +149,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     int indexInCurveOfKey = frame * transformsByHumanBoneName.Count + transformIndex;
 
-
+                    //462 frame ... 8 more frame to go 470
                     Quaternion frameRotation = new Quaternion(clip.physicsKeyframesCurve3[indexInCurveOfKey],
-                        clip.physicsKeyframesCurve4[indexInCurveOfKey],
+                        clip.physicsKeyframesCurve4[indexInCurveOfKey], 
                         clip.physicsKeyframesCurve5[indexInCurveOfKey],
                         clip.physicsKeyframesCurve6[indexInCurveOfKey]);
 
@@ -155,7 +162,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (!localQuaternionsByFrame.ContainsKey(pair.Key))
                     {
                         localQuaternionsByFrame.Add(pair.Key,
-                            new List<Tuple<Quaternion, Vector3>>(clip.lastFrameInTimelineWhenItWasCaptured + 1));
+                            new List<Tuple<Quaternion, Vector3>>(lastFrame + 1));
                     }
 
                     localQuaternionsByFrame[pair.Key]
@@ -179,7 +186,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="loadedFbXofCharacter">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        private static IT_ClipByDictionaryTuple PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter, string animationClipDataPath)
+        private static IT_ClipByDictionaryTuple PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter,
+            string animationClipDataPath)
         {
             IT_CharacterTransformAnimationClip clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
@@ -206,11 +214,12 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="characterRoot">Root gameObject of the character to apply animation to.</param>
         private static AnimationClip CreateTransformMovementsAnimationClip(
             IT_ClipByDictionaryTuple itClipAndDictionariesTuple,
-            GameObject characterRoot)
+            GameObject characterRoot,IT_ClipData clipData)
         {
             IT_CharacterTransformAnimationClip clip = itClipAndDictionariesTuple.Clip;
             Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones =
                 itClipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
+            
             Dictionary<Transform, HumanBodyBones> humanBodyBonesBytransforms =
                 itClipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
 
@@ -222,12 +231,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             Dictionary<HumanBodyBones, List<Tuple<Quaternion, Vector3>>> localTransformValuesFromAnimFile =
-                GetLocalTransformValuesFromAnimFile(clip, transformsByHumanBodyBones);
+                GetLocalTransformValuesFromAnimFile(clip, transformsByHumanBodyBones,clipData);
 
 
             Dictionary<HumanBodyBones, List<Quaternion>> globalQuaternionsByFrame =
                 GetGlobalRotationsFromAnimFile(transformsByHumanBodyBones, humanBodyBonesBytransforms,
-                    localTransformValuesFromAnimFile, clip);
+                    localTransformValuesFromAnimFile, clip,clipData);
 
             //HARDCODE !
             string path = string.Concat(Directory.GetCurrentDirectory(),
@@ -242,9 +251,13 @@ namespace Retinize.Editor.AnimotiveImporter
             IT_TransformInfoList editorTPoseTransformInfoList =
                 JsonUtility.FromJson<IT_TransformInfoList>(editorTPoseText);
 
+            
+            int startFrame = clip.startFrameInTimelineWhenItWasCaptured;
+            int lastFrame = clip.lastFrameInTimelineWhenItWasCaptured;
+            
             //loop as long as the frame count from the binary file (exported from Animotive)
-            for (int frame = clip.startFrameInTimelineWhenItWasCaptured;
-                 frame <= clip.lastFrameInTimelineWhenItWasCaptured;
+            for (int frame = startFrame;
+                 frame <= lastFrame;
                  frame++)
             {
                 int transformIndex = 0;
@@ -261,19 +274,19 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>(55));
 
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //0
+                            .Add(new List<Keyframe>(lastFrame)); //0
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //1
+                            .Add(new List<Keyframe>(lastFrame)); //1
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //2
+                            .Add(new List<Keyframe>(lastFrame)); //2
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //3
+                            .Add(new List<Keyframe>(lastFrame)); //3
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //4
+                            .Add(new List<Keyframe>(lastFrame)); //4
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //5
+                            .Add(new List<Keyframe>(lastFrame)); //5
                         pathAndKeyframesDictionary[relativePath]
-                            .Add(new List<Keyframe>(clip.lastFrameInTimelineWhenItWasCaptured + 1)); //6
+                            .Add(new List<Keyframe>(lastFrame)); //6
                     }
 
                     // do not add the rotations of the root transform to animation clip
@@ -376,46 +389,54 @@ namespace Retinize.Editor.AnimotiveImporter
         public static void HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsPath,
             IT_FbxData fbxData)
         {
-            Dictionary<IT_ClipType, string> clipsTypeByPath = GetClipsPathByType(sceneData, clipsPath);
+            Dictionary<IT_ClipType, IT_ClipData> clipsTypeByPath = GetClipsPathByType(sceneData, clipsPath);
 
-            foreach (KeyValuePair<IT_ClipType, string> pair in clipsTypeByPath)
+            foreach (KeyValuePair<IT_ClipType, IT_ClipData> pair in clipsTypeByPath)
             {
-                string animationClipDataPath = pair.Value;
-                
-                string baseBodyPathWithNameWithoutExtension = string.Concat(
-                    IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                    Path.GetFileNameWithoutExtension(animationClipDataPath));
+                if (pair.Key==IT_ClipType.TransformClip)
+                {
+                          
+                    string animationClipDataPath = pair.Value.animationClipDataPath;
 
-                bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
+                    string baseBodyPathWithNameWithoutExtension = string.Concat(
+                        IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                        Path.GetFileNameWithoutExtension(animationClipDataPath));
 
-                bodyAnimatorPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".controller");
+                    bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
 
-                bodyAnimationName = Path.GetFileName(animationClipDataPath);
+                    bodyAnimatorPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".controller");
 
-
-                IT_ClipByDictionaryTuple clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData,animationClipDataPath);
-
-                IT_AnimotiveImporterEditorUtilities
-                    .DeleteAssetIfExists(bodyAnimationPath,
-                        typeof(AnimationClip));
-
-                AnimationClip animationClip =
-                    CreateTransformMovementsAnimationClip(clipAndDictionariesTuple, fbxData.FbxGameObject);
-
-                AnimatorController animatorController =
-                    AnimatorController.CreateAnimatorControllerAtPathWithClip(bodyAnimatorPath, animationClip);
+                    bodyAnimationName = Path.GetFileName(animationClipDataPath);
 
 
-                fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+                    IT_ClipByDictionaryTuple clipAndDictionariesTuple =
+                        PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+
+                    IT_AnimotiveImporterEditorUtilities
+                        .DeleteAssetIfExists(bodyAnimationPath,
+                            typeof(AnimationClip));
+
+                    AnimationClip animationClip =
+                        CreateTransformMovementsAnimationClip(clipAndDictionariesTuple, fbxData.FbxGameObject,pair.Value);
+
+                    AnimatorController animatorController =
+                        AnimatorController.CreateAnimatorControllerAtPathWithClip(bodyAnimatorPath, animationClip);
+
+
+                    fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+                }
+          
             }
 
             AssetDatabase.Refresh();
         }
 
-        private static Dictionary<IT_ClipType, string> GetClipsPathByType(IT_SceneInternalData sceneData,
+  
+        
+        private static Dictionary<IT_ClipType, IT_ClipData> GetClipsPathByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
-            Dictionary<IT_ClipType, string> clipPathsByType = new Dictionary<IT_ClipType, string>();
+            Dictionary<IT_ClipType, IT_ClipData> clipPathsByType = new Dictionary<IT_ClipType, IT_ClipData>();
 
             foreach (GroupData groupData in sceneData.groupDataById.Values)
             {
@@ -442,7 +463,9 @@ namespace Retinize.Editor.AnimotiveImporter
                                 IT_ClipType type =
                                     IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(clip.clipName);
 
-                                clipPathsByType.Add(type, animationClipDataPath);
+                                var clipdata = new IT_ClipData(clip, animationClipDataPath);
+                                
+                                clipPathsByType.Add(type, clipdata);
                             }
                         }
                     }

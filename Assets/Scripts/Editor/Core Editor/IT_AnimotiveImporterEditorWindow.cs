@@ -37,7 +37,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
                     {
                         _UserChosenDirectoryToImportUnityExports = choosenFolder;
-                        Debug.Log("Imported the Animotive files successfully !");
+                        Debug.Log("Selected the Animotive files successfully !");
                         _IsAnimotiveFolderImported = true;
                     }
                     else
@@ -62,40 +62,31 @@ namespace Retinize.Editor.AnimotiveImporter
 
             EditorGUILayout.TextField("Character FBX Folder :", _UserChosenDirectoryToImportCharacterFbxModels);
 
-            if (GUILayout.Button("Import Character Model"))
+            if (GUILayout.Button("Import Character Model(FBX)"))
             {
                 _UserChosenDirectoryToImportCharacterFbxModels =
                     EditorUtility.OpenFilePanel("Import Character into Unity",
-                        Directory.GetCurrentDirectory(), "*.fbx");
+                        Directory.GetCurrentDirectory(), "fbx");
 
+                
+                
                 if (!string.IsNullOrEmpty(_UserChosenDirectoryToImportCharacterFbxModels))
                 {
-                    var strippedFfileNameWithoutExtension =
-                        Path.GetFileNameWithoutExtension(_UserChosenDirectoryToImportCharacterFbxModels);
+                    if (!_UserChosenDirectoryToImportCharacterFbxModels.ToLower().EndsWith(".fbx"))
+                    {
+                        EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
+                            "Can't import models other than fbx ! ", "OK");
 
-                    var targetDirectoryToSaveFbx = Path.Combine(Directory.GetCurrentDirectory(), "Assets",
-                        "Imported Files", "Characters");
+                        _IsModelImported = false;
+                    }
+                    else
+                    {
+                        ImportFbxIntoUnityAndProcessIt();
 
-                    if (!Directory.Exists(targetDirectoryToSaveFbx))
-                        Directory.CreateDirectory(targetDirectoryToSaveFbx);
-
-                    var fullPathToSaveFbx =
-                        Path.Combine(targetDirectoryToSaveFbx, strippedFfileNameWithoutExtension);
-
-                    EnableImportConfig = true;
-                    File.Copy(_UserChosenDirectoryToImportCharacterFbxModels,
-                        fullPathToSaveFbx, true);
-                    ImportedFbxAssetDatabasePath =
-                        fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
-                    ImportedFbxAssetDatabasePath = string.Concat("Assets", ImportedFbxAssetDatabasePath);
-
-
-                    AssetDatabase.Refresh();
-
-                    EnableImportConfig = false;
-
-                    _IsModelImported = true;
-                    Debug.Log("Imported the Character model successfully !");
+                        _IsModelImported = true;
+                        Debug.Log("Selected the Character model successfully !");
+                    }
+            
                 }
                 else
                     _IsModelImported = false;
@@ -112,10 +103,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Import Animotive"))
             {
+
                 var clipsPath = Path.Combine(_UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
-
 
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
@@ -123,12 +114,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
 
-
                 IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath, fbxData);
 
                 var animationGroup = new IT_AnimotiveImporterEditorGroupInfo(
-                    IT_TransformAnimationClipEditor.bodyAnimationName,
-                    fbxData.FbxGameObject);
+                    IT_TransformAnimationClipEditor.bodyAnimationName, fbxData.FbxGameObject
+                );
 
                 groupInfos.Add(animationGroup);
 
@@ -159,6 +149,35 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
             window.Show();
+        }
+        
+        
+        public static void ImportFbxIntoUnityAndProcessIt()
+        {
+            var strippedFfileName =
+                Path.GetFileName(_UserChosenDirectoryToImportCharacterFbxModels);
+
+            var targetDirectoryToSaveFbx = Path.Combine(Directory.GetCurrentDirectory(), "Assets",
+                "Imported Files", "Characters");
+
+            if (!Directory.Exists(targetDirectoryToSaveFbx))
+                Directory.CreateDirectory(targetDirectoryToSaveFbx);
+
+            var fullPathToSaveFbx =
+                Path.Combine(targetDirectoryToSaveFbx, strippedFfileName);
+
+            EnableImportConfig = true;
+            File.Copy(_UserChosenDirectoryToImportCharacterFbxModels, fullPathToSaveFbx, true);
+            
+            ImportedFbxAssetDatabasePath =
+                fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
+            
+            ImportedFbxAssetDatabasePath = string.Concat("Assets", ImportedFbxAssetDatabasePath);
+
+
+            AssetDatabase.Refresh();
+            
+            EnableImportConfig = false;
         }
     }
 }

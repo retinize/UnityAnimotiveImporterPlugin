@@ -73,6 +73,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
             return IT_ClipType.None;
         }
+
+
         
         
     }

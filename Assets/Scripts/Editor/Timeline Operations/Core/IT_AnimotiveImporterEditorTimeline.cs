@@ -17,7 +17,7 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             for (var i = 0; i < group.Count; i++)
             {
-                var obj = group[i].fbx;
+                var obj = group[i].ObjectInScene;
                 obj.name = group[i].name;
                 var audioSource = obj.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
