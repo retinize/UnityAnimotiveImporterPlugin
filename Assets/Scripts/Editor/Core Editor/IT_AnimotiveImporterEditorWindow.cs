@@ -1,26 +1,27 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using AnimotiveImporterDLL;
+using UnityEditor;
+using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using UnityEditor;
-    using UnityEngine;
-
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
-        
-        
-        private static bool _DisableImport = true;
+        private static bool _DisableImport;
+        private static bool _IsAnimotiveFolderImported;
+        private static bool _IsModelImported;
+
         private static string _UserChosenDirectoryToImportUnityExports = "";
         private static string _UserChosenDirectoryToImportCharacterFbxModels = "";
         public static string ImportedFbxAssetDatabasePath = "";
 
-        public static bool EnableImportConfig = false;
-        
-        private async void OnGUI()
+        public static bool EnableImportConfig;
+
+        private void OnGUI()
         {
-            #region Choose Animotive folder 
+            #region Choose Animotive folder
 
             GUILayout.BeginHorizontal();
 
@@ -29,7 +30,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Choose Folder to Import"))
             {
-                 var choosenFolder = EditorUtility.OpenFolderPanel("Import Animotive into Unity ",
+                string choosenFolder = EditorUtility.OpenFolderPanel("Import Animotive into Unity ",
                     Directory.GetCurrentDirectory(), "");
 
                 if (!string.IsNullOrEmpty(choosenFolder))
@@ -38,15 +39,19 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         _UserChosenDirectoryToImportUnityExports = choosenFolder;
                         Debug.Log("Imported the Animotive files successfully !");
-                        // _DisableImport = false;
+                        _IsAnimotiveFolderImported = true;
                     }
                     else
                     {
-                        _DisableImport = true;
+                        _IsAnimotiveFolderImported = false;
 
                         EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                             "The folder you chose is not a valid Animotive Export folder ! ", "OK");
                     }
+                }
+                else
+                {
+                    _IsAnimotiveFolderImported = false;
                 }
             }
 
@@ -62,14 +67,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Import Character Model"))
             {
-
                 _UserChosenDirectoryToImportCharacterFbxModels =
                     EditorUtility.OpenFilePanel("Import Character into Unity",
                         Directory.GetCurrentDirectory(), "*.fbx");
 
                 if (!string.IsNullOrEmpty(_UserChosenDirectoryToImportCharacterFbxModels))
                 {
-
                     string strippedFfileNameWithoutExtension =
                         Path.GetFileNameWithoutExtension(_UserChosenDirectoryToImportCharacterFbxModels);
 
@@ -86,22 +89,23 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     EnableImportConfig = true;
                     File.Copy(_UserChosenDirectoryToImportCharacterFbxModels,
-                        fullPathToSaveFbx,true);
-                    ImportedFbxAssetDatabasePath = fullPathToSaveFbx.Split(new string[] { "Assets" }, StringSplitOptions.None)[1];
-                    ImportedFbxAssetDatabasePath = string.Concat("Assets" , ImportedFbxAssetDatabasePath);
-                    
-                    
+                        fullPathToSaveFbx, true);
+                    ImportedFbxAssetDatabasePath =
+                        fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
+                    ImportedFbxAssetDatabasePath = string.Concat("Assets", ImportedFbxAssetDatabasePath);
+
+
                     AssetDatabase.Refresh();
 
                     EnableImportConfig = false;
-   
-                    
-                    Debug.Log("Imported the Character model successfully !");
-                    _DisableImport = false;
 
+                    _IsModelImported = true;
+                    Debug.Log("Imported the Character model successfully !");
                 }
-               
-                
+                else
+                {
+                    _IsModelImported = false;
+                }
             }
 
             GUILayout.EndHorizontal();
@@ -110,25 +114,25 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Button
 
-            EditorGUI.BeginDisabledGroup(_DisableImport);
+            _DisableImport = _IsModelImported & _IsAnimotiveFolderImported;
+            EditorGUI.BeginDisabledGroup(!_DisableImport);
 
             if (GUILayout.Button("Import Animotive"))
             {
-                IT_SceneEditor.CreateScene("___scene_name_here___");
-
-                var clipsPath = Path.Combine(_UserChosenDirectoryToImportUnityExports, "Clips");
-                var animationClipDataPath =
+                string clipsPath = Path.Combine(_UserChosenDirectoryToImportUnityExports, "Clips");
+                string animationClipDataPath =
                     IT_AnimotiveImporterEditorUtilities.ReturnClipDataFromPath(clipsPath);
 
-
-                var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
+                IT_SceneInternalData sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
                 Debug.Log(sceneData.currentSetName);
 
-                var groupInfos = new List<IT_AnimotiveImporterEditorGroupInfo>(1);
-                var animationClipObj =
+                IT_SceneEditor.CreateScene(sceneData.currentSetName);
+
+                List<IT_AnimotiveImporterEditorGroupInfo> groupInfos = new List<IT_AnimotiveImporterEditorGroupInfo>(1);
+                GameObject animationClipObj =
                     IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(animationClipDataPath);
 
-                var animationGroup =
+                IT_AnimotiveImporterEditorGroupInfo animationGroup =
                     new IT_AnimotiveImporterEditorGroupInfo(IT_TransformAnimationClipEditor.bodyAnimationName,
                         animationClipObj);
 
@@ -159,7 +163,7 @@ namespace Retinize.Editor.AnimotiveImporter
         [MenuItem("Animotive/Importer")]
         public static void ShowWindow()
         {
-            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
+            IT_AnimotiveImporterEditorWindow window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
             window.Show();
         }
     }

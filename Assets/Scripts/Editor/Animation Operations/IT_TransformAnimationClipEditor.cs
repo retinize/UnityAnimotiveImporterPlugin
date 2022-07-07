@@ -170,8 +170,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="loadedFbXofCharacter">Tuple of loaded character.</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        private static IT_ClipByDictionaryTuple
-            PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter)
+        private static IT_ClipByDictionaryTuple PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter)
         {
             var clip =
                 SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
@@ -180,8 +179,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             var animator = loadedFbXofCharacter.FbxAnimator;
-            var
-                boneTransformDictionaries = GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject);
+            
+            var boneTransformDictionaries = GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject);
 
             animator.avatar = null;
 

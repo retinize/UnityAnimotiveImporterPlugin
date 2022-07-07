@@ -9,9 +9,6 @@
 
         #region Hardcoded PoC Paths
 
-        public const string FBXPath =
-            @"Assets\AnimotivePluginExampleStructure\SampleModels\FrankBshp_Export_Master.fbx";
-
 
         public const string FacialAnimationSourcePath =
             @"Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";

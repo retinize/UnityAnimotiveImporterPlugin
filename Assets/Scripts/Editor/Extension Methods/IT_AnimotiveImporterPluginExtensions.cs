@@ -52,4 +52,5 @@ public static class IT_AnimotiveImporterPluginExtensions
 
         return result;
     }
+    
 }

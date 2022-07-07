@@ -8,7 +8,11 @@ public class IT_ModelCustomImportSteps : AssetPostprocessor
         if (IT_AnimotiveImporterEditorWindow.EnableImportConfig)  // @-sign in the name triggers this step
         {
             ModelImporter modelImporter = assetImporter as ModelImporter;
-            modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+            if (modelImporter!=null)
+            {
+                modelImporter.animationType = ModelImporterAnimationType.Human;
+                modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+            }
         }
     }
 }
