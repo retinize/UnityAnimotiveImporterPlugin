@@ -31,7 +31,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static IT_FbxData LoadFbx()
         {
             var characterRoot = AssetDatabase.LoadAssetAtPath(
-                IT_AnimotiveImporterEditorConstants.FBXPath,
+                IT_AnimotiveImporterEditorWindow.ImportedFbxAssetDatabasePath,
                 typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);

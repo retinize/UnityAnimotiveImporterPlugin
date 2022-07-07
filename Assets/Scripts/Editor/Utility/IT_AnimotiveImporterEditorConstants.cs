@@ -14,7 +14,7 @@
 
 
         public const string FacialAnimationSourcePath =
-            @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
+            @"Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
 
         public const string FacialAnimationDirectory =
             @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/";

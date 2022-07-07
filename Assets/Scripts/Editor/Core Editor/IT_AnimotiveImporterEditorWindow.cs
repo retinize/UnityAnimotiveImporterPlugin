@@ -9,10 +9,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
+        
+        
         private static bool _DisableImport = true;
         private static string _UserChosenDirectoryToImportUnityExports = "";
         private static string _UserChosenDirectoryToImportCharacterFbxModels = "";
+        public static string ImportedFbxAssetDatabasePath = "";
 
+        public static bool EnableImportConfig = false;
+        
         private async void OnGUI()
         {
             #region Choose Animotive folder 
@@ -32,7 +37,8 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
                     {
                         _UserChosenDirectoryToImportUnityExports = choosenFolder;
-                        _DisableImport = false;
+                        Debug.Log("Imported the Animotive files successfully !");
+                        // _DisableImport = false;
                     }
                     else
                     {
@@ -41,13 +47,6 @@ namespace Retinize.Editor.AnimotiveImporter
                         EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                             "The folder you chose is not a valid Animotive Export folder ! ", "OK");
                     }
-                }
-                else
-                {
-                    _DisableImport = true;
-                    
-                    EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
-                        "Please choose a folder to import !" , "OK");
                 }
             }
 
@@ -65,13 +64,14 @@ namespace Retinize.Editor.AnimotiveImporter
             {
 
                 _UserChosenDirectoryToImportCharacterFbxModels =
-                    EditorUtility.OpenFilePanel("Import Character into Unity",Directory.GetCurrentDirectory(), "fbx");
+                    EditorUtility.OpenFilePanel("Import Character into Unity",
+                        Directory.GetCurrentDirectory(), "*.fbx");
 
                 if (!string.IsNullOrEmpty(_UserChosenDirectoryToImportCharacterFbxModels))
                 {
+
                     string strippedFfileNameWithoutExtension =
                         Path.GetFileNameWithoutExtension(_UserChosenDirectoryToImportCharacterFbxModels);
-                    Debug.Log(strippedFfileNameWithoutExtension);
 
                     string targetDirectoryToSaveFbx = Path.Combine(Directory.GetCurrentDirectory(), "Assets",
                         "Imported Files", "Characters");
@@ -83,10 +83,24 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     string fullPathToSaveFbx =
                         Path.Combine(targetDirectoryToSaveFbx, strippedFfileNameWithoutExtension);
-                    File.Copy(_UserChosenDirectoryToImportCharacterFbxModels,fullPathToSaveFbx);
+
+                    EnableImportConfig = true;
+                    File.Copy(_UserChosenDirectoryToImportCharacterFbxModels,
+                        fullPathToSaveFbx,true);
+                    ImportedFbxAssetDatabasePath = fullPathToSaveFbx.Split(new string[] { "Assets" }, StringSplitOptions.None)[1];
+                    ImportedFbxAssetDatabasePath = string.Concat("Assets" , ImportedFbxAssetDatabasePath);
+                    
+                    
                     AssetDatabase.Refresh();
+
+                    EnableImportConfig = false;
+   
+                    
+                    Debug.Log("Imported the Character model successfully !");
+                    _DisableImport = false;
+
                 }
-                
+               
                 
             }
 
