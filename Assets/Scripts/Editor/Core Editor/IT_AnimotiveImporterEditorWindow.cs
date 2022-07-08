@@ -110,20 +110,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
-                var groupInfos = new List<IT_AnimotiveImporterEditorGroupInfo>(1);
 
                 var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
 
                 IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath, fbxData);
 
-                var animationGroup = new IT_AnimotiveImporterEditorGroupInfo(
-                    IT_TransformAnimationClipEditor.bodyAnimationName, fbxData.FbxGameObject
-                );
-
-                groupInfos.Add(animationGroup);
-
-
-                IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
+    
             }
 
 
