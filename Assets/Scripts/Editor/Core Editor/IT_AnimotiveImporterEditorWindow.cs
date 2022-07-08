@@ -174,6 +174,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         });
                         SetImportedFbxAssetDatabasePathVariable(fullPathToSaveFbx);
 
+
                         AssetDatabase.Refresh();
 
                         EnableImportConfig = false;

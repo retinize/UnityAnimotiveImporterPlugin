@@ -236,11 +236,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses");
 
 
-            var animotiveTPoseText = File.ReadAllText(string.Concat(path, "\\AnimotiveTPoseFrank.json"));
             var editorTPoseText = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
 
-            var animotiveTPoseTransformInfoList =
-                JsonUtility.FromJson<IT_TransformInfoList>(animotiveTPoseText);
+
             var editorTPoseTransformInfoList =
                 JsonUtility.FromJson<IT_TransformInfoList>(editorTPoseText);
 
@@ -289,18 +287,16 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var editorTPoseList = editorTPoseTransformInfoList.TransformsByStrings
                             .Where(a => a.Name == pair.Key).ToList();
-                        var animotiveTPoseList = animotiveTPoseTransformInfoList
-                            .TransformsByStrings
-                            .Where(a => a.Name == pair.Key).ToList();
 
-                        var editorTPoseRotationForThisBone = editorTPoseList[0].GlobalRotation;
-                        var animotiveTPoseRotationThisBone = animotiveTPoseList[0].GlobalRotation;
+                        var editorTPoseGlobalRotationForThisBone = editorTPoseList[0].GlobalRotation;
+                        var animotiveTPoseGlobalRotationForThisBone = clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
+
                         var invAnimotiveTPoseRotationThisBone =
-                            Quaternion.Inverse(animotiveTPoseRotationThisBone);
+                            Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
 
                         var boneRotation = invAnimotiveTPoseRotationThisBone *
                                            boneGlobalRotationThisFrameFromAnimFile *
-                                           editorTPoseRotationForThisBone;
+                                           editorTPoseGlobalRotationForThisBone;
 
                         pair.Value.rotation = boneRotation;
 
