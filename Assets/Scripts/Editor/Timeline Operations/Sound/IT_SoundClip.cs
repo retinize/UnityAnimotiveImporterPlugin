@@ -1,12 +1,13 @@
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using UnityEngine;
-    using UnityEngine.Playables;
-    using UnityEngine.Timeline;
-
     public class IT_SoundClip : PlayableAsset, ITimelineClipAsset
     {
-        [SerializeField] private IT_SoundBehaviour _behaviour = new IT_SoundBehaviour();
+        [SerializeField]
+        private IT_SoundBehaviour _behaviour = new IT_SoundBehaviour();
 
         public ClipCaps clipCaps => ClipCaps.None;
 

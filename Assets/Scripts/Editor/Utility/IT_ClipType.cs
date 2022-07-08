@@ -1,5 +1,4 @@
-﻿
-namespace Retinize.Editor.AnimotiveImporter
+﻿namespace Retinize.Editor.AnimotiveImporter
 {
     public enum IT_ClipType
     {

@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System.Collections.Generic;
-    using UnityEditor;
-    using UnityEngine;
-    using UnityEngine.Playables;
-    using UnityEngine.Timeline;
-
     public static class IT_AnimotiveImporterEditorTimeline
     {
         /// <summary>

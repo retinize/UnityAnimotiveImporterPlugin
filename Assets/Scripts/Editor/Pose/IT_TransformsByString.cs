@@ -1,8 +1,8 @@
-﻿namespace Retinize.Editor.AnimotiveImporter
-{
-    using System;
-    using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+namespace Retinize.Editor.AnimotiveImporter
+{
     /// <summary>
     ///     This struct is a data container for serialized json pose.
     /// </summary>

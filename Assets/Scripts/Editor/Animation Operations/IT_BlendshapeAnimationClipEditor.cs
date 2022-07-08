@@ -1,13 +1,12 @@
+using System.Collections.Generic;
+using System.IO;
+using AnimotiveImporterDLL;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using AnimotiveImporterDLL;
-    using UnityEditor;
-    using UnityEditor.Animations;
-    using UnityEngine;
-
     public static class IT_BlendshapeAnimationClipEditor
     {
         /// <summary>
@@ -17,15 +16,15 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
         private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
         {
-            string hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
+            var hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
                 IT_AnimotiveImporterEditorConstants.FacialAnimationSourcePath);
 
-            StreamReader reader = new StreamReader(hardCodedJsonPath);
-            string jsonData = reader.ReadToEnd();
+            var reader = new StreamReader(hardCodedJsonPath);
+            var jsonData = reader.ReadToEnd();
 
             reader.Close();
             reader.Dispose();
-            FacialAnimationExportWrapper clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
+            var clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
             return clip;
         }
 
@@ -38,41 +37,41 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     and the animator of the character.
         /// </param>
         private static AnimationClip CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
-          IT_FbxData itFbxData)
+            IT_FbxData itFbxData)
         {
-            AnimationClip animationClip = new AnimationClip();
+            var animationClip = new AnimationClip();
 
-            Dictionary<string, AnimationCurve> blendshapeCurves =
+            var blendshapeCurves =
                 new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
 
-            for (int i = 0; i < clip.characterGeos.Count; i++)
+            for (var i = 0; i < clip.characterGeos.Count; i++)
             {
                 blendshapeCurves.Add(clip.characterGeos[i].name, new AnimationCurve());
             }
 
-            for (int i = 0; i < clip.facialAnimationFrames.Count; i++)
+            for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
-                float time = i * clip.fixedDeltaTimeBetweenKeyFrames;
-                for (int j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
+                var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
+                for (var j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
                 {
-                    IT_SpecificCharacterBlendShapeData
+                    var
                         blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
-                    CharacterGeoDescriptor characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
+                    var characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
 
-                    string skinnedMeshRendererName = characterGeoDescriptor.name;
+                    var skinnedMeshRendererName = characterGeoDescriptor.name;
 
-                    Transform tr = itFbxData.FbxGameObject.transform.FindChildRecursively(skinnedMeshRendererName);
-                    SkinnedMeshRenderer skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
-                    string blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
-                    float blendshapeValue = blendShapeData.value;
-                    Keyframe keyframe = new Keyframe(time, blendshapeValue);
+                    var tr = itFbxData.FbxGameObject.transform.FindChildRecursively(skinnedMeshRendererName);
+                    var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
+                    var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
+                    var blendshapeValue = blendShapeData.value;
+                    var keyframe = new Keyframe(time, blendshapeValue);
 
-                    string relativePath = AnimationUtility.CalculateTransformPath(tr, itFbxData.FbxGameObject.transform);
-                    AnimationCurve curve = blendshapeCurves[skinnedMeshRendererName];
+                    var relativePath = AnimationUtility.CalculateTransformPath(tr, itFbxData.FbxGameObject.transform);
+                    var curve = blendshapeCurves[skinnedMeshRendererName];
                     curve.AddKey(keyframe);
 
-                    string propertyName = string.Concat("blendShape.", blendshapeName);
+                    var propertyName = string.Concat("blendShape.", blendshapeName);
                     animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
                         curve);
                 }
@@ -91,12 +90,12 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         public static void HandleFacialAnimationOperations()
         {
-            FacialAnimationExportWrapper wrapper =
+            var wrapper =
                 HandleBlendShapeAnimationCreation();
 
-            IT_FbxData itFbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-            AnimationClip clip = CreateBlendShapeAnimationClip(wrapper, itFbxData);
-            AnimatorController animatorController =
+            var itFbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+            var clip = CreateBlendShapeAnimationClip(wrapper, itFbxData);
+            var animatorController =
                 AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
                     .FacialAnimationController, clip);
 

@@ -9,15 +9,15 @@ namespace Retinize.Editor.AnimotiveImporter
         private const string _PropertyClipName = "PropertiesClip";
         private const string _AudioClipName = "AudioClip";
 
+        public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
-        public static  readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
+
+        public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
             { IT_ClipType.PropertiesClip, _PropertyClipName },
             { IT_ClipType.TransformClip, _TransformClipName },
             { IT_ClipType.AudioClip, _AudioClipName }
         };
-
-        public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
         #region Hardcoded PoC Paths
 

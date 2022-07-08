@@ -1,10 +1,10 @@
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System;
-    using System.IO;
-    using UnityEditor;
-    using UnityEngine;
-
     /// <summary>
     ///     Pose: All bone's rotation,position,scale values for one frame.
     ///     The main reason for this class to exist is to test if we can have the same visual pose of a character on another
@@ -18,18 +18,22 @@ namespace Retinize.Editor.AnimotiveImporter
         private static readonly string _posesBase =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses";
 
-        [Header("Load")] public string   LoadJson = "";
-        public                  Animator LoadAnimator;
+        [Header("Load")]
+        public string LoadJson = "";
 
-        [Header("Save")] public string SaveJson = "";
+        public Animator LoadAnimator;
+
+        [Header("Save")]
+        public string SaveJson = "";
 
         public Animator SaveAnimator;
 
-        [Space] [Header("For Loading Fixed Pose")]
+        [Space]
+        [Header("For Loading Fixed Pose")]
         public string EditorTPose = "";
 
         public string AnimotiveTPose = "";
-        public string Pose           = "";
+        public string Pose = "";
 
         /// <summary>
         ///     Loads the current values of the animator bone's recursively from a JSON file
@@ -37,21 +41,21 @@ namespace Retinize.Editor.AnimotiveImporter
         [ContextMenu("Load Pose")]
         public void LoadPoseFromJson()
         {
-            string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
+            var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
-            string text = File.ReadAllText(string.Concat(path, $"\\{LoadJson}.json"));
+            var text = File.ReadAllText(string.Concat(path, $"\\{LoadJson}.json"));
 
 
-            IT_TransformInfoList transformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(text);
+            var transformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(text);
 
-            foreach (IT_TransformsByString pair in transformInfoList.TransformsByStrings)
+            foreach (var pair in transformInfoList.TransformsByStrings)
             {
-                Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
+                var tr = LoadAnimator.GetBoneTransform(pair.Name);
                 if (tr != null)
                 {
                     tr.localPosition = pair.LocalPosition;
                     tr.localRotation = pair.LocalRotation;
-                    tr.localScale    = pair.LocalScale;
+                    tr.localScale = pair.LocalScale;
                 }
             }
         }
@@ -63,39 +67,39 @@ namespace Retinize.Editor.AnimotiveImporter
         [ContextMenu("Fix And Load Pose")]
         public void LoadPoseFromJsonAdditively()
         {
-            string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
+            var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
-            string pluginTpose        = File.ReadAllText(string.Concat(path, $"\\{EditorTPose}.json"));
-            string animotiveTposeText = File.ReadAllText(string.Concat(path, $"\\{AnimotiveTPose}.json"));
-            string frankAnimotiveGestureText =
+            var pluginTpose = File.ReadAllText(string.Concat(path, $"\\{EditorTPose}.json"));
+            var animotiveTposeText = File.ReadAllText(string.Concat(path, $"\\{AnimotiveTPose}.json"));
+            var frankAnimotiveGestureText =
                 File.ReadAllText(string.Concat(path, $"\\{Pose}.json"));
 
-            IT_TransformInfoList pluginTPoseTransformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(pluginTpose);
-            IT_TransformInfoList animotiveTPoseTransformInfoList =
+            var pluginTPoseTransformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(pluginTpose);
+            var animotiveTPoseTransformInfoList =
                 JsonUtility.FromJson<IT_TransformInfoList>(animotiveTposeText);
-            IT_TransformInfoList frankGestureAnimotiveTransformInfoList =
+            var frankGestureAnimotiveTransformInfoList =
                 JsonUtility.FromJson<IT_TransformInfoList>(frankAnimotiveGestureText);
 
-            for (int i = 0;
+            for (var i = 0;
                  i < pluginTPoseTransformInfoList
                      .TransformsByStrings.Count;
                  i++)
             {
-                IT_TransformsByString pair = pluginTPoseTransformInfoList
+                var pair = pluginTPoseTransformInfoList
                     .TransformsByStrings[i];
-                Transform tr = LoadAnimator.GetBoneTransform(pair.Name);
+                var tr = LoadAnimator.GetBoneTransform(pair.Name);
 
                 if (tr != null)
                 {
                     tr.localPosition = pair.LocalPosition;
 
-                    Quaternion inverseAnimotiveTpose =
+                    var inverseAnimotiveTpose =
                         Quaternion.Inverse(animotiveTPoseTransformInfoList.TransformsByStrings[i].GlobalRotation);
 
-                    Quaternion poseRotation =
+                    var poseRotation =
                         frankGestureAnimotiveTransformInfoList.TransformsByStrings[i].GlobalRotation;
 
-                    Quaternion editorTPoseRotation = pair.GlobalRotation;
+                    var editorTPoseRotation = pair.GlobalRotation;
 
                     tr.rotation = inverseAnimotiveTpose * poseRotation * editorTPoseRotation;
 
@@ -110,24 +114,21 @@ namespace Retinize.Editor.AnimotiveImporter
         [ContextMenu("Save Pose")]
         public void SavePoseToJson()
         {
-            string path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
+            var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
 
-            IT_TransformInfoList transformInfoList = new IT_TransformInfoList();
+            var transformInfoList = new IT_TransformInfoList();
 
             foreach (HumanBodyBones pair in Enum.GetValues(typeof(HumanBodyBones)))
             {
-                if (pair == HumanBodyBones.LastBone || !SaveAnimator.GetBoneTransform(pair))
-                {
-                    continue;
-                }
+                if (pair == HumanBodyBones.LastBone || !SaveAnimator.GetBoneTransform(pair)) continue;
 
-                Transform boneTransform = SaveAnimator.GetBoneTransform(pair);
+                var boneTransform = SaveAnimator.GetBoneTransform(pair);
                 transformInfoList.TransformsByStrings.Add(new IT_TransformsByString(boneTransform, pair));
             }
 
 
-            string jsonString = JsonUtility.ToJson(transformInfoList, true);
+            var jsonString = JsonUtility.ToJson(transformInfoList, true);
             File.WriteAllText(string.Concat(path, $"\\{SaveJson}.json"), jsonString);
             AssetDatabase.Refresh();
         }

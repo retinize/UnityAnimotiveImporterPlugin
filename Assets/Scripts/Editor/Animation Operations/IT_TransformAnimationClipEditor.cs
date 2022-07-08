@@ -386,8 +386,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var transformClipDatas = clipsTypeByPath.Where(a => a.Key == IT_ClipType.TransformClip).Select(a => a.Value)
                 .ToList();
-            
-            for (int i = 0; i < transformClipDatas.Count; i++)
+
+            for (var i = 0; i < transformClipDatas.Count; i++)
             {
                 var boneCount = CalculateBoneCount(fbxData);
 
@@ -408,7 +408,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
 
 
-                if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple,boneCount))
+                if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
                 {
                     EditorUtility.DisplayDialog(
                         IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
@@ -430,7 +430,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                 fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-                
+
                 var animationGroup = new IT_AnimotiveImporterEditorGroupInfo(
                     bodyAnimationName, fbxData.FbxGameObject
                 );
@@ -441,8 +441,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
             }
-            
-       
+
 
             AssetDatabase.Refresh();
         }

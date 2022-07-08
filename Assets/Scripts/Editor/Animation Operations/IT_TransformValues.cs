@@ -4,8 +4,8 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public struct IT_TransformValues
     {
-        public Quaternion Rotation { get; private set; }
-        public Vector3 Position { get; private set; }
+        public Quaternion Rotation { get; }
+        public Vector3 Position { get; }
 
         public IT_TransformValues(Quaternion rotation, Vector3 position)
         {

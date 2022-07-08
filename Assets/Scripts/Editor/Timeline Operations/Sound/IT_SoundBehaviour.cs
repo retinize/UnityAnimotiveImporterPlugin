@@ -1,9 +1,9 @@
+using System;
+using UnityEngine;
+using UnityEngine.Playables;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System;
-    using UnityEngine;
-    using UnityEngine.Playables;
-
     [Serializable]
     public class IT_SoundBehaviour : PlayableBehaviour
     {

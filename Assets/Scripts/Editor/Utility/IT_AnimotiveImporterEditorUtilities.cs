@@ -1,12 +1,12 @@
+using System;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
 namespace Retinize.Editor.AnimotiveImporter
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using UnityEditor;
-    using UnityEngine;
-    using Object = UnityEngine.Object;
-
 #if UNITY_EDITOR
     public static class IT_AnimotiveImporterEditorUtilities
     {
@@ -49,10 +49,10 @@ namespace Retinize.Editor.AnimotiveImporter
             return result;
         }
 
-        public static string ReturnClipDataFromPath(string clipsPath,string clipName)
+        public static string ReturnClipDataFromPath(string clipsPath, string clipName)
         {
             var files = Directory.GetFiles(clipsPath);
-            
+
             for (var i = 0; i < files.Length; i++)
             {
                 if (files[i].Contains(clipName)) return files[i];
@@ -65,20 +65,12 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             foreach (var pair in IT_AnimotiveImporterEditorConstants.ClipNamesByType)
             {
-                if (clipName.Contains(pair.Value))
-                {
-                    return pair.Key;
-                }
+                if (clipName.Contains(pair.Value)) return pair.Key;
             }
 
             return IT_ClipType.None;
         }
-
-
-        
-        
     }
 
 #endif
 }
-

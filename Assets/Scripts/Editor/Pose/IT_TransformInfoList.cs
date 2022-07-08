@@ -1,8 +1,8 @@
-﻿namespace Retinize.Editor.AnimotiveImporter
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Retinize.Editor.AnimotiveImporter
+{
     /// <summary>
     ///     The point of this class is solely based on serializing list of 'IT_TransformsByString' class to a json file
     /// </summary>
