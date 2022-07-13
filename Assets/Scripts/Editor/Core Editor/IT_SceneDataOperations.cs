@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AnimotiveImporterDLL;
@@ -9,9 +10,19 @@ public static class IT_SceneDataOperations
     {
         var files = Directory.GetFiles(importedFilesDirectory);
         var sceneDataFilePath =
-            files.Where(a => Path.GetFileNameWithoutExtension(a).StartsWith("SceneData")).ToList()[0];
+            files.Where(a => Path.GetFileNameWithoutExtension(a).StartsWith("SceneData")).ToList();
 
-        return SerializationUtility.DeserializeValue<IT_SceneInternalData>(File.ReadAllBytes(sceneDataFilePath),
-            DataFormat.Binary);
+        var sceneInternalDatas = new List<IT_SceneInternalData>(sceneDataFilePath.Count);
+
+        for (var i = 0; i < sceneDataFilePath.Count; i++)
+        {
+            var value = SerializationUtility.DeserializeValue<IT_SceneInternalData>(
+                File.ReadAllBytes(sceneDataFilePath[i]),
+                DataFormat.Binary);
+
+            sceneInternalDatas.Add(value);
+        }
+
+        return sceneInternalDatas[sceneInternalDatas.Count - 1];
     }
 }

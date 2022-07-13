@@ -70,6 +70,14 @@ namespace Retinize.Editor.AnimotiveImporter
 
             return IT_ClipType.None;
         }
+
+        public static T AddOrGetComponent<T>(this GameObject obj) where T : Component
+        {
+            var get = obj.GetComponent<T>();
+            if (get == null) return obj.AddComponent<T>();
+
+            return get;
+        }
     }
 
 #endif

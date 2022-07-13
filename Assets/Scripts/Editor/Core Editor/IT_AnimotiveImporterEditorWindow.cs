@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static bool EnableImportConfig;
 
-        private void OnGUI()
+        private async void OnGUI()
         {
             #region Choose Animotive folder
 
@@ -109,7 +109,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
 
-                IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath, fbxData);
+                await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath,
+                    fbxData);
             }
 
 

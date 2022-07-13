@@ -13,16 +13,29 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     asset.
         /// </summary>
         /// <param name="group">List of group info</param>
-        public static void HandleGroups(List<IT_AnimotiveImporterEditorGroupInfo> group)
+        public static void HandleGroups(Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>> group)
         {
-            for (var i = 0; i < group.Count; i++)
+            var index = 0;
+            foreach (var gr in group)
             {
-                var obj = group[i].ObjectInScene;
-                obj.name = group[i].name;
-                var audioSource = obj.AddComponent<AudioSource>();
-                audioSource.playOnAwake = false;
-                var playableDirector = obj.AddComponent<PlayableDirector>();
-                playableDirector.playableAsset = CreatePlayableAsset(obj, playableDirector);
+                index++;
+                var groupObjectName = string.Concat("Group", "_", index.ToString());
+                var groupObject = new GameObject(groupObjectName);
+                for (var i = 0; i < gr.Value.Count; i++)
+                {
+                    var groupMemberInfo = gr.Value[i];
+
+                    var characterInScene = groupMemberInfo.ObjectInScene;
+                    var audioSource = characterInScene.AddOrGetComponent<AudioSource>();
+                    audioSource.playOnAwake = false;
+
+                    var groupMemberInScene = new GameObject(groupMemberInfo.name);
+                    groupMemberInScene.transform.SetParent(groupObject.transform);
+
+                    var playableDirector = groupMemberInScene.AddOrGetComponent<PlayableDirector>();
+                    playableDirector.playableAsset =
+                        CreatePlayableAsset(characterInScene, playableDirector, groupMemberInfo);
+                }
             }
         }
 
@@ -31,8 +44,10 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="objToBind">gameObject to bind the playable director to.</param>
         /// <param name="playableDirector">Playable object to bind playable asset and gameobject to. </param>
+        /// <param name="groupMemberInfo"></param>
         /// <returns></returns>
-        public static PlayableAsset CreatePlayableAsset(GameObject objToBind, PlayableDirector playableDirector)
+        public static PlayableAsset CreatePlayableAsset(GameObject objToBind, PlayableDirector playableDirector,
+            IT_AnimotiveImporterEditorGroupMemberInfo groupMemberInfo)
         {
             var assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath,
                 objToBind.GetInstanceID().ToString(),
@@ -63,7 +78,7 @@ namespace Retinize.Editor.AnimotiveImporter
             var bodyPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
             bodyPerformanceAnimationTrack.SetGroup(groupTrack);
             var bodyAnimationClip =
-                AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_TransformAnimationClipEditor.bodyAnimationPath);
+                AssetDatabase.LoadAssetAtPath<AnimationClip>(groupMemberInfo.BodyAnimationPath);
             var bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip(bodyAnimationClip);
             bodyPerformanceClip.start = 0;
             // bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
