@@ -204,18 +204,19 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates the Animation clip according to the given data contains clip info read from json and
         ///     BoneTransformDictionaries
         /// </summary>
-        /// <param name="itClipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
+        /// <param name="clipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
         /// <param name="characterRoot">Root gameObject of the character to apply animation to.</param>
+        /// <param name="clipData"></param>
         private static AnimationClip CreateTransformMovementsAnimationClip(
-            IT_ClipByDictionaryTuple itClipAndDictionariesTuple,
+            IT_ClipByDictionaryTuple clipAndDictionariesTuple,
             GameObject characterRoot, IT_ClipData clipData)
         {
-            var clip = itClipAndDictionariesTuple.Clip;
+            var clip = clipAndDictionariesTuple.Clip;
             var transformsByHumanBodyBones =
-                itClipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
+                clipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
 
             var humanBodyBonesBytransforms =
-                itClipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
+                clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
 
             var animationClip = new AnimationClip();
 
@@ -386,12 +387,22 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var groupInfos = new Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>>();
 
+            var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
 
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
                 var groupData = transformGroupDatas[i];
 
                 groupInfos.Add(groupData.serializedId, null);
+
+                bodyAnimatorPath =
+                    string.Concat(
+                        string.Concat(IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory, groupData.GroupName),
+                        ".controller");
+
+                var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
+                fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+
 
                 for (var j = 0; j < transformGroupDatas[i].ClipDatas.Count; j++)
                 {
@@ -410,12 +421,18 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
 
-                    bodyAnimatorPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".controller");
 
                     bodyAnimationName = Path.GetFileName(animationClipDataPath);
 
                     var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+                    fbxData.FbxGameObject.transform.localScale =
+                        clipAndDictionariesTuple.Clip.lossyScaleRoot *
+                        Vector3.one; // since the character has no parent 
+                    // we can safely assign lossy scale data to character's root
 
+
+                    holderObject.transform.position = clipAndDictionariesTuple.Clip.worldPositionHolder;
+                    holderObject.transform.rotation = clipAndDictionariesTuple.Clip.worldRotationHolder;
 
                     if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
                     {
@@ -426,6 +443,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         continue;
                     }
 
+
                     IT_AnimotiveImporterEditorUtilities
                         .DeleteAssetIfExists(bodyAnimationPath,
                             typeof(AnimationClip));
@@ -434,36 +452,38 @@ namespace Retinize.Editor.AnimotiveImporter
                         CreateTransformMovementsAnimationClip(clipAndDictionariesTuple, fbxData.FbxGameObject,
                             clipData);
 
-                    var animatorController =
-                        AnimatorController.CreateAnimatorControllerAtPathWithClip(bodyAnimatorPath, animationClip);
 
+                    animatorController.AddMotion(animationClip);
 
-                    fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
 
                     if (groupInfos[groupData.serializedId] == null)
                         groupInfos[groupData.serializedId] = new List<IT_AnimotiveImporterEditorGroupMemberInfo>();
 
                     var animationGroup =
-                        new IT_AnimotiveImporterEditorGroupMemberInfo(groupData.serializedId, bodyAnimationName,
+                        new IT_AnimotiveImporterEditorGroupMemberInfo(groupData.GroupName, groupData.serializedId,
+                            bodyAnimationName,
                             fbxData.FbxGameObject, bodyAnimationPath);
                     groupInfos[groupData.serializedId].Add(animationGroup);
                 }
             }
 
+
+            fbxData.FbxGameObject.transform.SetParent(holderObject.transform);
+            // fbxData.FbxGameObject.transform.localPosition =
             IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
 
             AssetDatabase.Refresh();
         }
 
 
-        private static List<IT_Groupdata> GetClipsPathByType(IT_SceneInternalData sceneData,
+        private static List<IT_GroupData> GetClipsPathByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
-            var groupDatas = new List<IT_Groupdata>();
+            var groupDatas = new List<IT_GroupData>();
 
             foreach (var groupData in sceneData.groupDataById.Values)
             {
-                var readerGroupData = new IT_Groupdata(groupData.serializedId);
+                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName);
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];

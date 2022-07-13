@@ -19,8 +19,7 @@ namespace Retinize.Editor.AnimotiveImporter
             foreach (var gr in group)
             {
                 index++;
-                var groupObjectName = string.Concat("Group", "_", index.ToString());
-                var groupObject = new GameObject(groupObjectName);
+                var groupObject = new GameObject(gr.Value[0].BindedGroupName);
                 for (var i = 0; i < gr.Value.Count; i++)
                 {
                     var groupMemberInfo = gr.Value[i];
@@ -53,18 +52,19 @@ namespace Retinize.Editor.AnimotiveImporter
                 objToBind.GetInstanceID().ToString(),
                 ".playable");
 
-
+            //TODO: Creating tracks for animationclips should be done in one script which would reduce the duplicate code.
             var asset = ScriptableObject.CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
             var groupTrack = asset.CreateTrack<GroupTrack>();
-            groupTrack.name = "GROUP_NAME_HERE";
+            groupTrack.name = groupMemberInfo.BindedGroupName;
 
             var facialPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
             facialPerformanceAnimationTrack.SetGroup(groupTrack);
             var blendshapeAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
                     .FacialAnimationCreatedPath);
+            
             if (blendshapeAnimationClip)
             {
                 var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);

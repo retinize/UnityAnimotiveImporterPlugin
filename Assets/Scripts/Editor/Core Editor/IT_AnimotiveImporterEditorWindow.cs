@@ -108,9 +108,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                 var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-
                 await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath,
                     fbxData);
+                fbxData.FbxAnimator.avatar = null;
             }
 
 
