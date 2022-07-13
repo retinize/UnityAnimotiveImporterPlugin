@@ -13,6 +13,10 @@ namespace Retinize.Editor.AnimotiveImporter
         public static void CreateScene(string sceneName)
         {
             var hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
+            var fullOsPath = Path.Combine(Directory.GetCurrentDirectory(), hardcodedPath);
+
+            if (!Directory.Exists(fullOsPath)) Directory.CreateDirectory(fullOsPath);
+
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             EditorSceneManager.SaveScene(scene,
                 string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,

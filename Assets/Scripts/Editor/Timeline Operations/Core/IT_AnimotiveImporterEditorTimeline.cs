@@ -15,10 +15,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="group">List of group info</param>
         public static void HandleGroups(Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>> group)
         {
-            var index = 0;
             foreach (var gr in group)
             {
-                index++;
                 var groupObject = new GameObject(gr.Value[0].BindedGroupName);
                 for (var i = 0; i < gr.Value.Count; i++)
                 {
@@ -64,7 +62,7 @@ namespace Retinize.Editor.AnimotiveImporter
             var blendshapeAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
                     .FacialAnimationCreatedPath);
-            
+
             if (blendshapeAnimationClip)
             {
                 var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);

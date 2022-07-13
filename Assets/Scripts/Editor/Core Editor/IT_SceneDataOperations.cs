@@ -10,14 +10,16 @@ public static class IT_SceneDataOperations
     {
         var files = Directory.GetFiles(importedFilesDirectory);
         var sceneDataFilePath =
-            files.Where(a => Path.GetFileNameWithoutExtension(a).StartsWith("SceneData")).ToList();
+            files.Where(a => Path.GetFileNameWithoutExtension(a).StartsWith("SceneData") && !a.EndsWith(".meta"))
+                .ToList();
 
         var sceneInternalDatas = new List<IT_SceneInternalData>(sceneDataFilePath.Count);
 
         for (var i = 0; i < sceneDataFilePath.Count; i++)
         {
-            var value = SerializationUtility.DeserializeValue<IT_SceneInternalData>(
-                File.ReadAllBytes(sceneDataFilePath[i]),
+            var bytes = File.ReadAllBytes(sceneDataFilePath[i]);
+            var value = SerializationUtility.DeserializeValue<IT_SceneInternalData>(bytes
+                ,
                 DataFormat.Binary);
 
             sceneInternalDatas.Add(value);
