@@ -13,9 +13,8 @@ public class IT_ModelCustomImportSteps : AssetPostprocessor
             {
                 modelImporter.animationType = ModelImporterAnimationType.Human;
                 modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
-                var directoryName = IT_AnimotiveImporterEditorWindow.ImportedFbxAssetDatabasePath;
-                string dirName = Path.GetDirectoryName(directoryName);
-                var texturesPath = Path.Combine(dirName, "Textures");
+                var directoryName = IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory;
+                var texturesPath = Path.Combine(directoryName, "Textures");
                 var fullOSPath = Path.Combine(Directory.GetCurrentDirectory(), texturesPath);
                 if (!Directory.Exists(fullOSPath))
                 {
@@ -24,7 +23,6 @@ public class IT_ModelCustomImportSteps : AssetPostprocessor
                 }
 
                 modelImporter.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
-                // modelImporter.materialLocation = ModelImporterMaterialLocation.InPrefab;
                 modelImporter.ExtractTextures(texturesPath);
                 AssetDatabase.Refresh();
             }

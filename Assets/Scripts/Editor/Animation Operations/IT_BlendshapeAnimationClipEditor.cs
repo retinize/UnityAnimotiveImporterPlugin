@@ -90,17 +90,17 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         public static void HandleFacialAnimationOperations()
         {
-            var wrapper =
-                HandleBlendShapeAnimationCreation();
-
-            var itFbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-            var clip = CreateBlendShapeAnimationClip(wrapper, itFbxData);
-            var animatorController =
-                AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-                    .FacialAnimationController, clip);
-
-            itFbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-            AssetDatabase.Refresh();
+            // var wrapper =
+            //     HandleBlendShapeAnimationCreation();
+            //
+            // var itFbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+            // var clip = CreateBlendShapeAnimationClip(wrapper, itFbxData);
+            // var animatorController =
+            //     AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
+            //         .FacialAnimationController, clip);
+            //
+            // itFbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+            // AssetDatabase.Refresh();
         }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,15 +7,17 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
+        public static string ImportedCharactersAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
+            "Assets",
+            "Imported Files", "Characters");
+
         private static bool _DisableImport;
         private static bool _IsAnimotiveFolderImported;
-        private static bool _IsModelImported;
 
         private static string _UserChosenDirectoryToImportUnityExports = "";
-        private static string _UserChosenDirectoryToImportCharacterFbxModels = "";
-        public static string ImportedFbxAssetDatabasePath = "";
 
         public static bool EnableImportConfig;
+        private static bool _ReimportFbxs = true;
 
         private async void OnGUI()
         {
@@ -37,8 +38,11 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
                     {
                         _UserChosenDirectoryToImportUnityExports = choosenFolder;
-                        Debug.Log("Selected the Animotive files successfully !");
-                        _IsAnimotiveFolderImported = true;
+                        var fbxes = CheckCharacterFbxs(_UserChosenDirectoryToImportUnityExports);
+
+                        if (fbxes) Debug.Log("Imported the Animotive files successfully !");
+
+                        _IsAnimotiveFolderImported = fbxes;
                     }
                     else
                     {
@@ -54,48 +58,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
             GUILayout.EndHorizontal();
 
-            #endregion
-
-            #region Choose Character FBX
-
             GUILayout.BeginHorizontal();
 
-            EditorGUILayout.TextField("Character FBX Folder :", _UserChosenDirectoryToImportCharacterFbxModels);
-
-            if (GUILayout.Button("Import Character Model(FBX)"))
-            {
-                _UserChosenDirectoryToImportCharacterFbxModels =
-                    EditorUtility.OpenFilePanel("Import Character into Unity",
-                        Directory.GetCurrentDirectory(), "fbx");
-
-
-                if (!string.IsNullOrEmpty(_UserChosenDirectoryToImportCharacterFbxModels))
-                {
-                    if (!_UserChosenDirectoryToImportCharacterFbxModels.ToLower().EndsWith(".fbx"))
-                    {
-                        EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
-                            "Can't import models other than fbx ! ", "OK");
-
-                        _IsModelImported = false;
-                    }
-                    else
-                    {
-                        ImportFbxIntoUnityAndProcessIt();
-
-                        if (_IsModelImported) Debug.Log("Selected the Character model successfully !");
-                    }
-                }
-                else
-                    _IsModelImported = false;
-            }
+            EditorGUILayout.LabelField("Reimport Always");
+            _ReimportFbxs = EditorGUILayout.Toggle(_ReimportFbxs);
 
             GUILayout.EndHorizontal();
 
             #endregion
 
+
             #region Import Animotive Button
 
-            _DisableImport = _IsModelImported & _IsAnimotiveFolderImported;
+            _DisableImport = _IsAnimotiveFolderImported;
             EditorGUI.BeginDisabledGroup(!_DisableImport);
 
             if (GUILayout.Button("Import Animotive"))
@@ -103,11 +78,12 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipsPath = Path.Combine(_UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
-
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
+                var hardCodedPathForFbx = Path.Combine(ImportedCharactersAssetdatabaseDirectory, "Pat_Test.fbx");
+                hardCodedPathForFbx = GetImportedFbxAssetDatabasePathVariable(hardCodedPathForFbx);
 
-                var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
+                var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(hardCodedPathForFbx);
                 await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath,
                     fbxData);
                 fbxData.FbxAnimator.avatar = null;
@@ -117,15 +93,6 @@ namespace Retinize.Editor.AnimotiveImporter
             EditorGUI.EndDisabledGroup();
 
             #endregion
-
-            // if (GUILayout.Button("Test Animation Clip"))
-            // {
-            // }
-            //
-            // if (GUILayout.Button("Test Json BlendShape"))
-            // {
-            //     IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations();
-            // }
         }
 
         /// <summary>
@@ -134,93 +101,73 @@ namespace Retinize.Editor.AnimotiveImporter
         [MenuItem("Animotive/Importer")]
         public static void ShowWindow()
         {
-            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Example");
+            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Animotive Reader");
             window.Show();
         }
 
 
-        public static async void ImportFbxIntoUnityAndProcessIt()
+        public static async void ImportFbxIntoUnityAndProcessIt(string fullOsPath)
         {
-            var strippedFfileName =
-                Path.GetFileName(_UserChosenDirectoryToImportCharacterFbxModels);
+            var strippedFfileName = Path.GetFileName(fullOsPath);
+            if (!Directory.Exists(ImportedCharactersAssetdatabaseDirectory))
+                Directory.CreateDirectory(ImportedCharactersAssetdatabaseDirectory);
 
-            var targetDirectoryToSaveFbx = Path.Combine(Directory.GetCurrentDirectory(), "Assets",
-                "Imported Files", "Characters");
-
-            if (!Directory.Exists(targetDirectoryToSaveFbx))
-                Directory.CreateDirectory(targetDirectoryToSaveFbx);
-
-            var fullPathToSaveFbx =
-                Path.Combine(targetDirectoryToSaveFbx, strippedFfileName);
+            var fullPathToSaveFbx = Path.Combine(ImportedCharactersAssetdatabaseDirectory, strippedFfileName);
 
             if (File.Exists(fullPathToSaveFbx))
             {
-                var option = EditorUtility.DisplayDialogComplex(IT_AnimotiveImporterEditorConstants.WarningTitle,
-                    "The selected model is already present in the current project !", "Reimport", "Cancel",
-                    "Continue with existing");
-
-                switch (option)
-                {
-                    case 0:
-                    {
-                        await Task.Run(delegate { File.Delete(fullPathToSaveFbx); });
-
-                        AssetDatabase.Refresh();
-
-                        EnableImportConfig = true;
-                        await Task.Run(delegate
-                        {
-                            File.Copy(_UserChosenDirectoryToImportCharacterFbxModels,
-                                fullPathToSaveFbx, true);
-                        });
-                        SetImportedFbxAssetDatabasePathVariable(fullPathToSaveFbx);
-
-
-                        AssetDatabase.Refresh();
-
-                        EnableImportConfig = false;
-
-                        _IsModelImported = true;
-                    }
-                        break;
-                    case 1:
-                        _UserChosenDirectoryToImportCharacterFbxModels = "";
-                        _IsModelImported = false;
-                        break;
-                    case 2:
-                    {
-                        SetImportedFbxAssetDatabasePathVariable(fullPathToSaveFbx);
-                        _IsModelImported = true;
-                    }
-                        break;
-                    default:
-                        Debug.LogError("Unknown option !");
-                        break;
-                }
-            }
-            else
-            {
-                EnableImportConfig = true;
-                await Task.Run(delegate
-                {
-                    File.Copy(_UserChosenDirectoryToImportCharacterFbxModels, fullPathToSaveFbx, true);
-                });
-
-                SetImportedFbxAssetDatabasePathVariable(fullPathToSaveFbx);
-                _IsModelImported = true;
+                if (!_ReimportFbxs)
+                    return;
+                File.Delete(fullPathToSaveFbx);
                 AssetDatabase.Refresh();
-                EnableImportConfig = false;
             }
+
+            EnableImportConfig = true;
+            File.Copy(fullOsPath, fullPathToSaveFbx, true);
+
+            AssetDatabase.Refresh();
+            EnableImportConfig = false;
+
 
             AssetDatabase.Refresh();
         }
 
-        private static void SetImportedFbxAssetDatabasePathVariable(string fullPathToSaveFbx)
+        private static bool CheckCharacterFbxs(string unityExportPath)
         {
-            ImportedFbxAssetDatabasePath =
+            var charactersPath = Path.Combine(unityExportPath, "EntityAssets", "Characters");
+            var characterFolders = Directory.GetDirectories(charactersPath);
+
+            if (characterFolders.Length == 0) return false;
+
+
+            for (var i = 0; i < characterFolders.Length; i++)
+            {
+                var folder = characterFolders[i];
+                var characterName = Path.GetFileName(folder);
+
+                var characterNameWithExtension = string.Concat(characterName, ".fbx");
+                var fullPathToExpectedFbx = Path.Combine(folder, characterNameWithExtension);
+                var existence = File.Exists(fullPathToExpectedFbx);
+                if (!existence)
+                {
+                    EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
+                        $@"Couldn't find {characterNameWithExtension} at the directory: {folder}", "OK");
+                    return false;
+                }
+
+                ImportFbxIntoUnityAndProcessIt(fullPathToExpectedFbx);
+            }
+
+            return true;
+        }
+
+        private static string GetImportedFbxAssetDatabasePathVariable(string fullPathToSaveFbx)
+        {
+            fullPathToSaveFbx =
                 fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
 
-            ImportedFbxAssetDatabasePath = string.Concat("Assets", ImportedFbxAssetDatabasePath);
+            fullPathToSaveFbx = string.Concat("Assets", fullPathToSaveFbx);
+            return fullPathToSaveFbx;
         }
     }
 }

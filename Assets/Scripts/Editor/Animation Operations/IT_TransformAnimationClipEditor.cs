@@ -384,7 +384,6 @@ namespace Retinize.Editor.AnimotiveImporter
             var clipsTypeByPath = GetClipsPathByType(sceneData, clipsPath);
 
             var transformGroupDatas = clipsTypeByPath;
-
             var groupInfos = new Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>>();
 
             var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
@@ -404,7 +403,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
 
 
-                for (var j = 0; j < transformGroupDatas[i].ClipDatas.Count; j++)
+                for (var j = 0; j < groupData.ClipDatas.Count; j++)
                 {
                     var boneCount = CalculateBoneCount(fbxData);
 
@@ -412,6 +411,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     if (clipData.Type != IT_ClipType.TransformClip) continue;
 
+
+                    Debug.Log(clipData.ClipPlayerData.clipName);
                     var animationClipDataPath = clipData.animationClipDataPath;
 
 
@@ -425,6 +426,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     bodyAnimationName = Path.GetFileName(animationClipDataPath);
 
                     var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+
                     fbxData.FbxGameObject.transform.localScale =
                         clipAndDictionariesTuple.Clip.lossyScaleRoot *
                         Vector3.one; // since the character has no parent 
@@ -469,7 +471,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             fbxData.FbxGameObject.transform.SetParent(holderObject.transform);
-            // fbxData.FbxGameObject.transform.localPosition =
             IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
 
             AssetDatabase.Refresh();
@@ -487,7 +488,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
-                    //Here you can read the entity data that belongs to this group, such as its animation clips per take
+                    Debug.Log(entityData.entityInstantiationTokenData);
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var takes = entityData.clipsByTrackByTakeIndex[i];

@@ -28,10 +28,9 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Loads FBX from it's designated path and instantiates it to the current scene in the editor
         /// </summary>
         /// <returns>Tuple that contains instantiated character's root gameObject and it's Animator</returns>
-        public static IT_FbxData LoadFbx()
+        public static IT_FbxData LoadFbx(string fbxAssetDatabasePath)
         {
-            var characterRoot = AssetDatabase.LoadAssetAtPath(
-                IT_AnimotiveImporterEditorWindow.ImportedFbxAssetDatabasePath,
+            var characterRoot = AssetDatabase.LoadAssetAtPath(fbxAssetDatabasePath,
                 typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);
