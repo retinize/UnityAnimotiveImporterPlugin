@@ -41,7 +41,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var fbxes = CheckCharacterFbxs(_UserChosenDirectoryToImportUnityExports);
 
                         if (fbxes) Debug.Log("Imported the Animotive files successfully !");
-
+                        _UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
                         _IsAnimotiveFolderImported = fbxes;
                     }
                     else
