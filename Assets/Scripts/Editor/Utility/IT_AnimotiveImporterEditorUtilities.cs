@@ -77,7 +77,17 @@ namespace Retinize.Editor.AnimotiveImporter
 
             return get;
         }
+
+        public static string GetImportedFbxAssetDatabasePathVariable(string fullPathToSaveFbx)
+        {
+            fullPathToSaveFbx =
+                fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
+
+            fullPathToSaveFbx = string.Concat("Assets", fullPathToSaveFbx);
+            return fullPathToSaveFbx;
+        }
     }
+
 
 #endif
 }

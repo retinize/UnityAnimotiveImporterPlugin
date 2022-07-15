@@ -9,11 +9,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public string animationClipDataPath { get; }
 
-        public IT_ClipData(IT_ClipType type, IT_ClipPlayerData clipPlayerData, string animationClipDataPath)
+        public string ModelName { get; }
+
+        public IT_ClipData(IT_ClipType type, IT_ClipPlayerData clipPlayerData, string animationClipDataPath,
+            string modelName)
         {
             Type = type;
             ClipPlayerData = clipPlayerData;
             this.animationClipDataPath = animationClipDataPath;
+            ModelName = modelName;
         }
     }
 }

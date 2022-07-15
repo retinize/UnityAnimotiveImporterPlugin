@@ -290,7 +290,12 @@ namespace Retinize.Editor.AnimotiveImporter
                         var editorTPoseList = editorTPoseTransformInfoList.TransformsByStrings
                             .Where(a => a.Name == pair.Key).ToList();
 
-                        var editorTPoseGlobalRotationForThisBone = editorTPoseList[0].GlobalRotation;
+                        var editorTPoseGlobalRotationForThisBone = Quaternion.identity;
+
+                        if (editorTPoseList.Count != 0)
+                            editorTPoseGlobalRotationForThisBone = editorTPoseList[0].GlobalRotation;
+
+
                         var animotiveTPoseGlobalRotationForThisBone =
                             clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
 
@@ -378,15 +383,36 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
-        public static async Task HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsPath,
-            IT_FbxData fbxData)
+        public static async Task HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsPath)
         {
-            var clipsTypeByPath = GetClipsPathByType(sceneData, clipsPath);
-
-            var transformGroupDatas = clipsTypeByPath;
+            var transformGroupDatas = GetClipsPathByType(sceneData, clipsPath);
             var groupInfos = new Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>>();
 
-            var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
+
+            var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
+
+            for (var i = 0; i < transformGroupDatas.Count; i++)
+            {
+                var groupdata = transformGroupDatas[i];
+                for (var j = 0; j < groupdata.ClipDatas.Count; j++)
+                {
+                    var clipData = groupdata.ClipDatas[j];
+
+                    if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
+
+                    var pathToFbx = Path.Combine(
+                        IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory
+                        , string.Concat(clipData.ModelName, ".fbx"));
+
+                    pathToFbx = IT_AnimotiveImporterEditorUtilities.GetImportedFbxAssetDatabasePathVariable(pathToFbx);
+
+                    var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(pathToFbx);
+                    var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
+                    var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject);
+                    fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
+                }
+            }
+
 
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
@@ -400,19 +426,22 @@ namespace Retinize.Editor.AnimotiveImporter
                         ".controller");
 
                 var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
-                fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-
 
                 for (var j = 0; j < groupData.ClipDatas.Count; j++)
                 {
-                    var boneCount = CalculateBoneCount(fbxData);
-
                     var clipData = groupData.ClipDatas[j];
-
                     if (clipData.Type != IT_ClipType.TransformClip) continue;
 
+                    var fbxDataTuple = fbxDatasAndHoldersTuples[clipData.ModelName];
+                    var fbxData = fbxDataTuple.FbxData;
 
-                    Debug.Log(clipData.ClipPlayerData.clipName);
+                    var holderObject = fbxDataTuple.HolderObject;
+
+                    fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+
+                    var boneCount = CalculateBoneCount(fbxData);
+
+
                     var animationClipDataPath = clipData.animationClipDataPath;
 
 
@@ -470,7 +499,12 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
 
-            fbxData.FbxGameObject.transform.SetParent(holderObject.transform);
+            foreach (var pair in fbxDatasAndHoldersTuples)
+            {
+                pair.Value.FbxData.FbxGameObject.transform.SetParent(pair.Value.HolderObject.transform);
+                pair.Value.FbxData.FbxAnimator.avatar = null;
+            }
+
             IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
 
             AssetDatabase.Refresh();
@@ -508,7 +542,8 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var type =
                                     IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(clip.clipName);
 
-                                var clipdata = new IT_ClipData(type, clip, animationClipDataPath);
+                                var clipdata = new IT_ClipData(type, clip, animationClipDataPath,
+                                    entityData.entityInstantiationTokenData);
                                 readerGroupData.ClipDatas.Add(clipdata);
                             }
                         }

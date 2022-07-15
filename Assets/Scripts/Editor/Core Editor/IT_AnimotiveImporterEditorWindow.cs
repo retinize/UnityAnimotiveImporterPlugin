@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private static string _UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
-        private static bool _ReimportFbxs = true;
+        private static bool _ReimportFbxs;
 
         private async void OnGUI()
         {
@@ -80,13 +79,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
-                var hardCodedPathForFbx = Path.Combine(ImportedCharactersAssetdatabaseDirectory, "Pat_Test.fbx");
-                hardCodedPathForFbx = GetImportedFbxAssetDatabasePathVariable(hardCodedPathForFbx);
-
-                var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(hardCodedPathForFbx);
-                await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath,
-                    fbxData);
-                fbxData.FbxAnimator.avatar = null;
+                await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath);
             }
 
 
@@ -159,15 +152,6 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
             return true;
-        }
-
-        private static string GetImportedFbxAssetDatabasePathVariable(string fullPathToSaveFbx)
-        {
-            fullPathToSaveFbx =
-                fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
-
-            fullPathToSaveFbx = string.Concat("Assets", fullPathToSaveFbx);
-            return fullPathToSaveFbx;
         }
     }
 }
