@@ -86,6 +86,16 @@ namespace Retinize.Editor.AnimotiveImporter
             fullPathToSaveFbx = string.Concat("Assets", fullPathToSaveFbx);
             return fullPathToSaveFbx;
         }
+
+        public static string GetBodyAnimationAssetDatabasePath(string animationClipDataPath)
+        {
+            var baseBodyPathWithNameWithoutExtension = string.Concat(
+                IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                Path.GetFileNameWithoutExtension(animationClipDataPath));
+
+            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
+            return bodyAnimationPath;
+        }
     }
 
 

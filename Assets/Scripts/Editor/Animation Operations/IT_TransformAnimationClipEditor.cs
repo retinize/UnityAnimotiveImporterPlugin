@@ -389,29 +389,7 @@ namespace Retinize.Editor.AnimotiveImporter
             var groupInfos = new Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>>();
 
 
-            var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
-
-            for (var i = 0; i < transformGroupDatas.Count; i++)
-            {
-                var groupdata = transformGroupDatas[i];
-                for (var j = 0; j < groupdata.ClipDatas.Count; j++)
-                {
-                    var clipData = groupdata.ClipDatas[j];
-
-                    if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
-
-                    var pathToFbx = Path.Combine(
-                        IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory
-                        , string.Concat(clipData.ModelName, ".fbx"));
-
-                    pathToFbx = IT_AnimotiveImporterEditorUtilities.GetImportedFbxAssetDatabasePathVariable(pathToFbx);
-
-                    var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(pathToFbx);
-                    var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
-                    var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject);
-                    fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
-                }
-            }
+            var fbxDatasAndHoldersTuples = GetFbxDataAndHolders(transformGroupDatas);
 
 
             for (var i = 0; i < transformGroupDatas.Count; i++)
@@ -427,74 +405,81 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
 
-                for (var j = 0; j < groupData.ClipDatas.Count; j++)
+                for (var j = 0; j < groupData.TakeDatas.Count; j++)
                 {
-                    var clipData = groupData.ClipDatas[j];
-                    if (clipData.Type != IT_ClipType.TransformClip) continue;
-
-                    var fbxDataTuple = fbxDatasAndHoldersTuples[clipData.ModelName];
-                    var fbxData = fbxDataTuple.FbxData;
-
-                    var holderObject = fbxDataTuple.HolderObject;
-
-                    fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-
-                    var boneCount = CalculateBoneCount(fbxData);
-
-
-                    var animationClipDataPath = clipData.animationClipDataPath;
-
-
-                    var baseBodyPathWithNameWithoutExtension = string.Concat(
-                        IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                        Path.GetFileNameWithoutExtension(animationClipDataPath));
-
-                    bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
-
-
-                    bodyAnimationName = Path.GetFileName(animationClipDataPath);
-
-                    var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
-
-                    fbxData.FbxGameObject.transform.localScale =
-                        clipAndDictionariesTuple.Clip.lossyScaleRoot *
-                        Vector3.one; // since the character has no parent 
-                    // we can safely assign lossy scale data to character's root
-
-
-                    holderObject.transform.position = clipAndDictionariesTuple.Clip.worldPositionHolder;
-                    holderObject.transform.rotation = clipAndDictionariesTuple.Clip.worldRotationHolder;
-
-                    if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
+                    var takeData = groupData.TakeDatas[j];
+                    for (var k = 0; k < takeData.ClipDatas.Count; k++)
                     {
-                        EditorUtility.DisplayDialog(
-                            IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
-                            "Bone count with the character and animation clip doesn't match ! Make sure that you're using the correct character and clip data",
-                            "OK");
-                        continue;
+                        var clipData = takeData.ClipDatas[k];
+                        if (clipData.Type != IT_ClipType.TransformClip) continue;
+
+                        var fbxDataTuple = fbxDatasAndHoldersTuples[clipData.ModelName];
+                        var fbxData = fbxDataTuple.FbxData;
+
+                        var holderObject = fbxDataTuple.HolderObject;
+
+                        fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
+
+                        var boneCount = CalculateBoneCount(fbxData);
+
+
+                        var animationClipDataPath = clipData.animationClipDataPath;
+
+
+                        var baseBodyPathWithNameWithoutExtension = string.Concat(
+                            IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                            Path.GetFileNameWithoutExtension(animationClipDataPath));
+
+                        bodyAnimationPath =
+                            IT_AnimotiveImporterEditorUtilities
+                                .GetBodyAnimationAssetDatabasePath(animationClipDataPath);
+
+                        bodyAnimationName = Path.GetFileName(animationClipDataPath);
+
+                        var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+
+                        fbxData.FbxGameObject.transform.localScale =
+                            clipAndDictionariesTuple.Clip.lossyScaleRoot *
+                            Vector3.one; // since the character has no parent 
+                        // we can safely assign lossy scale data to character's root
+
+                        AssignWorldPositionAndRotationToHolder(holderObject, clipAndDictionariesTuple.Clip);
+
+                        if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
+                        {
+                            EditorUtility.DisplayDialog(
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
+                                "Bone count with the character and animation clip doesn't match ! Make sure that you're using the correct character and clip data",
+                                "OK");
+                            continue;
+                        }
+
+
+                        IT_AnimotiveImporterEditorUtilities
+                            .DeleteAssetIfExists(bodyAnimationPath,
+                                typeof(AnimationClip));
+
+                        var animationClip =
+                            CreateTransformMovementsAnimationClip(clipAndDictionariesTuple, fbxData.FbxGameObject,
+                                clipData);
+
+
+                        animatorController.AddMotion(animationClip);
+
+
+                        if (groupInfos[groupData.serializedId] == null)
+                        {
+                            groupInfos[groupData.serializedId] =
+                                new List<IT_AnimotiveImporterEditorGroupMemberInfo>();
+                        }
+
+                        var animationGroupMemberInfo =
+                            new IT_AnimotiveImporterEditorGroupMemberInfo(groupData.GroupName,
+                                groupData.serializedId,
+                                bodyAnimationName,
+                                fbxData.FbxGameObject, bodyAnimationPath, clipData);
+                        groupInfos[groupData.serializedId].Add(animationGroupMemberInfo);
                     }
-
-
-                    IT_AnimotiveImporterEditorUtilities
-                        .DeleteAssetIfExists(bodyAnimationPath,
-                            typeof(AnimationClip));
-
-                    var animationClip =
-                        CreateTransformMovementsAnimationClip(clipAndDictionariesTuple, fbxData.FbxGameObject,
-                            clipData);
-
-
-                    animatorController.AddMotion(animationClip);
-
-
-                    if (groupInfos[groupData.serializedId] == null)
-                        groupInfos[groupData.serializedId] = new List<IT_AnimotiveImporterEditorGroupMemberInfo>();
-
-                    var animationGroup =
-                        new IT_AnimotiveImporterEditorGroupMemberInfo(groupData.GroupName, groupData.serializedId,
-                            bodyAnimationName,
-                            fbxData.FbxGameObject, bodyAnimationPath);
-                    groupInfos[groupData.serializedId].Add(animationGroup);
                 }
             }
 
@@ -505,7 +490,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 pair.Value.FbxData.FbxAnimator.avatar = null;
             }
 
-            IT_AnimotiveImporterEditorTimeline.HandleGroups(groupInfos);
+            IT_AnimotiveImporterEditorTimeline.HandleGroups(transformGroupDatas, fbxDatasAndHoldersTuples);
 
             AssetDatabase.Refresh();
         }
@@ -522,18 +507,24 @@ namespace Retinize.Editor.AnimotiveImporter
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
-                    Debug.Log(entityData.entityInstantiationTokenData);
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
-                        var takes = entityData.clipsByTrackByTakeIndex[i];
+                        var take = entityData.clipsByTrackByTakeIndex[i];
 
-                        for (var j = 0; j < takes.Count; j++)
+                        IT_TakeData takeData = null;
+                        if (take.Count != 0)
                         {
-                            var tracks = takes[j];
+                            takeData = new IT_TakeData(i);
+                            readerGroupData.TakeDatas.Add(takeData);
+                        }
 
-                            for (var k = 0; k < tracks.Count; k++)
+                        for (var j = 0; j < take.Count; j++)
+                        {
+                            var track = take[j];
+
+                            for (var k = 0; k < track.Count; k++)
                             {
-                                var clip = tracks[k];
+                                var clip = track[k];
 
                                 var animationClipDataPath =
                                     IT_AnimotiveImporterEditorUtilities.ReturnClipDataFromPath(clipsPath,
@@ -543,12 +534,15 @@ namespace Retinize.Editor.AnimotiveImporter
                                     IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(clip.clipName);
 
                                 var clipdata = new IT_ClipData(type, clip, animationClipDataPath,
-                                    entityData.entityInstantiationTokenData);
-                                readerGroupData.ClipDatas.Add(clipdata);
+                                    entityData.entityInstantiationTokenData, i);
+
+                                takeData?.ClipDatas.Add(clipdata);
                             }
                         }
                     }
                 }
+
+                readerGroupData.TakeDatas = readerGroupData.TakeDatas.Where(a => a.ClipDatas.Count != 0).ToList();
 
                 groupDatas.Add(readerGroupData);
             }
@@ -581,9 +575,53 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             var recorderFramesMultipliedByBone = clip.physicsKeyframesCurve0.Length;
-            var formula = totalFrameCount * boneCount + boneCount;
+            var formula = totalFrameCount * boneCount;
 
-            return formula - boneCount == recorderFramesMultipliedByBone;
+            return formula <= recorderFramesMultipliedByBone;
+        }
+
+
+        private static Dictionary<string, IT_FbxDatasAndHoldersTuple> GetFbxDataAndHolders(
+            List<IT_GroupData> transformGroupDatas)
+        {
+            var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
+            for (var i = 0; i < transformGroupDatas.Count; i++)
+            {
+                var groupdata = transformGroupDatas[i];
+
+                for (var j = 0; j < groupdata.TakeDatas.Count; j++)
+                {
+                    var takeData = groupdata.TakeDatas[j];
+                    for (var k = 0; k < takeData.ClipDatas.Count; k++)
+                    {
+                        var clipData = takeData.ClipDatas[k];
+
+                        if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
+
+                        var pathToFbx = Path.Combine(
+                            IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory
+                            , string.Concat(clipData.ModelName, ".fbx"));
+
+                        pathToFbx =
+                            IT_AnimotiveImporterEditorUtilities.GetImportedFbxAssetDatabasePathVariable(pathToFbx);
+
+                        var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(pathToFbx);
+                        var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
+                        var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject);
+                        fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
+                    }
+                }
+            }
+
+            return fbxDatasAndHoldersTuples;
+        }
+
+
+        private static void AssignWorldPositionAndRotationToHolder(GameObject holderObject,
+            IT_CharacterTransformAnimationClip clip)
+        {
+            holderObject.transform.position = clip.worldPositionHolder;
+            holderObject.transform.rotation = clip.worldRotationHolder;
         }
 
         #endregion
