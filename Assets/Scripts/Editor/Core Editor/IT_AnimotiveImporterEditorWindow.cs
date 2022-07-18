@@ -73,7 +73,7 @@ namespace Retinize.Editor.AnimotiveImporter
             _DisableImport = _IsAnimotiveFolderImported;
             EditorGUI.BeginDisabledGroup(!_DisableImport);
 
-            if (GUILayout.Button("Import Animotive"))
+            if (GUILayout.Button("Import Animotive Scene"))
             {
                 var clipsPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
@@ -95,7 +95,7 @@ namespace Retinize.Editor.AnimotiveImporter
         [MenuItem("Animotive/Importer")]
         public static void ShowWindow()
         {
-            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Animotive Reader");
+            var window = GetWindow<IT_AnimotiveImporterEditorWindow>("Animotive Importer");
             window.Show();
         }
 
