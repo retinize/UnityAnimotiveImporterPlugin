@@ -8,13 +8,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public string GroupName { get; }
 
-        public List<IT_TakeData> TakeDatas { get; set; }
+        public  Dictionary<int, IT_TakeData> TakeDatas { get; set; }
 
         public IT_GroupData(int serializedId, string groupName)
         {
             this.serializedId = serializedId;
             GroupName = groupName;
-            TakeDatas = new List<IT_TakeData>();
+            TakeDatas = new Dictionary<int, IT_TakeData>();
         }
     }
 

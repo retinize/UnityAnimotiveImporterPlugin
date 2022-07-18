@@ -490,7 +490,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 pair.Value.FbxData.FbxAnimator.avatar = null;
             }
 
-            IT_AnimotiveImporterEditorTimeline.HandleGroups(transformGroupDatas, fbxDatasAndHoldersTuples);
+            IT_AnimotiveImporterEditorTimeline.HandleGroups(transformGroupDatas, fbxDatasAndHoldersTuples, sceneData);
 
             AssetDatabase.Refresh();
         }
@@ -511,12 +511,8 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
 
-                        IT_TakeData takeData = null;
-                        if (take.Count != 0)
-                        {
-                            takeData = new IT_TakeData(i);
-                            readerGroupData.TakeDatas.Add(takeData);
-                        }
+                        if (!readerGroupData.TakeDatas.ContainsKey(i))
+                            readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
 
                         for (var j = 0; j < take.Count; j++)
                         {
@@ -536,13 +532,14 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var clipdata = new IT_ClipData(type, clip, animationClipDataPath,
                                     entityData.entityInstantiationTokenData, i);
 
-                                takeData?.ClipDatas.Add(clipdata);
+                                readerGroupData.TakeDatas[i].ClipDatas.Add(clipdata);
                             }
                         }
                     }
                 }
 
-                readerGroupData.TakeDatas = readerGroupData.TakeDatas.Where(a => a.ClipDatas.Count != 0).ToList();
+                readerGroupData.TakeDatas = readerGroupData.TakeDatas.Where(a => a.Value.ClipDatas.Count != 0)
+                    .ToDictionary(p => p.Key, p => p.Value);
 
                 groupDatas.Add(readerGroupData);
             }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AnimotiveImporterDLL;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -14,7 +15,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="group">List of group info</param>
         public static void HandleGroups(List<IT_GroupData> transformGroupDatas,
-            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
+            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
+            IT_SceneInternalData sceneInternalData)
         {
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
@@ -34,25 +36,28 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                     var timelineData = new IT_TimelineData(groupData.GroupName, takeData.ClipDatas, playableDirector,
-                        fbxDatasAndHoldersTuples);
-                    
-                    for (var k = 0; k < takeData.ClipDatas.Count; k++)
-                    {
-                        var clipData = takeData.ClipDatas[k];
-                        if (clipData.Type != IT_ClipType.TransformClip) continue;
+                        fbxDatasAndHoldersTuples, takeData);
 
-                        var characterInScene = fbxDatasAndHoldersTuples[clipData.ModelName].FbxData.FbxGameObject;
-
-                        var audioSource = characterInScene.AddOrGetComponent<AudioSource>();
-                        audioSource.playOnAwake = false;
+                    playableDirector.playableAsset = CreatePlayableAssets(timelineData, sceneInternalData);
 
 
-                        var temp =
-                            IT_AnimotiveImporterEditorUtilities.GetBodyAnimationAssetDatabasePath(
-                                clipData.animationClipDataPath);
-                        playableDirector.playableAsset =
-                            CreatePlayableAsset(characterInScene, playableDirector, groupData.GroupName, temp);
-                    }
+                    // for (var k = 0; k < takeData.ClipDatas.Count; k++)
+                    // {
+                    //     var clipData = takeData.ClipDatas[k];
+                    //     if (clipData.Type != IT_ClipType.TransformClip) continue;
+                    //
+                    //     var characterInScene = fbxDatasAndHoldersTuples[clipData.ModelName].FbxData.FbxGameObject;
+                    //
+                    //     var audioSource = characterInScene.AddOrGetComponent<AudioSource>();
+                    //     audioSource.playOnAwake = false;
+                    //
+                    //
+                    //     var temp =
+                    //         IT_AnimotiveImporterEditorUtilities.GetBodyAnimationAssetDatabasePath(
+                    //             clipData.animationClipDataPath);
+                    //     
+                    //         
+                    // }
                 }
             }
 
@@ -86,51 +91,64 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="playableDirector">Playable object to bind playable asset and gameobject to. </param>
         /// <param name="groupMemberInfo"></param>
         /// <returns></returns>
-        public static PlayableAsset CreatePlayableAsset(GameObject objToBind, PlayableDirector playableDirector,
-            string groupName, string bodyAnimationPath)
+        public static PlayableAsset CreatePlayableAssets(IT_TimelineData timelineData,
+            IT_SceneInternalData sceneInternalData)
         {
-            var assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath,
-                objToBind.GetInstanceID().ToString(),
+            var playableDirector = timelineData.PlayableDirector;
+
+            var assetName = string.Concat(sceneInternalData.currentSetName, "_", timelineData.GroupName, "_Take",
+                timelineData.TakeData.TakeIndex);
+
+            var assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath, assetName,
                 ".playable");
 
-            //TODO: Creating tracks for animationclips should be done in one script which would reduce the duplicate code.
+
             var asset = ScriptableObject.CreateInstance<TimelineAsset>();
             AssetDatabase.CreateAsset(asset, assetPath);
 
-            var groupTrack = asset.CreateTrack<GroupTrack>();
-            groupTrack.name = groupName;
 
-            var facialPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
-            facialPerformanceAnimationTrack.SetGroup(groupTrack);
-            var blendshapeAnimationClip =
-                AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
-                    .FacialAnimationCreatedPath);
-
-            if (blendshapeAnimationClip)
+            for (var i = 0; i < timelineData.ClipDatasInTake.Count; i++)
             {
-                var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
-                facialPerformanceClip.start = 0;
-                playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
+                var clipData = timelineData.ClipDatasInTake[i];
+
+                //TODO: Will be updated to add the audio clip and facial animations as well
+                if (clipData.Type != IT_ClipType.TransformClip) continue;
+                
+                var groupTrack = asset.CreateTrack<GroupTrack>();
+                groupTrack.name = timelineData.GroupName;
+
+                var objToBind = timelineData.FbxDataWithHolders[clipData.ModelName].FbxData.FbxGameObject;
+                var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.GetBodyAnimationAssetDatabasePath(
+                    clipData.animationClipDataPath);
+
+                // TODO: REMOVE FACIAL ANIMATION PART LATER.
+                // FACIAL ANIMATION 
+                var facialPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
+                facialPerformanceAnimationTrack.SetGroup(groupTrack);
+                var blendshapeAnimationClip =
+                    AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
+                        .FacialAnimationCreatedPath);
+
+                if (blendshapeAnimationClip)
+                {
+                    var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
+                    facialPerformanceClip.start = 0;
+                    playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
+                }
+
+                // END OF FACIAL ANIMATION
+
+                CreateAnimationTrack(asset, groupTrack, bodyAnimationPath, playableDirector, objToBind);
+                // CreateAnimationTrack(); //facial animation
+                CreateAudioTrack(asset, groupTrack, playableDirector, objToBind);
             }
 
 
-            // facialPerformanceClip.displayName = "FACIAL_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-
-            var bodyPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
-            bodyPerformanceAnimationTrack.SetGroup(groupTrack);
-            var bodyAnimationClip =
-                AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath);
-            var bodyPerformanceClip = bodyPerformanceAnimationTrack.CreateClip(bodyAnimationClip);
-            bodyPerformanceClip.start = 0;
-            // bodyPerformanceClip.displayName = "BODY_ANIMATOR_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(bodyPerformanceAnimationTrack, objToBind);
-
-
-            var itSoundTrack = asset.CreateTrack<IT_SoundTrack>();
-            itSoundTrack.SetGroup(groupTrack);
-            var soundClip = itSoundTrack.CreateClip<IT_SoundClip>();
-            soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
-            playableDirector.SetGenericBinding(itSoundTrack, objToBind);
+            // var itSoundTrack = asset.CreateTrack<IT_SoundTrack>();
+            // itSoundTrack.SetGroup(groupTrack);
+            // var soundClip = itSoundTrack.CreateClip<IT_SoundClip>();
+            // soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
+            // playableDirector.SetGenericBinding(itSoundTrack, objToBind);
 
             AssetDatabase.Refresh();
 
@@ -139,6 +157,29 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             return playableAsset;
+        }
+
+        private static void CreateAnimationTrack(TimelineAsset asset, GroupTrack groupTrack, string bodyAnimationPath,
+            PlayableDirector playableDirector, GameObject objToBind)
+        {
+            var animationTrack = asset.CreateTrack<AnimationTrack>();
+            animationTrack.SetGroup(groupTrack);
+            var bodyAnimationClip =
+                AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath);
+            var animationCliip = animationTrack.CreateClip(bodyAnimationClip);
+            animationCliip.start = 0;
+            playableDirector.SetGenericBinding(animationTrack, objToBind);
+        }
+
+
+        private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack,
+            PlayableDirector playableDirector, GameObject objToBind)
+        {
+            var itSoundTrack = asset.CreateTrack<IT_SoundTrack>();
+            itSoundTrack.SetGroup(groupTrack);
+            var soundClip = itSoundTrack.CreateClip<IT_SoundClip>();
+            soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
+            playableDirector.SetGenericBinding(itSoundTrack, objToBind);
         }
     }
 }

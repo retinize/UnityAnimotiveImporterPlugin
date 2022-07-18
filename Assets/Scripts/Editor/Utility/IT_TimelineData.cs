@@ -9,12 +9,15 @@ public class IT_TimelineData
     public PlayableDirector PlayableDirector { get; }
     public Dictionary<string, IT_FbxDatasAndHoldersTuple> FbxDataWithHolders { get; }
 
+    public IT_TakeData TakeData { get; }
+
     public IT_TimelineData(string groupName, List<IT_ClipData> clipDatasInTake, PlayableDirector playableDirector,
-        Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDataWithHolders)
+        Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDataWithHolders, IT_TakeData takeData)
     {
         GroupName = groupName;
         ClipDatasInTake = clipDatasInTake;
         PlayableDirector = playableDirector;
         FbxDataWithHolders = fbxDataWithHolders;
+        TakeData = takeData;
     }
 }
