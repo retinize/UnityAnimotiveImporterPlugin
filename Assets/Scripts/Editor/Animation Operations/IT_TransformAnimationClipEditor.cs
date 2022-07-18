@@ -424,11 +424,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                         var animationClipDataPath = clipData.animationClipDataPath;
-
-
-                        var baseBodyPathWithNameWithoutExtension = string.Concat(
-                            IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                            Path.GetFileNameWithoutExtension(animationClipDataPath));
+                        //
+                        //
+                        // var baseBodyPathWithNameWithoutExtension = string.Concat(
+                        //     IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                        //     Path.GetFileNameWithoutExtension(animationClipDataPath));
 
                         bodyAnimationPath =
                             IT_AnimotiveImporterEditorUtilities
@@ -581,6 +581,10 @@ namespace Retinize.Editor.AnimotiveImporter
         private static Dictionary<string, IT_FbxDatasAndHoldersTuple> GetFbxDataAndHolders(
             List<IT_GroupData> transformGroupDatas)
         {
+            var files = Directory.GetDirectories(Path.Combine(
+                IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
+                "Characters"));
+
             var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
@@ -595,9 +599,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
 
+
+                        files = files.Where(a => a.EndsWith(clipData.ModelName)).ToArray();
+                        var modelDirectory = files[0];
+                        var fbxes = Directory.GetFiles(modelDirectory)
+                            .Where(a => a.Substring(a.Length - 4, 4).ToLower().EndsWith(".fbx")).ToArray();
+
+                        var fullOsPathToFbx = fbxes[0];
+                        var modelName = Path.GetFileName(fullOsPathToFbx);
+
                         var pathToFbx = Path.Combine(
                             IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory
-                            , string.Concat(clipData.ModelName, ".fbx"));
+                            , modelName);
+                        // var pathToFbx = fbxes[0];
 
                         pathToFbx =
                             IT_AnimotiveImporterEditorUtilities.GetImportedFbxAssetDatabasePathVariable(pathToFbx);

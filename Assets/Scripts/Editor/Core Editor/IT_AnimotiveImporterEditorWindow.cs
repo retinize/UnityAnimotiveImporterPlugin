@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private static bool _DisableImport;
         private static bool _IsAnimotiveFolderImported;
 
-        private static string _UserChosenDirectoryToImportUnityExports = "";
+        public static string UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
         private static bool _ReimportFbxs;
@@ -25,7 +26,7 @@ namespace Retinize.Editor.AnimotiveImporter
             GUILayout.BeginHorizontal();
 
 
-            EditorGUILayout.TextField("Animotive Export Folder :", _UserChosenDirectoryToImportUnityExports);
+            EditorGUILayout.TextField("Animotive Export Folder :", UserChosenDirectoryToImportUnityExports);
 
             if (GUILayout.Button("Choose Folder to Import"))
             {
@@ -36,11 +37,11 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
                     {
-                        _UserChosenDirectoryToImportUnityExports = choosenFolder;
-                        var fbxes = CheckCharacterFbxs(_UserChosenDirectoryToImportUnityExports);
+                        UserChosenDirectoryToImportUnityExports = choosenFolder;
+                        var fbxes = CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
 
                         if (fbxes) Debug.Log("Imported the Animotive files successfully !");
-                        _UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
+                        UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
                         _IsAnimotiveFolderImported = fbxes;
                     }
                     else
@@ -74,7 +75,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Import Animotive"))
             {
-                var clipsPath = Path.Combine(_UserChosenDirectoryToImportUnityExports, "Clips");
+                var clipsPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
@@ -136,18 +137,27 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < characterFolders.Length; i++)
             {
                 var folder = characterFolders[i];
-                var characterName = Path.GetFileName(folder);
+                var fbxes = Directory.GetFiles(folder)
+                    .Where(a => a.Substring(a.Length - 4, 4).ToLower().EndsWith(".fbx")).ToList();
 
-                var characterNameWithExtension = string.Concat(characterName, ".fbx");
-                var fullPathToExpectedFbx = Path.Combine(folder, characterNameWithExtension);
-                var existence = File.Exists(fullPathToExpectedFbx);
+
+                var existence = fbxes.Count != 0;
                 if (!existence)
                 {
                     EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
-                        $@"Couldn't find {characterNameWithExtension} at the directory: {folder}", "OK");
+                        $@"Couldn't find any FBX file at the directory: {folder}", "OK");
                     return false;
                 }
 
+                existence = fbxes.Count == 1;
+                if (!existence)
+                {
+                    EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
+                        $@"More than one FBX is detected at : {folder}", "OK");
+                    return false;
+                }
+
+                var fullPathToExpectedFbx = fbxes[0];
                 ImportFbxIntoUnityAndProcessIt(fullPathToExpectedFbx);
             }
 
