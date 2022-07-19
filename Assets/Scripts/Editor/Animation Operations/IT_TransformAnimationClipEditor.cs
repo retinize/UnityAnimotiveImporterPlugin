@@ -296,8 +296,13 @@ namespace Retinize.Editor.AnimotiveImporter
                             editorTPoseGlobalRotationForThisBone = editorTPoseList[0].GlobalRotation;
 
 
-                        var animotiveTPoseGlobalRotationForThisBone =
-                            clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
+                        var animotiveTPoseGlobalRotationForThisBone = Quaternion.identity;
+
+                        if (clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone.ContainsKey(pair.Key))
+                        {
+                            animotiveTPoseGlobalRotationForThisBone =
+                                clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
+                        }
 
                         var invAnimotiveTPoseRotationThisBone =
                             Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
@@ -405,9 +410,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
 
-                for (var j = 0; j < groupData.TakeDatas.Count; j++)
+
+                foreach (var pair in groupData.TakeDatas)
                 {
-                    var takeData = groupData.TakeDatas[j];
+                    var takeData = pair.Value;
                     for (var k = 0; k < takeData.ClipDatas.Count; k++)
                     {
                         var clipData = takeData.ClipDatas[k];
@@ -581,24 +587,23 @@ namespace Retinize.Editor.AnimotiveImporter
         private static Dictionary<string, IT_FbxDatasAndHoldersTuple> GetFbxDataAndHolders(
             List<IT_GroupData> transformGroupDatas)
         {
-            var files = Directory.GetDirectories(Path.Combine(
-                IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
-                "Characters"));
-
             var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
                 var groupdata = transformGroupDatas[i];
 
-                for (var j = 0; j < groupdata.TakeDatas.Count; j++)
+
+                foreach (var pair in groupdata.TakeDatas)
                 {
-                    var takeData = groupdata.TakeDatas[j];
+                    var takeData = pair.Value;
                     for (var k = 0; k < takeData.ClipDatas.Count; k++)
                     {
                         var clipData = takeData.ClipDatas[k];
 
                         if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
-
+                        var files = Directory.GetDirectories(Path.Combine(
+                            IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
+                            "Characters"));
 
                         files = files.Where(a => a.EndsWith(clipData.ModelName)).ToArray();
                         var modelDirectory = files[0];

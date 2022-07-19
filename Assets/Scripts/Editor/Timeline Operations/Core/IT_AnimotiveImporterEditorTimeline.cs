@@ -24,11 +24,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var groupObject = new GameObject(groupData.GroupName);
 
-                for (var j = 0; j < groupData.TakeDatas.Count; j++)
+                foreach (var pair in groupData.TakeDatas)
                 {
-                    var takeData = groupData.TakeDatas[j];
-
-                    var takeNameInScene = string.Concat("Take_", j.ToString());
+                    var takeData = pair.Value;
+                    var takeNameInScene = string.Concat("Take_", pair.Key.ToString());
 
                     var takeObjectInScene = new GameObject(takeNameInScene);
                     takeObjectInScene.transform.SetParent(groupObject.transform);
@@ -39,49 +38,8 @@ namespace Retinize.Editor.AnimotiveImporter
                         fbxDatasAndHoldersTuples, takeData);
 
                     playableDirector.playableAsset = CreatePlayableAssets(timelineData, sceneInternalData);
-
-
-                    // for (var k = 0; k < takeData.ClipDatas.Count; k++)
-                    // {
-                    //     var clipData = takeData.ClipDatas[k];
-                    //     if (clipData.Type != IT_ClipType.TransformClip) continue;
-                    //
-                    //     var characterInScene = fbxDatasAndHoldersTuples[clipData.ModelName].FbxData.FbxGameObject;
-                    //
-                    //     var audioSource = characterInScene.AddOrGetComponent<AudioSource>();
-                    //     audioSource.playOnAwake = false;
-                    //
-                    //
-                    //     var temp =
-                    //         IT_AnimotiveImporterEditorUtilities.GetBodyAnimationAssetDatabasePath(
-                    //             clipData.animationClipDataPath);
-                    //     
-                    //         
-                    // }
                 }
             }
-
-
-            // foreach (var gr in group)
-            // {
-            //     var groupObject = new GameObject(gr.Value[0].BindedGroupName);
-            //     for (var i = 0; i < gr.Value.Count; i++)
-            //     {
-            //         var groupMemberInfo = gr.Value[i];
-            //
-            //         var characterInScene = groupMemberInfo.ObjectInScene;
-            //         var audioSource = characterInScene.AddOrGetComponent<AudioSource>();
-            //         audioSource.playOnAwake = false;
-            //
-            //         var takeNameInScene = string.Concat("Take_", groupMemberInfo.ClipData.TakeIndex.ToString());
-            //         var takeObjectInScene = new GameObject(takeNameInScene);
-            //
-            //
-            //         var playableDirector = takeObjectInScene.AddOrGetComponent<PlayableDirector>();
-            //         playableDirector.playableAsset =
-            //             CreatePlayableAsset(characterInScene, playableDirector, groupMemberInfo);
-            //     }
-            // }
         }
 
         /// <summary>
@@ -113,13 +71,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 //TODO: Will be updated to add the audio clip and facial animations as well
                 if (clipData.Type != IT_ClipType.TransformClip) continue;
-                
+
                 var groupTrack = asset.CreateTrack<GroupTrack>();
                 groupTrack.name = timelineData.GroupName;
 
                 var objToBind = timelineData.FbxDataWithHolders[clipData.ModelName].FbxData.FbxGameObject;
                 var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.GetBodyAnimationAssetDatabasePath(
                     clipData.animationClipDataPath);
+
+                if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 
                 // TODO: REMOVE FACIAL ANIMATION PART LATER.
                 // FACIAL ANIMATION 
@@ -162,10 +122,13 @@ namespace Retinize.Editor.AnimotiveImporter
         private static void CreateAnimationTrack(TimelineAsset asset, GroupTrack groupTrack, string bodyAnimationPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
+            if (string.IsNullOrEmpty(bodyAnimationPath)) return;
             var animationTrack = asset.CreateTrack<AnimationTrack>();
             animationTrack.SetGroup(groupTrack);
             var bodyAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath);
+
+
             var animationCliip = animationTrack.CreateClip(bodyAnimationClip);
             animationCliip.start = 0;
             playableDirector.SetGenericBinding(animationTrack, objToBind);
