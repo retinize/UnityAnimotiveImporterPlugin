@@ -222,7 +222,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             // this dictionary is used to store the values of bones at every frame to be applied to animation clip later.
             var pathAndKeyframesDictionary =
-                new Dictionary<string, List<List<Keyframe>>>(55);
+                new Dictionary<string, List<List<Keyframe>>>();
 
 
             var localTransformValuesFromAnimFile =
