@@ -264,7 +264,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (!pathAndKeyframesDictionary.ContainsKey(relativePath))
                     {
                         //initialize a new list of keyframes for the
-                        pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>(55));
+                        pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>());
 
                         pathAndKeyframesDictionary[relativePath]
                             .Add(new List<Keyframe>(lastFrame)); //0
