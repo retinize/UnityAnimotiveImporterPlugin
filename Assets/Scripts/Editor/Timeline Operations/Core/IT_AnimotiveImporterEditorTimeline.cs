@@ -147,12 +147,13 @@ namespace Retinize.Editor.AnimotiveImporter
             path = string.Concat("Assets", path);
             
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-          
+
+            objToBind.GetComponent<AudioSource>().clip = audioClip;
           var itSoundTrack = asset.CreateTrack<AudioTrack>();
           itSoundTrack.SetGroup(groupTrack);
 
           var soundClip = itSoundTrack.CreateClip(audioClip);
-          soundClip.displayName = "SOUND_CLIP_DISPLAY_NAME_HERE";
+          soundClip.displayName = Path.GetFileNameWithoutExtension(clipFullName);
           playableDirector.SetGenericBinding(itSoundTrack, objToBind);
 
 
