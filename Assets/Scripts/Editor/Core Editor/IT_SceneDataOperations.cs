@@ -26,7 +26,7 @@ public static class IT_SceneDataOperations
         // return sceneInternalDatas[sceneInternalDatas.Count - 1];
 
 
-        var sceneDataFilePath = importedFilesDirectory + "/SceneData_UnityExport";
+        var sceneDataFilePath = string.Concat(importedFilesDirectory, "/SceneData_UnityExport");
         var bytes = File.ReadAllBytes(sceneDataFilePath);
         var loadSceneData = SerializationUtility.DeserializeValue<IT_SceneInternalData>(bytes, DataFormat.Binary);
         return loadSceneData;

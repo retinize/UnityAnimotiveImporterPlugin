@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AnimotiveImporterDLL;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -34,6 +37,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 typeof(GameObject)) as GameObject;
 
             characterRoot = Object.Instantiate(characterRoot);
+            characterRoot.AddComponent<AudioSource>();
             var animator = characterRoot.GetComponent<Animator>();
 
             return new IT_FbxData(characterRoot, animator);
@@ -87,15 +91,135 @@ namespace Retinize.Editor.AnimotiveImporter
             return fullPathToSaveFbx;
         }
 
-        public static string GetBodyAnimationAssetDatabasePath(string animationClipDataPath)
+        public static string GetBodyAssetDatabasePath(string dataPath,string extension )
         {
             var baseBodyPathWithNameWithoutExtension = string.Concat(
                 IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                Path.GetFileNameWithoutExtension(animationClipDataPath));
+                Path.GetFileNameWithoutExtension(dataPath));
 
-            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, ".anim");
+            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, extension);
             return bodyAnimationPath;
         }
+
+
+        public static List<IT_GroupData> GetClipsPathByType(IT_SceneInternalData sceneData,
+            string clipsPath)
+        {
+            var groupDatas = new List<IT_GroupData>();
+
+            var clipClusters = new List<IT_ClipCluster>();
+            IT_ClipCluster currentCluster = null;
+
+            foreach (var groupData in sceneData.groupDataById.Values)
+            {
+                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName);
+                foreach (var entityId in groupData.entitiesIds)
+                {
+                    var entityData = sceneData.entitiesDataBySerializedId[entityId];
+                    for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
+                    {
+                        var take = entityData.clipsByTrackByTakeIndex[i];
+
+                        if (!readerGroupData.TakeDatas.ContainsKey(i))
+                            readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
+
+                        currentCluster = new IT_ClipCluster();
+
+                        for (var j = 0; j < take.Count; j++)
+                        {
+                            var track = take[j];
+                            if (track.Count != 0) clipClusters.Add(currentCluster);
+
+                            for (var k = 0; k < track.Count; k++)
+                            {
+                                var clip = track[k];
+
+                                var animationClipDataPath =
+                                    ReturnClipDataFromPath(clipsPath,
+                                        clip.clipName);
+
+                                var type =
+                                    GetClipTypeFromClipName(clip.clipName);
+
+                                var clipdata = new IT_ClipData(type, clip, animationClipDataPath);
+
+                                switch (type)
+                                {
+                                    case IT_ClipType.None:
+                                        throw new ArgumentOutOfRangeException();
+                                    case IT_ClipType.PropertiesClip:
+                                        currentCluster.SetPropertiesClip(clipdata);
+                                        break;
+                                    case IT_ClipType.TransformClip:
+                                        currentCluster.SetTransformClip(clipdata);
+                                        break;
+                                    case IT_ClipType.AudioClip:
+                                        currentCluster.SetAudioClip(clipdata);
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
+
+                                currentCluster.TakeIndex = i;
+                                currentCluster.ModelName = entityData.entityInstantiationTokenData;
+                            }
+
+                            if (currentCluster.AudioClip.ClipPlayerData != null)
+                                readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
+                        }
+                    }
+                }
+
+                readerGroupData.TakeDatas = readerGroupData.TakeDatas.Where(a => a.Value.Clusters.Count != 0)
+                    .ToDictionary(p => p.Key, p => p.Value);
+
+                groupDatas.Add(readerGroupData);
+            }
+
+            return groupDatas;
+        }
+
+        public static AudioClip GetAudioClip(string fullPath)
+        {
+            using (var www = UnityWebRequestMultimedia.GetAudioClip(fullPath, AudioType.MPEG))
+            {
+                www.SendWebRequest();
+
+                
+                if (www.result == UnityWebRequest.Result.ConnectionError ||
+                    www.result == UnityWebRequest.Result.ProtocolError)
+                    Debug.LogError(www.error);
+                else
+                {
+                    var myClip = DownloadHandlerAudioClip.GetContent(www);
+                    // audioSource.clip = myClip;
+                    // audioSource.Play();
+
+                    return myClip;
+                }
+            }
+
+            return null;
+        }
+        
+        // Assigns the loaded audio clip to the source or does nothing if the argument filename or path is inexistend. Call this method inside the StartCoroutine of C#
+        public static IEnumerator<WWW> LoadAudioClip(string fullPathToFile, AudioSource audioSource)
+        {
+            if(!String.IsNullOrEmpty(fullPathToFile) && audioSource != null){
+
+                if(File.Exists(fullPathToFile))
+                {
+                    WWW www = new WWW("file:" + fullPathToFile);
+                    yield return www;
+                    audioSource.clip = www.GetAudioClip(false, false, AudioType.WAV);
+                    audioSource.clip.name = fullPathToFile;
+                }
+            }
+        }
+        
+        // Returns the used path with filename and its ending
+      
+        
     }
 
 

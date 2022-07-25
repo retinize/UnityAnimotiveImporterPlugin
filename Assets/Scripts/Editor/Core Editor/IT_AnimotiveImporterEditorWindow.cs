@@ -10,6 +10,11 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string ImportedCharactersAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
             "Assets",
             "Imported Files", "Characters");
+        
+        
+        public static string ImportedAudiosAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
+            "Assets",
+            "Imported Files", "Audio");
 
         private static bool _DisableImport;
         private static bool _IsAnimotiveFolderImported;
@@ -17,7 +22,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
-        private static bool _ReimportFbxs;
+        private static bool _ReimportAssets;
 
         private async void OnGUI()
         {
@@ -39,6 +44,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         UserChosenDirectoryToImportUnityExports = choosenFolder;
                         var fbxes = CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
+                        MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
 
                         if (fbxes) Debug.Log("Imported the Animotive files successfully !");
                         UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
@@ -61,7 +67,7 @@ namespace Retinize.Editor.AnimotiveImporter
             GUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField("Reimport Always");
-            _ReimportFbxs = EditorGUILayout.Toggle(_ReimportFbxs);
+            _ReimportAssets = EditorGUILayout.Toggle(_ReimportAssets);
 
             GUILayout.EndHorizontal();
 
@@ -80,7 +86,13 @@ namespace Retinize.Editor.AnimotiveImporter
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
-                await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath);
+                //create animation clips
+                var animationClipOperations =
+                    await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath);
+
+                //create timeline using animation clips
+                IT_AnimotiveImporterEditorTimeline.HandleGroups(animationClipOperations.Item1,
+                    animationClipOperations.Item2, sceneData);
             }
 
 
@@ -110,7 +122,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (File.Exists(fullPathToSaveFbx))
             {
-                if (!_ReimportFbxs)
+                if (!_ReimportAssets)
                     return;
                 File.Delete(fullPathToSaveFbx);
                 AssetDatabase.Refresh();
@@ -162,6 +174,24 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
             return true;
+        }
+
+        private static void MoveAudiosIntoUnity(string unityExportPath)
+        {
+            var charactersPath = Path.Combine(unityExportPath, "Clips");
+
+            var files = Directory.GetFiles(charactersPath)
+                .Where(a => !a.EndsWith(".meta") && a.ToLower().EndsWith(".wav")).ToList();
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                string fileName = Path.GetFileName(files[i]);
+                string targetFileName = Path.Combine(ImportedAudiosAssetdatabaseDirectory , fileName) ;
+                
+                File.Copy(files[i],targetFileName,true);
+            }
+            
+            AssetDatabase.Refresh();
         }
     }
 }
