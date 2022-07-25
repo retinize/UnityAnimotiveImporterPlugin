@@ -453,9 +453,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
                         {
+                            var message =
+                                $@"Bone count with the {clipData.ModelName} and {clipData.ClipPlayerData.clipName} doesn't match ! Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
-                                "Bone count with the character and animation clip doesn't match ! Make sure that you're using the correct character and clip data",
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message
+                                ,
                                 "OK");
                             continue;
                         }
