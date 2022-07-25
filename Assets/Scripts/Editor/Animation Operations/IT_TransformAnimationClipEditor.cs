@@ -24,18 +24,20 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="animator">Animator of the character</param>
         /// <param name="characterRoot">Root GameObject of the character</param>
+        /// <param name="usedHumanoidBones">Array that has the bone indexes used in the clip</param>
         /// <returns></returns>
-        private static IT_DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot)
+        private static IT_DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot,
+            int[] usedHumanoidBones)
         {
-            var temp = Enum.GetValues(typeof(HumanBodyBones));
             var humanBodyBonesByTransforms =
                 new Dictionary<HumanBodyBones, Transform>(55);
 
             var transformsByHumanBodyBones =
                 new Dictionary<Transform, HumanBodyBones>(55);
 
-            foreach (HumanBodyBones humanBodyBone in temp)
+            for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
+                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -192,7 +194,8 @@ namespace Retinize.Editor.AnimotiveImporter
             var animator = loadedFbXofCharacter.FbxAnimator;
 
             var boneTransformDictionaries =
-                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject);
+                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject,
+                    clip.humanoidBonesEnumThatAreUsed);
 
             // animator.avatar = null;
 
@@ -393,7 +396,6 @@ namespace Retinize.Editor.AnimotiveImporter
             var transformGroupDatas = GetClipsPathByType(sceneData, clipsPath);
             var groupInfos = new Dictionary<int, List<IT_AnimotiveImporterEditorGroupMemberInfo>>();
 
-
             var fbxDatasAndHoldersTuples = GetFbxDataAndHolders(transformGroupDatas);
 
 
@@ -425,9 +427,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var holderObject = fbxDataTuple.HolderObject;
 
                         fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-
-                        var boneCount = CalculateBoneCount(fbxData);
-
+                        // var boneCount = CalculateBoneCount(fbxData);
 
                         var animationClipDataPath = clipData.animationClipDataPath;
                         //
@@ -444,6 +444,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
 
+
                         fbxData.FbxGameObject.transform.localScale =
                             clipAndDictionariesTuple.Clip.lossyScaleRoot *
                             Vector3.one; // since the character has no parent 
@@ -451,14 +452,16 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         AssignWorldPositionAndRotationToHolder(holderObject, clipAndDictionariesTuple.Clip);
 
-                        if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple, boneCount))
+                        if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple,
+                                clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length))
                         {
                             var message =
-                                $@"Bone count with the {clipData.ModelName} and {clipData.ClipPlayerData.clipName} doesn't match ! Make sure that you're using the correct character and clip data";
+                                $@"Bone count with the {clipData.ModelName} and {clipData.ClipPlayerData.clipName} doesn't match !
+ Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message
-                                ,
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
                                 "OK");
+
                             continue;
                         }
 
@@ -557,7 +560,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
         private static int CalculateBoneCount(IT_FbxData fbxData)
         {
-            var boneCount = 1; //lastbone count
+            var boneCount = 1;
 
 
             var temp = Enum.GetValues(typeof(HumanBodyBones));
