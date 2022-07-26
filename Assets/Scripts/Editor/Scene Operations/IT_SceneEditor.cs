@@ -18,9 +18,22 @@ namespace Retinize.Editor.AnimotiveImporter
             if (!Directory.Exists(fullOsPath)) Directory.CreateDirectory(fullOsPath);
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            EditorSceneManager.SaveScene(scene,
-                string.Concat(hardcodedPath, Path.DirectorySeparatorChar, sceneName,
-                    IT_AnimotiveImporterEditorConstants.UnitySceneExtension));
+            var unitySceneName = string.Concat(sceneName, IT_AnimotiveImporterEditorConstants.UnitySceneExtension);
+            var sceneFullPath = Path.Combine(hardcodedPath, unitySceneName);
+
+
+            var fullSourcePath = Path.Combine(fullOsPath, unitySceneName);
+            var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath, fullSourcePath,
+                unitySceneName,
+                "unity");
+
+            if (File.Exists(fullSourcePath))
+            {
+                similarName = IT_AnimotiveImporterEditorUtilities.ConvertPathToAssetDatabasePath(similarName);
+                EditorSceneManager.SaveScene(scene, similarName);
+            }
+            else
+                EditorSceneManager.SaveScene(scene, sceneFullPath);
 
 
             AssetDatabase.Refresh();

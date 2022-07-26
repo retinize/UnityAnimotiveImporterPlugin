@@ -5,7 +5,6 @@ using System.Linq;
 using AnimotiveImporterDLL;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -91,14 +90,21 @@ namespace Retinize.Editor.AnimotiveImporter
             return fullPathToSaveFbx;
         }
 
-        public static string GetBodyAssetDatabasePath(string dataPath,string extension )
+        public static string GetBodyAssetDatabasePath(string dataPath, string extension)
         {
             var baseBodyPathWithNameWithoutExtension = string.Concat(
                 IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
                 Path.GetFileNameWithoutExtension(dataPath));
 
-            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, extension);
+            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, $".{extension}");
             return bodyAnimationPath;
+        }
+
+        public static string ConvertPathToAssetDatabasePath(string fullOsPath)
+        {
+            var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
+            result = string.Concat("Assets", result);
+            return result;
         }
 
 
@@ -179,47 +185,43 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
-        public static AudioClip GetAudioClip(string fullPath)
+
+        public static string GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
+            string fileName,
+            string extension)
         {
-            using (var www = UnityWebRequestMultimedia.GetAudioClip(fullPath, AudioType.MPEG))
+            var targetFileName = Path.Combine(assetDatabaseDir, fileName);
+
+            var alreadySavedSimilarFiles = Directory.GetFiles(assetDatabaseDir)
+                .Where(a => a.ToLower().Contains(Path.GetFileNameWithoutExtension(fullSourceFilePath).ToLower()) &
+                            !a.EndsWith(".meta")).OrderByDescending(a =>
+                    Path.GetFileNameWithoutExtension(a).Split(' ')[
+                        Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1])
+                .ToList();
+
+            if (alreadySavedSimilarFiles.Count > 1)
             {
-                www.SendWebRequest();
+                var nameWithoutExtension = Path.GetFileNameWithoutExtension(alreadySavedSimilarFiles[1]);
+                var split = nameWithoutExtension.Split(' ');
+                var number = int.Parse(split[split.Length - 1]);
+                number += 1;
+                var numberAsString = 4 - number.ToString().Length;
+                var temp = string.Concat(Enumerable.Repeat("0", numberAsString));
+                temp = string.Concat(temp, number);
 
-                
-                if (www.result == UnityWebRequest.Result.ConnectionError ||
-                    www.result == UnityWebRequest.Result.ProtocolError)
-                    Debug.LogError(www.error);
-                else
-                {
-                    var myClip = DownloadHandlerAudioClip.GetContent(www);
-                    // audioSource.clip = myClip;
-                    // audioSource.Play();
-
-                    return myClip;
-                }
+                targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
+                    Path.GetFileNameWithoutExtension(targetFileName), " ",
+                    temp, $".{extension}"));
+            }
+            else
+            {
+                targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
+                    Path.GetFileNameWithoutExtension(targetFileName), " ", "0001",
+                    $".{extension}"));
             }
 
-            return null;
+            return targetFileName;
         }
-        
-        // Assigns the loaded audio clip to the source or does nothing if the argument filename or path is inexistend. Call this method inside the StartCoroutine of C#
-        public static IEnumerator<WWW> LoadAudioClip(string fullPathToFile, AudioSource audioSource)
-        {
-            if(!String.IsNullOrEmpty(fullPathToFile) && audioSource != null){
-
-                if(File.Exists(fullPathToFile))
-                {
-                    WWW www = new WWW("file:" + fullPathToFile);
-                    yield return www;
-                    audioSource.clip = www.GetAudioClip(false, false, AudioType.WAV);
-                    audioSource.clip.name = fullPathToFile;
-                }
-            }
-        }
-        
-        // Returns the used path with filename and its ending
-      
-        
     }
 
 

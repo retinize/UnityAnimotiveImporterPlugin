@@ -78,7 +78,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var objToBind = timelineData.FbxDataWithHolders[clipCluster.ModelName].FbxData.FbxGameObject;
                 var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.GetBodyAssetDatabasePath(
-                    clipCluster.TransformClip.clipDataPath,".anim");
+                    clipCluster.TransformClip.clipDataPath,"anim");
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 

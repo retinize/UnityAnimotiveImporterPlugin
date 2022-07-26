@@ -380,7 +380,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 animationClip.EnsureQuaternionContinuity();
             }
 
-
+            Debug.Log(bodyAnimationPath);
             AssetDatabase.CreateAsset(animationClip, bodyAnimationPath);
             AssetDatabase.Refresh();
 
@@ -429,7 +429,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         bodyAnimationPath =
                             IT_AnimotiveImporterEditorUtilities
-                                .GetBodyAssetDatabasePath(animationClipDataPath,".anim");
+                                .GetBodyAssetDatabasePath(animationClipDataPath, "anim");
 
                         bodyAnimationName = Path.GetFileName(animationClipDataPath);
 

@@ -10,8 +10,8 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string ImportedCharactersAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
             "Assets",
             "Imported Files", "Characters");
-        
-        
+
+
         public static string ImportedAudiosAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
             "Assets",
             "Imported Files", "Audio");
@@ -183,14 +183,23 @@ namespace Retinize.Editor.AnimotiveImporter
             var files = Directory.GetFiles(charactersPath)
                 .Where(a => !a.EndsWith(".meta") && a.ToLower().EndsWith(".wav")).ToList();
 
-            for (int i = 0; i < files.Count; i++)
+            if (!Directory.Exists(ImportedAudiosAssetdatabaseDirectory))
+                Directory.CreateDirectory(ImportedAudiosAssetdatabaseDirectory);
+            for (var i = 0; i < files.Count; i++)
             {
-                string fileName = Path.GetFileName(files[i]);
-                string targetFileName = Path.Combine(ImportedAudiosAssetdatabaseDirectory , fileName) ;
-                
-                File.Copy(files[i],targetFileName,true);
+                var fileName = Path.GetFileName(files[i]);
+                var targetFileName = Path.Combine(ImportedAudiosAssetdatabaseDirectory, fileName);
+                if (!File.Exists(targetFileName))
+                    File.Copy(files[i], targetFileName, false);
+                else
+                {
+                    targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
+                        ImportedAudiosAssetdatabaseDirectory,
+                        files[i], fileName, "wav");
+                    File.Copy(files[i], targetFileName, false);
+                }
             }
-            
+
             AssetDatabase.Refresh();
         }
     }
