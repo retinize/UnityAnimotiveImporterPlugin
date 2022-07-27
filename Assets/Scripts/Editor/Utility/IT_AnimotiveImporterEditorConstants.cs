@@ -11,6 +11,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
+        public const string HolderPositionString = "HolderPosition";
+        public const string HolderRotationString = "HolderRotation";
+        public const string RootPositionString = "RootPosition";
+        public const string RootRotationString = "RootRotation";
+
 
         public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
@@ -18,6 +23,13 @@ namespace Retinize.Editor.AnimotiveImporter
             { IT_ClipType.TransformClip, _TransformClipName },
             { IT_ClipType.AudioClip, _AudioClipName }
         };
+
+        public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
+            new Dictionary<IT_EntityType, string>
+            {
+                { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
+            };
+
 
         #region Hardcoded PoC Paths
 

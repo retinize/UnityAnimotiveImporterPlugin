@@ -81,14 +81,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (GUILayout.Button("Import Animotive Scene"))
             {
-                var clipsPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
+                var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
-                var sceneData = IT_SceneDataOperations.LoadSceneData(clipsPath);
+                var sceneData = IT_SceneDataOperations.LoadSceneData(clipsFolderPath);
                 IT_SceneEditor.CreateScene(sceneData.currentSetName);
+
 
                 //create animation clips
                 var animationClipOperations =
-                    await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsPath);
+                    await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsFolderPath);
+
+
+                IT_EntityOperations.HandleEntityOperations(sceneData);
+
 
                 //create timeline using animation clips
                 IT_AnimotiveImporterEditorTimeline.HandleGroups(animationClipOperations.Item1,

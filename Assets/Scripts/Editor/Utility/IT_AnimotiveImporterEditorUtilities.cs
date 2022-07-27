@@ -113,10 +113,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
             foreach (var groupData in sceneData.groupDataById.Values)
             {
-                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName.Replace(" ", ""));
+                var readerGroupData =
+                    new IT_GroupData(groupData.serializedId, groupData.groupName.Trim().Replace(" ", ""));
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
+
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
@@ -215,6 +217,83 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
             return targetFileName;
+        }
+
+        public static Dictionary<IT_EntityType, List<IT_BaseEntity>> GetPropertiesData(IT_SceneInternalData sceneData)
+        {
+            var entitiesWithType =
+                new Dictionary<IT_EntityType, List<IT_BaseEntity>>();
+
+
+            foreach (var groupData in sceneData.groupDataById.Values)
+            {
+                foreach (var entityId in groupData.entitiesIds)
+                {
+                    var entityData = sceneData.entitiesDataBySerializedId[entityId];
+
+                    foreach (var propertyDatasDict in entityData.propertiesDataByTakeIndex)
+                    {
+                        var displayName = propertyDatasDict["displayName"].ToString();
+
+                        var list = IT_AnimotiveImporterEditorConstants.EntityTypesByKeyword.Where(pair =>
+                            displayName.Contains(pair.Value)).ToList();
+
+                        if (list.Count > 0)
+                        {
+                            var entityType = list[0].Key;
+
+                            if (!entitiesWithType.ContainsKey(entityType))
+                                entitiesWithType.Add(entityType, new List<IT_BaseEntity>());
+
+                            var holderPosition =
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+
+                            var holderRotation =
+                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderRotationString];
+
+                            var rootPosition =
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+
+                            var rootRotation =
+                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+
+
+                            IT_BaseEntity itEntity;
+
+                            switch (entityType)
+                            {
+                                case IT_EntityType.Camera:
+                                {
+                                    var focalLength = (float)propertyDatasDict["DepthOfFieldFocalLength"];
+                                    itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
+                                        holderRotation, rootRotation, displayName, focalLength);
+
+                                    break;
+                                }
+                                case IT_EntityType.Spotlight:
+                                {
+                                    itEntity = new IT_SpotLightEntity(IT_EntityType.Spotlight, holderPosition,
+                                        rootPosition, holderRotation, rootRotation, displayName);
+                                    break;
+                                }
+                                default:
+                                {
+                                    throw new ArgumentOutOfRangeException();
+                                }
+                            }
+
+                            entitiesWithType[entityType].Add(itEntity);
+                        }
+                    }
+                }
+            }
+
+            return entitiesWithType;
+        }
+
+        public static float GetFieldOfView(Camera camera, float newFocalLength)
+        {
+            return 2 * Mathf.Atan(camera.sensorSize.x / (2 * newFocalLength)) * (180 / Mathf.PI);
         }
     }
 

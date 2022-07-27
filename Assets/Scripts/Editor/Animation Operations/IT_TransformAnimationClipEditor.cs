@@ -407,9 +407,10 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
         public static async Task<Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>>
-            HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsPath)
+            HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsFolderPath)
         {
-            var transformGroupDatas = IT_AnimotiveImporterEditorUtilities.GetClipsPathByType(sceneData, clipsPath);
+            var transformGroupDatas =
+                IT_AnimotiveImporterEditorUtilities.GetClipsPathByType(sceneData, clipsFolderPath);
 
             var fbxDatasAndHoldersTuples = GetFbxDataAndHolders(transformGroupDatas);
 
