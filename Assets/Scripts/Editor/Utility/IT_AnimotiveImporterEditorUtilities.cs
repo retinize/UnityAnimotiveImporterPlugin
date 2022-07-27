@@ -81,15 +81,6 @@ namespace Retinize.Editor.AnimotiveImporter
             return get;
         }
 
-        public static string GetImportedFbxAssetDatabasePathVariable(string fullPathToSaveFbx)
-        {
-            fullPathToSaveFbx =
-                fullPathToSaveFbx.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
-
-            fullPathToSaveFbx = string.Concat("Assets", fullPathToSaveFbx);
-            return fullPathToSaveFbx;
-        }
-
         public static string GetBodyAssetDatabasePath(string dataPath, string extension)
         {
             var baseBodyPathWithNameWithoutExtension = string.Concat(
@@ -100,7 +91,7 @@ namespace Retinize.Editor.AnimotiveImporter
             return bodyAnimationPath;
         }
 
-        public static string ConvertPathToAssetDatabasePath(string fullOsPath)
+        public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
             var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
             result = string.Concat("Assets", result);
@@ -108,17 +99,21 @@ namespace Retinize.Editor.AnimotiveImporter
         }
 
 
+        public static string ConvertAssetDatabasePathToSystemPath(string assetDbPath)
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), assetDbPath);
+        }
+
         public static List<IT_GroupData> GetClipsPathByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
             var groupDatas = new List<IT_GroupData>();
 
-            var clipClusters = new List<IT_ClipCluster>();
             IT_ClipCluster currentCluster = null;
 
             foreach (var groupData in sceneData.groupDataById.Values)
             {
-                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName);
+                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName.Replace(" ", ""));
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
@@ -134,7 +129,6 @@ namespace Retinize.Editor.AnimotiveImporter
                         for (var j = 0; j < take.Count; j++)
                         {
                             var track = take[j];
-                            if (track.Count != 0) clipClusters.Add(currentCluster);
 
                             for (var k = 0; k < track.Count; k++)
                             {

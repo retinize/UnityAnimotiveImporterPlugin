@@ -29,7 +29,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (File.Exists(fullSourcePath))
             {
-                similarName = IT_AnimotiveImporterEditorUtilities.ConvertPathToAssetDatabasePath(similarName);
+                similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
                 EditorSceneManager.SaveScene(scene, similarName);
             }
             else

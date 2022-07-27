@@ -380,8 +380,24 @@ namespace Retinize.Editor.AnimotiveImporter
                 animationClip.EnsureQuaternionContinuity();
             }
 
-            Debug.Log(bodyAnimationPath);
+            var fullOsPathToBodyAnim =
+                IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath);
+
+            if (File.Exists(fullOsPathToBodyAnim))
+            {
+                var assetDatabaseDir = Path.GetDirectoryName(
+                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath));
+                var similarFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
+                    fullOsPathToBodyAnim,
+                    Path.GetFileName(fullOsPathToBodyAnim), "anim");
+
+                bodyAnimationPath =
+                    IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
+            }
+
             AssetDatabase.CreateAsset(animationClip, bodyAnimationPath);
+
+
             AssetDatabase.Refresh();
 
             return animationClip;
@@ -405,8 +421,23 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 bodyAnimatorPath =
                     string.Concat(
-                        string.Concat(IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory, groupData.GroupName),
+                        string.Concat(IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
+                            groupData.GroupName),
                         ".controller");
+
+
+                var fullOsPath =
+                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimatorPath);
+                var assetDatabaseDir = Path.GetDirectoryName(fullOsPath);
+
+                if (File.Exists(fullOsPath))
+                {
+                    var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
+                        fullOsPath,
+                        Path.GetFileName(fullOsPath), "controller");
+                    similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
+                    bodyAnimatorPath = similarName;
+                }
 
                 var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
 
@@ -461,9 +492,9 @@ namespace Retinize.Editor.AnimotiveImporter
                             continue;
                         }
 
-                        IT_AnimotiveImporterEditorUtilities
-                            .DeleteAssetIfExists(bodyAnimationPath,
-                                typeof(AnimationClip));
+                        // IT_AnimotiveImporterEditorUtilities
+                        //     .DeleteAssetIfExists(bodyAnimationPath,
+                        //         typeof(AnimationClip));
 
                         var animationClip =
                             CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
@@ -540,7 +571,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         // var pathToFbx = fbxes[0];
 
                         pathToFbx =
-                            IT_AnimotiveImporterEditorUtilities.GetImportedFbxAssetDatabasePathVariable(pathToFbx);
+                            IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(pathToFbx);
 
                         var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(pathToFbx);
                         var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));

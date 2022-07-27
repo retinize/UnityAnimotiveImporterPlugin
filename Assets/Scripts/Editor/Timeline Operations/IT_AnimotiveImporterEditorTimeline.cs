@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using AnimotiveImporterDLL;
@@ -64,6 +63,18 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             var asset = ScriptableObject.CreateInstance<TimelineAsset>();
+
+            var fullOsPath = IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(assetPath);
+            var assetPathDir = Path.GetDirectoryName(fullOsPath);
+
+            if (File.Exists(fullOsPath))
+            {
+                var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetPathDir,
+                    fullOsPath, Path.GetFileName(fullOsPath), "playable");
+                similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
+                assetPath = similarName;
+            }
+
             AssetDatabase.CreateAsset(asset, assetPath);
 
 
@@ -78,7 +89,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var objToBind = timelineData.FbxDataWithHolders[clipCluster.ModelName].FbxData.FbxGameObject;
                 var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.GetBodyAssetDatabasePath(
-                    clipCluster.TransformClip.clipDataPath,"anim");
+                    clipCluster.TransformClip.clipDataPath, "anim");
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 
@@ -100,10 +111,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 // END OF FACIAL ANIMATION
 
-       
 
-
-                
                 CreateAnimationTrack(asset, groupTrack, bodyAnimationPath, playableDirector, objToBind);
                 // CreateAnimationTrack(); //facial animation
                 CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.clipDataPath, playableDirector, objToBind);
@@ -135,28 +143,24 @@ namespace Retinize.Editor.AnimotiveImporter
         }
 
 
-        private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack,string clipDataPath,
+        private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-
-            
             var clipFullName = string.Concat(clipDataPath, ".wav");
 
-            string path = Path.Combine(IT_AnimotiveImporterEditorWindow.ImportedAudiosAssetdatabaseDirectory , Path.GetFileName(clipFullName));
-            path= path.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
-            path = string.Concat("Assets", path);
-            
+            var path = Path.Combine(IT_AnimotiveImporterEditorWindow.ImportedAudiosAssetdatabaseDirectory,
+                Path.GetFileName(clipFullName));
+            path = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(path);
+
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
 
             objToBind.GetComponent<AudioSource>().clip = audioClip;
-          var itSoundTrack = asset.CreateTrack<AudioTrack>();
-          itSoundTrack.SetGroup(groupTrack);
+            var itSoundTrack = asset.CreateTrack<AudioTrack>();
+            itSoundTrack.SetGroup(groupTrack);
 
-          var soundClip = itSoundTrack.CreateClip(audioClip);
-          soundClip.displayName = Path.GetFileNameWithoutExtension(clipFullName);
-          playableDirector.SetGenericBinding(itSoundTrack, objToBind);
-
-
+            var soundClip = itSoundTrack.CreateClip(audioClip);
+            soundClip.displayName = Path.GetFileNameWithoutExtension(clipFullName);
+            playableDirector.SetGenericBinding(itSoundTrack, objToBind);
         }
     }
 }
