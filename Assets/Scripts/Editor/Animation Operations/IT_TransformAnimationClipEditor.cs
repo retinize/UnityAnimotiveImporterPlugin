@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using OdinSerializer;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -208,10 +207,10 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="clipAndDictionariesTuple">Contains clip info read from json and BoneTransformDictionaries</param>
         /// <param name="characterRoot">Root gameObject of the character to apply animation to.</param>
-        /// <param name="clipData"></param>
+        /// <param name="editorTPose"></param>
         private static AnimationClip CreateTransformMovementsAnimationClip(
             IT_ClipByDictionaryTuple clipAndDictionariesTuple,
-            GameObject characterRoot, IT_ClipData clipData)
+            GameObject characterRoot, IT_TransformInfoList editorTPose)
         {
             var clip = clipAndDictionariesTuple.Clip;
             var transformsByHumanBodyBones =
@@ -235,16 +234,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 GetGlobalRotationsFromAnimFile(transformsByHumanBodyBones, humanBodyBonesBytransforms,
                     localTransformValuesFromAnimFile, clip);
 
-            //HARDCODE !
-            var path = string.Concat(Directory.GetCurrentDirectory(),
-                @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses");
-
-
-            var editorTPoseText = File.ReadAllText(string.Concat(path, "\\EditorTPoseFrank.json"));
-
-
-            var editorTPoseTransformInfoList =
-                JsonUtility.FromJson<IT_TransformInfoList>(editorTPoseText);
+            var editorTPoseTransformInfoList = editorTPose;
 
 
             var startFrame = 0;
@@ -414,7 +404,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var fbxDatasAndHoldersTuples = GetFbxDataAndHolders(transformGroupDatas);
 
-
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
                 var groupData = transformGroupDatas[i];
@@ -440,9 +429,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     bodyAnimatorPath = similarName;
                 }
 
-                var animatorController = AnimatorController.CreateAnimatorControllerAtPath(bodyAnimatorPath);
-
-
                 foreach (var pair in groupData.TakeDatas)
                 {
                     var takeData = pair.Value;
@@ -465,11 +451,29 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         bodyAnimationName = Path.GetFileName(animationClipDataPath);
 
-                        fbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-
-
                         var clipAndDictionariesTuple =
                             PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+
+
+                        var isAvatarHasAllRequiredBones =
+                            clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform.Count !=
+                            clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length;
+
+                        if (isAvatarHasAllRequiredBones)
+                        {
+                            var message =
+                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.TransformClip.ClipPlayerData.clipName}' clip don't match !
+  Make sure that the avatar has all the required bones and you're using correct FBX for this clip";
+
+                            EditorUtility.DisplayDialog(
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
+                                message,
+                                "OK");
+
+                            clipCluster.SetInterruptionValue(true);
+
+                            continue;
+                        }
 
 
                         fbxData.FbxGameObject.transform.localScale =
@@ -489,6 +493,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
                                 message,
                                 "OK");
+                            clipCluster.SetInterruptionValue(true);
 
                             continue;
                         }
@@ -499,11 +504,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var animationClip =
                             CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
-                                fbxData.FbxGameObject,
-                                clipCluster.TransformClip);
-
-
-                        animatorController.AddMotion(animationClip);
+                                fbxData.FbxGameObject, fbxDataTuple.EditorTPose);
                     }
                 }
             }
@@ -576,7 +577,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var fbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx(pathToFbx);
                         var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
-                        var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject);
+                        var pluginTPose = IT_PoseTestManager.SavePoseToJson(fbxData.FbxAnimator);
+
+                        var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject, pluginTPose);
+
                         fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
                     }
                 }

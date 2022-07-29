@@ -98,14 +98,13 @@ namespace Retinize.Editor.AnimotiveImporter
                 // FACIAL ANIMATION 
                 var facialPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
                 facialPerformanceAnimationTrack.SetGroup(groupTrack);
-
                 var blendshapeAnimationClip =
                     AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
                         .FacialAnimationCreatedPath);
 
                 if (blendshapeAnimationClip)
                 {
-                    var facialPerformanceClip = facialPerformanceAnimationTrack.CreateClip(blendshapeAnimationClip);
+                    var facialPerformanceClip = facialPerformanceAnimationTrack.CreateDefaultClip();
                     facialPerformanceClip.start = 0;
                     playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
                 }
@@ -134,12 +133,16 @@ namespace Retinize.Editor.AnimotiveImporter
             if (string.IsNullOrEmpty(bodyAnimationPath)) return;
             var animationTrack = asset.CreateTrack<AnimationTrack>();
             animationTrack.SetGroup(groupTrack);
+
             var bodyAnimationClip =
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath);
 
 
-            var animationCliip = animationTrack.CreateClip(bodyAnimationClip);
-            animationCliip.start = 0;
+            var timelineClip = animationTrack.CreateClip(bodyAnimationClip);
+            timelineClip.displayName =
+                Path.GetFileNameWithoutExtension(Path.Combine(Directory.GetCurrentDirectory(), bodyAnimationPath));
+            timelineClip.start = 0;
+
             playableDirector.SetGenericBinding(animationTrack, objToBind);
         }
 
