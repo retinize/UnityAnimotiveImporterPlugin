@@ -13,33 +13,33 @@ namespace Retinize.Editor.AnimotiveImporter
     ///     the base characters doesn't have same t-pose and other frame values which disrupts the animation.
     ///     NOTE ! : This is temporary because bindpose reset process will be lifted in the future versions of Animotive.
     /// </summary>
-    public class IT_PoseTestManager : MonoBehaviour
+    public static class IT_PoseTestManager
     {
         private static readonly string _posesBase =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses";
 
         [Header("Load")]
-        public string LoadJson = "";
+        public static string LoadJson = "";
 
-        public Animator LoadAnimator;
+        public static Animator LoadAnimator;
 
         [Header("Save")]
-        public string SaveJson = "";
+        public static string SaveJson = "";
 
-        public Animator SaveAnimator;
+        public static Animator SaveAnimator;
 
         [Space]
         [Header("For Loading Fixed Pose")]
-        public string EditorTPose = "";
+        public static string EditorTPose = "";
 
-        public string AnimotiveTPose = "";
-        public string Pose = "";
+        public static string AnimotiveTPose = "";
+        public static string Pose = "";
 
         /// <summary>
         ///     Loads the current values of the animator bone's recursively from a JSON file
         /// </summary>
         [ContextMenu("Load Pose")]
-        public void LoadPoseFromJson()
+        public static void LoadPoseFromJson()
         {
             var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
@@ -65,7 +65,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     rotations to them.
         /// </summary>
         [ContextMenu("Fix And Load Pose")]
-        public void LoadPoseFromJsonAdditively()
+        public static void LoadPoseFromJsonAdditively()
         {
             var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
 
@@ -111,26 +111,22 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Saves the current values of the animator bone's recursively to a JSON file.
         /// </summary>
-        [ContextMenu("Save Pose")]
-        public void SavePoseToJson()
+        public static IT_TransformInfoList SavePoseToJson(Animator animator)
         {
-            var path = string.Concat(Directory.GetCurrentDirectory(), _posesBase);
-
-
             var transformInfoList = new IT_TransformInfoList();
 
             foreach (HumanBodyBones pair in Enum.GetValues(typeof(HumanBodyBones)))
             {
-                if (pair == HumanBodyBones.LastBone || !SaveAnimator.GetBoneTransform(pair)) continue;
+                if (pair == HumanBodyBones.LastBone || !animator.GetBoneTransform(pair)) continue;
 
-                var boneTransform = SaveAnimator.GetBoneTransform(pair);
+                var boneTransform = animator.GetBoneTransform(pair);
                 transformInfoList.TransformsByStrings.Add(new IT_TransformsByString(boneTransform, pair));
             }
 
 
-            var jsonString = JsonUtility.ToJson(transformInfoList, true);
-            File.WriteAllText(string.Concat(path, $"\\{SaveJson}.json"), jsonString);
             AssetDatabase.Refresh();
+
+            return transformInfoList;
         }
     }
 }
