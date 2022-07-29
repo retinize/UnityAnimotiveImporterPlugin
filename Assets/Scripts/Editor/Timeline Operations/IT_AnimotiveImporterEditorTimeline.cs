@@ -81,6 +81,7 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < timelineData.ClipClustersInTake.Count; i++)
             {
                 var clipCluster = timelineData.ClipClustersInTake[i];
+                if (clipCluster.IsAnimationProcessInterrupted) continue;
 
                 //TODO: Will be updated to add the audio clip and facial animations as well
 

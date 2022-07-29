@@ -37,6 +37,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public IT_ClipData TransformClip { get; private set; }
         public IT_ClipData PropertiesClip { get; private set; }
 
+        public bool IsAnimationProcessInterrupted { get; private set; }
         public string ModelName { get; set; }
         public int TakeIndex { get; set; }
         public bool IsInit { get; }
@@ -47,6 +48,7 @@ namespace Retinize.Editor.AnimotiveImporter
             TransformClip = new IT_ClipData();
             PropertiesClip = new IT_ClipData();
             IsInit = true;
+            IsAnimationProcessInterrupted = false;
         }
 
 
@@ -63,6 +65,11 @@ namespace Retinize.Editor.AnimotiveImporter
         public void SetPropertiesClip(IT_ClipData clipData)
         {
             PropertiesClip = clipData;
+        }
+
+        public void SetInterruptionValue(bool value)
+        {
+            IsAnimationProcessInterrupted = value;
         }
     }
 }
