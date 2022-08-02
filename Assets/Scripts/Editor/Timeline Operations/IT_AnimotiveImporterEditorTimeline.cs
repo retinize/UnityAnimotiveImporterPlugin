@@ -15,6 +15,9 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     asset.
         /// </summary>
         /// <param name="group">List of group info</param>
+        /// <param name="fbxDatasAndHoldersTuples"></param>
+        /// <param name="sceneInternalData"></param>
+        /// <param name="transformGroupDatas"></param>
         public static void HandleGroups(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
@@ -28,8 +31,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 foreach (var pair in groupData.TakeDatas)
                 {
                     var takeData = pair.Value;
-
-                    var takeNameInScene = string.Concat("Take_", pair.Key.ToString());
+                    var timelineUI = pair.Key + 1;
+                    var takeNameInScene = string.Concat("Take_", timelineUI.ToString());
 
                     var takeObjectInScene = new GameObject(takeNameInScene);
                     takeObjectInScene.transform.SetParent(groupObject.transform);
@@ -150,7 +153,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-            var clipFullName = string.Concat(clipDataPath, ".wav");
+            var clipFullName = string.Concat(clipDataPath, IT_AnimotiveImporterEditorConstants.AudioFileExtension);
 
             var path = Path.Combine(IT_AnimotiveImporterEditorWindow.ImportedAudiosAssetdatabaseDirectory,
                 Path.GetFileName(clipFullName));

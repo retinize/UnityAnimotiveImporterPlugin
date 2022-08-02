@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string ImportedAudiosAssetdatabaseDirectory = Path.Combine(Directory.GetCurrentDirectory(),
             "Assets",
             "Imported Files", "Audio");
+
+        private static string _parentDirName = "";
 
         private static bool _DisableImport;
         private static bool _IsAnimotiveFolderImported;
@@ -43,10 +46,20 @@ namespace Retinize.Editor.AnimotiveImporter
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
                     {
                         UserChosenDirectoryToImportUnityExports = choosenFolder;
-                        var fbxes = CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
-                        MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
 
-                        if (fbxes) Debug.Log("Imported the Animotive files successfully !");
+                        var parentDirectory = Directory.GetParent(UserChosenDirectoryToImportUnityExports)?.Name;
+                        parentDirectory = parentDirectory?.Trim().Replace(' ', '-');
+                        _parentDirName = parentDirectory;
+
+                        var fbxes = await CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
+
+                        if (fbxes)
+                        {
+                            await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+
+                            Debug.Log("Imported the Animotive files successfully !");
+                        }
+
                         UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
                         _IsAnimotiveFolderImported = fbxes;
                     }
@@ -55,7 +68,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         _IsAnimotiveFolderImported = false;
 
                         EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
-                            "The folder you chose is not a valid Animotive Export folder ! ", "OK");
+                            "Please choose a valid Animotive Export folder", "OK");
                     }
                 }
                 else
@@ -66,10 +79,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
             GUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField("Reimport Always");
+            EditorGUILayout.LabelField("Reimport Characters : ");
             _ReimportAssets = EditorGUILayout.Toggle(_ReimportAssets);
 
             GUILayout.EndHorizontal();
+
+            // if (GUILayout.Button("Clear Accumulated Files")) ClearAccumulatedFiles();
 
             #endregion
 
@@ -84,7 +99,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsFolderPath);
-                IT_SceneEditor.CreateScene(sceneData.currentSetName);
+                IT_SceneEditor.CreateScene(sceneData.currentSetName, _parentDirName);
 
 
                 //create animation clips
@@ -143,12 +158,18 @@ namespace Retinize.Editor.AnimotiveImporter
             AssetDatabase.Refresh();
         }
 
-        private static bool CheckCharacterFbxs(string unityExportPath)
+        private static Task<bool> CheckCharacterFbxs(string unityExportPath)
         {
             var charactersPath = Path.Combine(unityExportPath, "EntityAssets", "Characters");
             var characterFolders = Directory.GetDirectories(charactersPath);
 
-            if (characterFolders.Length == 0) return false;
+            if (characterFolders.Length == 0)
+            {
+                EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
+                    @"Couldn't find any Character folder to import FBX", "OK");
+
+                return Task.FromResult(false);
+            }
 
 
             for (var i = 0; i < characterFolders.Length; i++)
@@ -163,7 +184,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                         $@"Couldn't find any FBX file at the directory: {folder}", "OK");
-                    return false;
+                    return Task.FromResult(false);
                 }
 
                 existence = fbxes.Count == 1;
@@ -171,22 +192,23 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                         $@"More than one FBX is detected at : {folder}", "OK");
-                    return false;
+                    return Task.FromResult(false);
                 }
 
                 var fullPathToExpectedFbx = fbxes[0];
                 ImportFbxIntoUnityAndProcessIt(fullPathToExpectedFbx);
             }
 
-            return true;
+            return Task.FromResult(true);
         }
 
-        private static void MoveAudiosIntoUnity(string unityExportPath)
+        private static Task MoveAudiosIntoUnity(string unityExportPath)
         {
             var charactersPath = Path.Combine(unityExportPath, "Clips");
 
             var files = Directory.GetFiles(charactersPath)
-                .Where(a => !a.EndsWith(".meta") && a.ToLower().EndsWith(".wav")).ToList();
+                .Where(a => !a.EndsWith(".meta") &&
+                            a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioFileExtension)).ToList();
 
             if (!Directory.Exists(ImportedAudiosAssetdatabaseDirectory))
                 Directory.CreateDirectory(ImportedAudiosAssetdatabaseDirectory);
@@ -200,12 +222,20 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
                         ImportedAudiosAssetdatabaseDirectory,
-                        files[i], fileName, "wav");
+                        files[i], fileName, IT_AnimotiveImporterEditorConstants.AudioFileExtension);
                     File.Copy(files[i], targetFileName, false);
                 }
             }
 
             AssetDatabase.Refresh();
+            return Task.CompletedTask;
+        }
+
+        private static void ClearAccumulatedFiles()
+        {
+            Debug.Log(ImportedAudiosAssetdatabaseDirectory);
+
+            var files = Directory.GetFiles(ImportedAudiosAssetdatabaseDirectory);
         }
     }
 }
