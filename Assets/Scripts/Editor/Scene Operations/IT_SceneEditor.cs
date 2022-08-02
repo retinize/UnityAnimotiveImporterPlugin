@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -10,9 +11,14 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates scene at the designated location.
         /// </summary>
         /// <param name="sceneName">Name of the scene to be created.</param>
-        public static void CreateScene(string sceneName)
+        public static Scene CreateScene(string sceneName)
         {
-            var hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
+            if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory))
+                Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory);
+
+            var hardcodedPath =
+                IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(
+                    IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory);
             var fullOsPath = Path.Combine(Directory.GetCurrentDirectory(), hardcodedPath);
 
             if (!Directory.Exists(fullOsPath)) Directory.CreateDirectory(fullOsPath);
@@ -30,13 +36,15 @@ namespace Retinize.Editor.AnimotiveImporter
             if (File.Exists(fullSourcePath))
             {
                 similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
-                EditorSceneManager.SaveScene(scene, similarName);
+                sceneFullPath = similarName;
             }
-            else
-                EditorSceneManager.SaveScene(scene, sceneFullPath);
 
+
+            EditorSceneManager.SaveScene(scene, sceneFullPath);
 
             AssetDatabase.Refresh();
+
+            return scene;
         }
     }
 }

@@ -13,7 +13,7 @@ public class IT_ModelCustomImportSteps : AssetPostprocessor
             {
                 modelImporter.animationType = ModelImporterAnimationType.Human;
                 modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
-                var directoryName = IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory;
+                var directoryName = IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory;
                 var texturesPath = Path.Combine(directoryName, "Textures");
                 var fullOSPath = Path.Combine(Directory.GetCurrentDirectory(), texturesPath);
                 if (!Directory.Exists(fullOSPath))

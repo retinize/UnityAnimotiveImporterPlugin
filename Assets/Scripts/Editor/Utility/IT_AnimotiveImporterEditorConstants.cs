@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
     public static class IT_AnimotiveImporterEditorConstants
     {
         public const string UnitySceneExtension = ".unity";
+        public const string AudioExtension = ".wav";
+        public const string AnimationExtension = ".anim";
+
+
         private const string _TransformClipName = "TransformClip";
         private const string _PropertyClipName = "PropertiesClip";
         private const string _AudioClipName = "AudioClip";
@@ -16,18 +21,37 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string RootPositionString = "RootPosition";
         public const string RootRotationString = "RootRotation";
 
+        public static string UnityFilesBase = Path.Combine(Directory.GetCurrentDirectory(),
+            "Assets",
+            "UnityFiles");
+
+        public static string UnityFilesAudioDirectory = Path.Combine(UnityFilesBase, "Audio");
+
+
+        public static string UnityFilesCharactersDirectory = Path.Combine(UnityFilesBase, "Characters");
+        public static string UnityFilesScenesDirectory = Path.Combine(UnityFilesBase, "Scenes");
+
+        public static readonly string UnityFilesPlayablesDirectory = Path.Combine(UnityFilesBase, "Playables");
+
+        public static readonly string UnityFilesAnimationDirectory = Path.Combine(UnityFilesBase, "Animations");
+
+        public static string UnityFilesBodyAnimationDirectory =
+            Path.Combine(UnityFilesAnimationDirectory, "BodyAnimations");
+
+        public static string UnityFilesFacialAnimationDirectory =
+            Path.Combine(UnityFilesAnimationDirectory, "FacialAnimations");
 
         public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
-            { IT_ClipType.PropertiesClip, _PropertyClipName },
-            { IT_ClipType.TransformClip, _TransformClipName },
-            { IT_ClipType.AudioClip, _AudioClipName }
+            {IT_ClipType.PropertiesClip, _PropertyClipName},
+            {IT_ClipType.TransformClip, _TransformClipName},
+            {IT_ClipType.AudioClip, _AudioClipName}
         };
 
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
             new Dictionary<IT_EntityType, string>
             {
-                { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
+                {IT_EntityType.Camera, "Camera"}, {IT_EntityType.Spotlight, "Spot Light"}
             };
 
 
@@ -41,13 +65,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public const string FacialAnimationCreatedPath =
             FacialAnimationDirectory + "blenshapeAnim.anim";
-
-        public const string BodyAnimationDirectory =
-            @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Transform/";
-
-        public const string FacialAnimationController = FacialAnimationDirectory + "blenshapes.controller";
-
-        public const string PlayablesCreationPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Playables\";
 
         #endregion
     }

@@ -13,7 +13,6 @@ namespace Retinize.Editor.AnimotiveImporter
     public static class IT_TransformAnimationClipEditor
     {
         private static string bodyAnimationPath = "";
-        public static string bodyAnimatorPath = "";
         public static string bodyAnimationName = "";
 
         #region Dictionary Operations
@@ -36,7 +35,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -399,6 +398,18 @@ namespace Retinize.Editor.AnimotiveImporter
         public static async Task<Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>>
             HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsFolderPath)
         {
+            string[] animationDirectories =
+            {
+                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory
+            };
+
+            for (var i = 0; i < animationDirectories.Length; i++)
+            {
+                if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
+            }
+
             var transformGroupDatas =
                 IT_AnimotiveImporterEditorUtilities.GetClipsPathByType(sceneData, clipsFolderPath);
 
@@ -408,26 +419,6 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var groupData = transformGroupDatas[i];
 
-
-                bodyAnimatorPath =
-                    string.Concat(
-                        string.Concat(IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                            groupData.GroupName),
-                        ".controller");
-
-
-                var fullOsPath =
-                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimatorPath);
-                var assetDatabaseDir = Path.GetDirectoryName(fullOsPath);
-
-                if (File.Exists(fullOsPath))
-                {
-                    var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
-                        fullOsPath,
-                        Path.GetFileName(fullOsPath), "controller");
-                    similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
-                    bodyAnimatorPath = similarName;
-                }
 
                 foreach (var pair in groupData.TakeDatas)
                 {
@@ -502,9 +493,8 @@ namespace Retinize.Editor.AnimotiveImporter
                         //     .DeleteAssetIfExists(bodyAnimationPath,
                         //         typeof(AnimationClip));
 
-                        var animationClip =
-                            CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
-                                fbxData.FbxGameObject, fbxDataTuple.EditorTPose);
+                        CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
+                            fbxData.FbxGameObject, fbxDataTuple.EditorTPose);
                     }
                 }
             }
@@ -568,7 +558,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var modelName = Path.GetFileName(fullOsPathToFbx);
 
                         var pathToFbx = Path.Combine(
-                            IT_AnimotiveImporterEditorWindow.ImportedCharactersAssetdatabaseDirectory
+                            IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory
                             , modelName);
                         // var pathToFbx = fbxes[0];
 

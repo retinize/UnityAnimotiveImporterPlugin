@@ -19,6 +19,9 @@ namespace Retinize.Editor.AnimotiveImporter
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
         {
+            if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory))
+                Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory);
+
             for (var i = 0; i < transformGroupDatas.Count; i++)
             {
                 var groupData = transformGroupDatas[i];
@@ -28,8 +31,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 foreach (var pair in groupData.TakeDatas)
                 {
                     var takeData = pair.Value;
-
-                    var takeNameInScene = string.Concat("Take_", pair.Key.ToString());
+                    var takeNumberOnUI = pair.Key + 1;
+                    var takeNameInScene = string.Concat("Take_", takeNumberOnUI.ToString());
 
                     var takeObjectInScene = new GameObject(takeNameInScene);
                     takeObjectInScene.transform.SetParent(groupObject.transform);
@@ -58,9 +61,12 @@ namespace Retinize.Editor.AnimotiveImporter
             var assetName = string.Concat(sceneInternalData.currentSetName, "_", timelineData.GroupName, "_Take",
                 timelineData.TakeData.TakeIndex);
 
-            var assetPath = string.Concat(IT_AnimotiveImporterEditorConstants.PlayablesCreationPath, assetName,
-                ".playable");
+            var assetPath = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                string.Concat(assetName,
+                    ".playable")
+            );
 
+            assetPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(assetPath);
 
             var asset = ScriptableObject.CreateInstance<TimelineAsset>();
 
@@ -152,7 +158,7 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var clipFullName = string.Concat(clipDataPath, ".wav");
 
-            var path = Path.Combine(IT_AnimotiveImporterEditorWindow.ImportedAudiosAssetdatabaseDirectory,
+            var path = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                 Path.GetFileName(clipFullName));
             path = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(path);
 
