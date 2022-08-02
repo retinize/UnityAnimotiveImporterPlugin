@@ -378,7 +378,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath));
                 var similarFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
                     fullOsPathToBodyAnim,
-                    Path.GetFileName(fullOsPathToBodyAnim), IT_AnimotiveImporterEditorConstants.AnimationClipExtension);
+                    Path.GetFileName(fullOsPathToBodyAnim), "anim");
 
                 bodyAnimationPath =
                     IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
