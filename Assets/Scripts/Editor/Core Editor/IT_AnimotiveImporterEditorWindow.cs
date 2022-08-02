@@ -222,7 +222,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
                         ImportedAudiosAssetdatabaseDirectory,
-                        files[i], fileName, IT_AnimotiveImporterEditorConstants.AudioFileExtension);
+                        files[i], fileName, "wav");
                     File.Copy(files[i], targetFileName, false);
                 }
             }

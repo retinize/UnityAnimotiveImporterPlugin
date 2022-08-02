@@ -27,8 +27,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var fullSourcePath = Path.Combine(fullOsPath, unitySceneName);
             var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath, fullSourcePath,
-                unitySceneName,
-                IT_AnimotiveImporterEditorConstants.UnitySceneExtension);
+                unitySceneName, "unity");
 
             if (File.Exists(fullSourcePath))
             {
