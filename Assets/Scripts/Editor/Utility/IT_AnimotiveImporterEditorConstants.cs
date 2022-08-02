@@ -5,6 +5,11 @@ namespace Retinize.Editor.AnimotiveImporter
     public static class IT_AnimotiveImporterEditorConstants
     {
         public const string UnitySceneExtension = ".unity";
+        public const string AnimationClipExtension = ".anim";
+        public const string AudioFileExtension = ".wav";
+        public const string PlayableExtension = ".playable";
+
+
         private const string _TransformClipName = "TransformClip";
         private const string _PropertyClipName = "PropertiesClip";
         private const string _AudioClipName = "AudioClip";
@@ -19,15 +24,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
-            { IT_ClipType.PropertiesClip, _PropertyClipName },
-            { IT_ClipType.TransformClip, _TransformClipName },
-            { IT_ClipType.AudioClip, _AudioClipName }
+            {IT_ClipType.PropertiesClip, _PropertyClipName},
+            {IT_ClipType.TransformClip, _TransformClipName},
+            {IT_ClipType.AudioClip, _AudioClipName}
         };
 
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
             new Dictionary<IT_EntityType, string>
             {
-                { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
+                {IT_EntityType.Camera, "Camera"}, {IT_EntityType.Spotlight, "Spot Light"}
             };
 
 

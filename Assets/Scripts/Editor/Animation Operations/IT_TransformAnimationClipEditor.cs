@@ -13,7 +13,6 @@ namespace Retinize.Editor.AnimotiveImporter
     public static class IT_TransformAnimationClipEditor
     {
         private static string bodyAnimationPath = "";
-        public static string bodyAnimatorPath = "";
         public static string bodyAnimationName = "";
 
         #region Dictionary Operations
@@ -36,7 +35,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -379,7 +378,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath));
                 var similarFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
                     fullOsPathToBodyAnim,
-                    Path.GetFileName(fullOsPathToBodyAnim), "anim");
+                    Path.GetFileName(fullOsPathToBodyAnim), IT_AnimotiveImporterEditorConstants.AnimationClipExtension);
 
                 bodyAnimationPath =
                     IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
@@ -408,26 +407,6 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var groupData = transformGroupDatas[i];
 
-
-                bodyAnimatorPath =
-                    string.Concat(
-                        string.Concat(IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory,
-                            groupData.GroupName),
-                        ".controller");
-
-
-                var fullOsPath =
-                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimatorPath);
-                var assetDatabaseDir = Path.GetDirectoryName(fullOsPath);
-
-                if (File.Exists(fullOsPath))
-                {
-                    var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDatabaseDir,
-                        fullOsPath,
-                        Path.GetFileName(fullOsPath), "controller");
-                    similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
-                    bodyAnimatorPath = similarName;
-                }
 
                 foreach (var pair in groupData.TakeDatas)
                 {
@@ -502,9 +481,8 @@ namespace Retinize.Editor.AnimotiveImporter
                         //     .DeleteAssetIfExists(bodyAnimationPath,
                         //         typeof(AnimationClip));
 
-                        var animationClip =
-                            CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
-                                fbxData.FbxGameObject, fbxDataTuple.EditorTPose);
+                        CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
+                            fbxData.FbxGameObject, fbxDataTuple.EditorTPose);
                     }
                 }
             }

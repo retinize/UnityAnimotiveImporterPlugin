@@ -79,10 +79,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
             GUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField("Reimport Always");
+            EditorGUILayout.LabelField("Reimport Characters : ");
             _ReimportAssets = EditorGUILayout.Toggle(_ReimportAssets);
 
             GUILayout.EndHorizontal();
+
+            // if (GUILayout.Button("Clear Accumulated Files")) ClearAccumulatedFiles();
 
             #endregion
 
@@ -205,7 +207,8 @@ namespace Retinize.Editor.AnimotiveImporter
             var charactersPath = Path.Combine(unityExportPath, "Clips");
 
             var files = Directory.GetFiles(charactersPath)
-                .Where(a => !a.EndsWith(".meta") && a.ToLower().EndsWith(".wav")).ToList();
+                .Where(a => !a.EndsWith(".meta") &&
+                            a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioFileExtension)).ToList();
 
             if (!Directory.Exists(ImportedAudiosAssetdatabaseDirectory))
                 Directory.CreateDirectory(ImportedAudiosAssetdatabaseDirectory);
@@ -219,13 +222,20 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
                         ImportedAudiosAssetdatabaseDirectory,
-                        files[i], fileName, "wav");
+                        files[i], fileName, IT_AnimotiveImporterEditorConstants.AudioFileExtension);
                     File.Copy(files[i], targetFileName, false);
                 }
             }
 
             AssetDatabase.Refresh();
             return Task.CompletedTask;
+        }
+
+        private static void ClearAccumulatedFiles()
+        {
+            Debug.Log(ImportedAudiosAssetdatabaseDirectory);
+
+            var files = Directory.GetFiles(ImportedAudiosAssetdatabaseDirectory);
         }
     }
 }

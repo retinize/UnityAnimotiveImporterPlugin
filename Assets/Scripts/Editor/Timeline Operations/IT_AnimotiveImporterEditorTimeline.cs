@@ -153,7 +153,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-            var clipFullName = string.Concat(clipDataPath, ".wav");
+            var clipFullName = string.Concat(clipDataPath, IT_AnimotiveImporterEditorConstants.AudioFileExtension);
 
             var path = Path.Combine(IT_AnimotiveImporterEditorWindow.ImportedAudiosAssetdatabaseDirectory,
                 Path.GetFileName(clipFullName));
