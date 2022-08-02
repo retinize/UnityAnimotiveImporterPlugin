@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -99,7 +100,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsFolderPath);
-                IT_SceneEditor.CreateScene(sceneData.currentSetName, _parentDirName);
+                var scene = IT_SceneEditor.CreateScene(sceneData.currentSetName, _parentDirName);
 
 
                 //create animation clips
@@ -113,6 +114,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 //create timeline using animation clips
                 IT_AnimotiveImporterEditorTimeline.HandleGroups(animationClipOperations.Item1,
                     animationClipOperations.Item2, sceneData);
+
+                EditorSceneManager.SaveScene(scene);
+                AssetDatabase.Refresh();
             }
 
 

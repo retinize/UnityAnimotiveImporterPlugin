@@ -1,6 +1,6 @@
 using System.IO;
-using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -10,7 +10,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates scene at the designated location.
         /// </summary>
         /// <param name="sceneName">Name of the scene to be created.</param>
-        public static void CreateScene(string sceneName, string parentDirName)
+        public static Scene CreateScene(string sceneName, string parentDirName)
         {
             var hardcodedPath = @"Assets\AnimotivePluginExampleStructure\UnityFiles\Scenes\";
             var fullOsPath = Path.Combine(Directory.GetCurrentDirectory(), hardcodedPath);
@@ -36,9 +36,7 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
 
-            EditorSceneManager.SaveScene(scene, sceneFullPath);
-
-            AssetDatabase.Refresh();
+            return scene;
         }
     }
 }
