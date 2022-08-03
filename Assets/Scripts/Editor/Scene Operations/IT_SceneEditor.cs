@@ -1,4 +1,5 @@
 using System.IO;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
@@ -35,6 +36,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 sceneFullPath = similarName;
             }
 
+            EditorSceneManager.SaveScene(scene, sceneFullPath);
+            AssetDatabase.Refresh();
 
             return scene;
         }
