@@ -469,7 +469,7 @@ Transform:
   m_Children:
   - {fileID: 666298574}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &614719209
 GameObject:
@@ -746,6 +746,10 @@ PrefabInstance:
       value: Frank_FBX_Masterv17_Prod(Clone)_HOLDER
       objectReference: {fileID: 0}
     - target: {fileID: 7054432296614973455, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.164487
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054432296614973455, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
@@ -820,7 +824,7 @@ GameObject:
   - component: {fileID: 777384190}
   - component: {fileID: 777384189}
   m_Layer: 0
-  m_Name: DUMMY TIMELINE
+  m_Name: EPISODE BODY DUMMY TIMELINE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -855,7 +859,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &815189055
 GameObject:
@@ -1948,6 +1952,54 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+--- !u!1 &1892790464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1892790466}
+  - component: {fileID: 1892790465}
+  m_Layer: 0
+  m_Name: INTRO DUMMY TIMELINE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!320 &1892790465
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892790464}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 68a1ebe83fc6d0b43827977f0ceb6838, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings: []
+  m_ExposedReferences:
+    m_References: []
+--- !u!4 &1892790466
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892790464}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1949868574
 GameObject:
   m_ObjectHideFlags: 0
@@ -7877,9 +7929,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1460958432586982837, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_TagString
+      value: Camera6
+      objectReference: {fileID: 0}
     - target: {fileID: 2441275133023363527, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2441275133023363527, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7921,13 +7977,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4423889853005291716, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
-      propertyPath: m_TargetDisplay
-      value: 0
+    - target: {fileID: 2946260601078317688, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4199204340412586787, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4677527604764851919, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4768332866933791460, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
       propertyPath: m_Name
       value: Cameras
+      objectReference: {fileID: 0}
+    - target: {fileID: 5732286334835929448, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
