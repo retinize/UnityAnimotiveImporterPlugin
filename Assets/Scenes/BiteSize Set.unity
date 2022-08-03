@@ -647,9 +647,25 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[5].key
       value: 
       objectReference: {fileID: 5683780725620674684, guid: 166decdec5e202d4fbb51222f0ee0acf, type: 2}
+    - target: {fileID: 7659007811715310305, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_SceneBindings.Array.data[0].value
+      value: 
+      objectReference: {fileID: 1662332650}
+    - target: {fileID: 7659007811715310305, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_SceneBindings.Array.data[1].value
+      value: 
+      objectReference: {fileID: 1662332649}
+    - target: {fileID: 7659007811715310305, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_SceneBindings.Array.data[2].value
+      value: 
+      objectReference: {fileID: 702290259}
+    - target: {fileID: 7659007811715310305, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_SceneBindings.Array.data[3].value
+      value: 
+      objectReference: {fileID: 702290258}
     - target: {fileID: 7659007811715310307, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7659007812016554690, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_SceneBindings.Array.size
@@ -679,6 +695,10 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[3].value
       value: 
       objectReference: {fileID: 702290258}
+    - target: {fileID: 7659007812016554716, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7659007813523291065, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_Name
       value: Ep8_07_28_2022 12_17_35
@@ -744,6 +764,10 @@ PrefabInstance:
     - target: {fileID: 783374185326152965, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
       propertyPath: m_Name
       value: Frank_FBX_Masterv17_Prod(Clone)_HOLDER
+      objectReference: {fileID: 0}
+    - target: {fileID: 1399885611416758127, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.1055333
       objectReference: {fileID: 0}
     - target: {fileID: 7054432296614973455, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7929,6 +7953,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1372996365887584213, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1460958432586982837, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1460958432586982837, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
       propertyPath: m_TagString
       value: Camera6
