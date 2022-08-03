@@ -83,7 +83,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static string GetBodyAssetDatabasePath(string dataPath, string extension)
         {
-            var baseBodyPathWithNameWithoutExtension = string.Concat(
+            var baseBodyPathWithNameWithoutExtension = Path.Combine(
                 ConvertSystemPathToAssetDatabasePath(IT_AnimotiveImporterEditorConstants
                     .UnityFilesBodyAnimationDirectory),
                 Path.GetFileNameWithoutExtension(dataPath));
@@ -141,6 +141,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                     ReturnClipDataFromPath(clipsPath,
                                         clip.clipName);
 
+
                                 var type =
                                     GetClipTypeFromClipName(clip.clipName);
 
@@ -157,7 +158,42 @@ namespace Retinize.Editor.AnimotiveImporter
                                         currentCluster.SetTransformClip(clipdata);
                                         break;
                                     case IT_ClipType.AudioClip:
-                                        currentCluster.SetAudioClip(clipdata);
+
+
+                                        var files = Directory
+                                            .GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
+
+                                        var nameWithoutExtension = Path
+                                            .GetFileNameWithoutExtension(clip.clipName)
+                                            .ToLower();
+
+                                        var audioFiles =
+                                            files.Where(a => !a.EndsWith(".meta") &&
+                                                             a.EndsWith(IT_AnimotiveImporterEditorConstants
+                                                                 .AudioExtension))
+                                                .ToArray();
+
+                                        audioFiles = audioFiles.Where(a =>
+                                                a.ToLower().Contains(nameWithoutExtension.ToLower()))
+                                            .ToArray();
+
+                                        audioFiles = audioFiles.OrderByDescending(a =>
+                                            Path.GetFileNameWithoutExtension(a).Split(' ')[
+                                                Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
+
+                                        if (audioFiles.Length > 1)
+                                        {
+                                            var currentClipDataPath = audioFiles[1];
+                                            currentClipDataPath = currentClipDataPath.Split(
+                                                new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                                StringSplitOptions.None)[0];
+
+                                            currentCluster.SetAudioClip(new IT_ClipData(type, clipdata.ClipPlayerData,
+                                                currentClipDataPath));
+                                        }
+                                        else
+                                            currentCluster.SetAudioClip(clipdata);
+
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
