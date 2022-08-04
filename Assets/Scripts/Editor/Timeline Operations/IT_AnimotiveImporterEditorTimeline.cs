@@ -62,8 +62,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 timelineData.TakeData.TakeIndex);
 
             var assetPath = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
-                string.Concat(assetName,
-                    ".playable")
+                string.Concat(assetName, IT_AnimotiveImporterEditorConstants.PlayableExtension)
             );
 
             assetPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(assetPath);
@@ -76,7 +75,7 @@ namespace Retinize.Editor.AnimotiveImporter
             if (File.Exists(fullOsPath))
             {
                 var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetPathDir,
-                    fullOsPath, Path.GetFileName(fullOsPath), "playable");
+                    fullOsPath, Path.GetFileName(fullOsPath), IT_AnimotiveImporterEditorConstants.PlayableExtension);
                 similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
                 assetPath = similarName;
             }
@@ -156,7 +155,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-            var clipFullName = string.Concat(clipDataPath, ".wav");
+            var clipFullName = string.Concat(clipDataPath, IT_AnimotiveImporterEditorConstants.AudioExtension);
 
             var path = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                 Path.GetFileName(clipFullName));

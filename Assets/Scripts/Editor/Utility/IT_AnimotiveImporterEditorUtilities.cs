@@ -244,13 +244,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
                     Path.GetFileNameWithoutExtension(targetFileName), " ",
-                    temp, $".{extension}"));
+                    temp, $"{extension}"));
             }
             else
             {
                 targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
                     Path.GetFileNameWithoutExtension(targetFileName), " ", "0001",
-                    $".{extension}"));
+                    $"{extension}"));
             }
 
             return targetFileName;

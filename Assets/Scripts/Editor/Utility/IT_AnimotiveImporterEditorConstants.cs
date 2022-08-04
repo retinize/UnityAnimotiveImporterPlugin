@@ -8,6 +8,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string UnitySceneExtension = ".unity";
         public const string AudioExtension = ".wav";
         public const string AnimationExtension = ".anim";
+        public const string PlayableExtension = ".playable";
 
 
         private const string _TransformClipName = "TransformClip";
