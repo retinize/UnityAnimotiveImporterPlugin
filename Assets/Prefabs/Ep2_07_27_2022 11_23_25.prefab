@@ -1,0 +1,154 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5336406896698215416
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5336406896698215423}
+  - component: {fileID: 5336406896698215422}
+  m_Layer: 0
+  m_Name: Ep2_07_27_2022 11_23_25_Take_2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5336406896698215423
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336406896698215416}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5336406897610405475}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!320 &5336406896698215422
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336406896698215416}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: 6990686223526031020, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 1177473234260547717, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -1499021946026353371, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -6951527237326449031, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -7543760849275672338, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -1830573025832630247, guid: 7bda6a1c8358f6548801ceb61d5c2c22, type: 2}
+    value: {fileID: 0}
+  m_ExposedReferences:
+    m_References: []
+--- !u!1 &5336406897480358111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5336406897480358110}
+  - component: {fileID: 5336406897480358109}
+  m_Layer: 0
+  m_Name: Ep2_07_27_2022 11_23_25_Take_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5336406897480358110
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336406897480358111}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5336406897610405475}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!320 &5336406897480358109
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336406897480358111}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -813030683396896887, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 7064909664718947246, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -1317538617615051042, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 4083088233932953116, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 6521448377597038722, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -2038202182458351232, guid: 41ab1ba4cda9e7d4abe7292cc0ff5f56, type: 2}
+    value: {fileID: 0}
+  m_ExposedReferences:
+    m_References: []
+--- !u!1 &5336406897610405500
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5336406897610405475}
+  m_Layer: 0
+  m_Name: Ep2_07_27_2022 11_23_25
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5336406897610405475
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5336406897610405500}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5336406897480358110}
+  - {fileID: 5336406896698215423}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
