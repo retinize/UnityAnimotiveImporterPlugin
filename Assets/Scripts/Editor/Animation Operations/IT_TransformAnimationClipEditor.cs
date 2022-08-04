@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
-    public static class IT_TransformAnimationClipEditor
+    public static class IT_BodyAnimationClipEditor
     {
         private static string bodyAnimationPath = "";
         public static string bodyAnimationName = "";
