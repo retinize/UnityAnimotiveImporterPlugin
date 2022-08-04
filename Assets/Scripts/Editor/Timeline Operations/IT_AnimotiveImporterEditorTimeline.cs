@@ -14,7 +14,9 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates the scene objects according to given group info and  creates&assigns them to their respective playable
         ///     asset.
         /// </summary>
-        /// <param name="group">List of group info</param>
+        /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
+        /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
+        /// <param name="sceneInternalData">Binary scene data.</param>
         public static void HandleGroups(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
@@ -94,8 +96,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 groupTrack.name = timelineData.GroupName;
 
                 var objToBind = timelineData.FbxDataWithHolders[clipCluster.ModelName].FbxData.FbxGameObject;
-                var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.GetBodyAssetDatabasePath(
-                    clipCluster.TransformClip.clipDataPath, "anim");
+                var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
+                    IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                    clipCluster.TransformClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 
@@ -117,9 +120,10 @@ namespace Retinize.Editor.AnimotiveImporter
                 // END OF FACIAL ANIMATION
 
 
-                CreateAnimationTrack(asset, groupTrack, bodyAnimationPath, playableDirector, objToBind);
+                CreateAnimationTrack(clipCluster.TransformClip, asset, groupTrack, bodyAnimationPath, playableDirector,
+                    objToBind);
                 // CreateAnimationTrack(); //facial animation
-                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.clipDataPath, playableDirector, objToBind);
+                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.ClipDataPath, playableDirector, objToBind);
             }
 
 
@@ -132,26 +136,49 @@ namespace Retinize.Editor.AnimotiveImporter
             return playableAsset;
         }
 
-        private static void CreateAnimationTrack(TimelineAsset asset, GroupTrack groupTrack, string bodyAnimationPath,
+        /// <summary>
+        ///     Creates animation track in the given group track.
+        /// </summary>
+        /// <param name="asset">Timeline asset to create track in</param>
+        /// <param name="groupTrack">group to assign created animation track</param>
+        /// <param name="animationPath">Path to animation clip</param>
+        /// <param name="playableDirector">Playable director to bind this track to. </param>
+        /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
+        private static void CreateAnimationTrack(IT_ClipData transformClip, TimelineAsset asset,
+            GroupTrack groupTrack, string animationPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-            if (string.IsNullOrEmpty(bodyAnimationPath)) return;
+            var files = IT_AnimotiveImporterEditorUtilities.Temp(transformClip.ClipPlayerData,
+                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+            if (files.Length > 1)
+                animationPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(files[1]);
+
+            if (string.IsNullOrEmpty(animationPath)) return;
             var animationTrack = asset.CreateTrack<AnimationTrack>();
             animationTrack.SetGroup(groupTrack);
 
             var bodyAnimationClip =
-                AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath);
+                AssetDatabase.LoadAssetAtPath<AnimationClip>(animationPath);
 
 
             var timelineClip = animationTrack.CreateClip(bodyAnimationClip);
             timelineClip.displayName =
-                Path.GetFileNameWithoutExtension(Path.Combine(Directory.GetCurrentDirectory(), bodyAnimationPath));
+                Path.GetFileNameWithoutExtension(Path.Combine(Directory.GetCurrentDirectory(), animationPath));
             timelineClip.start = 0;
 
             playableDirector.SetGenericBinding(animationTrack, objToBind);
         }
 
-
+        /// <summary>
+        ///     Creates audio track in the given group track.
+        /// </summary>
+        /// <param name="asset">Timeline asset to create track in</param>
+        /// <param name="groupTrack">group to assign created animation track</param>
+        /// <param name="clipDataPath">Path to audio clip data(binary)</param>
+        /// <param name="playableDirector">Playable director to bind this track to. </param>
+        /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
         private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {

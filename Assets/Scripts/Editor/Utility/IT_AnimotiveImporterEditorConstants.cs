@@ -9,6 +9,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string AudioExtension = ".wav";
         public const string AnimationExtension = ".anim";
         public const string PlayableExtension = ".playable";
+        public const string ModelExtension = ".fbx";
 
 
         private const string _TransformClipName = "TransformClip";

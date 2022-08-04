@@ -9,15 +9,13 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
-        private static string _parentDirName = "";
-
-        private static bool _DisableImport;
-        private static bool _IsAnimotiveFolderImported;
+        private static bool _disableImport;
+        private static bool _isAnimotiveFolderImported;
 
         public static string UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
-        private static bool _ReimportAssets;
+        private static bool _reimportAssets;
 
         private async void OnGUI()
         {
@@ -39,32 +37,23 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         UserChosenDirectoryToImportUnityExports = choosenFolder;
 
-                        var parentDirectory = Directory.GetParent(UserChosenDirectoryToImportUnityExports)?.Name;
-                        parentDirectory = parentDirectory?.Trim().Replace(' ', '-');
-                        _parentDirName = parentDirectory;
-
                         var fbxes = await CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
 
-                        if (fbxes)
-                        {
-                            await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
-
-                            Debug.Log("Imported the Animotive files successfully !");
-                        }
+                        if (fbxes) Debug.Log("Imported the Animotive files successfully !");
 
                         UserChosenDirectoryToImportUnityExports = fbxes ? choosenFolder : "";
-                        _IsAnimotiveFolderImported = fbxes;
+                        _isAnimotiveFolderImported = fbxes;
                     }
                     else
                     {
-                        _IsAnimotiveFolderImported = false;
+                        _isAnimotiveFolderImported = false;
 
                         EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                             "Please choose a valid Animotive Export folder", "OK");
                     }
                 }
                 else
-                    _IsAnimotiveFolderImported = false;
+                    _isAnimotiveFolderImported = false;
             }
 
             GUILayout.EndHorizontal();
@@ -72,7 +61,7 @@ namespace Retinize.Editor.AnimotiveImporter
             GUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField("Reimport Characters : ");
-            _ReimportAssets = EditorGUILayout.Toggle(_ReimportAssets);
+            _reimportAssets = EditorGUILayout.Toggle(_reimportAssets);
 
             GUILayout.EndHorizontal();
 
@@ -83,11 +72,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Button
 
-            _DisableImport = _IsAnimotiveFolderImported;
-            EditorGUI.BeginDisabledGroup(!_DisableImport);
+            _disableImport = _isAnimotiveFolderImported;
+            EditorGUI.BeginDisabledGroup(!_disableImport);
 
             if (GUILayout.Button("Import Animotive Scene"))
             {
+                await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(clipsFolderPath);
@@ -130,8 +121,12 @@ namespace Retinize.Editor.AnimotiveImporter
             window.Show();
         }
 
-
-        public static async void ImportFbxIntoUnityAndProcessIt(string fullOsPath)
+        /// <summary>
+        ///     This function imports FBX and configures the custom model importer to change the FBX importer settings to suit to
+        ///     this reader's needs.
+        /// </summary>
+        /// <param name="fullOsPath">Full path to fbx. Do not use assetDatabase path.</param>
+        public static void ImportFbxIntoUnityAndProcessIt(string fullOsPath)
         {
             var strippedFfileName = Path.GetFileName(fullOsPath);
 
@@ -144,7 +139,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (File.Exists(fullPathToSaveFbx))
             {
-                if (!_ReimportAssets)
+                if (!_reimportAssets)
                     return;
                 File.Delete(fullPathToSaveFbx);
                 AssetDatabase.Refresh();
@@ -160,6 +155,11 @@ namespace Retinize.Editor.AnimotiveImporter
             AssetDatabase.Refresh();
         }
 
+        /// <summary>
+        ///     This function checks if there's FBXes under their relative folder and if so, checks if there's only one.
+        /// </summary>
+        /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
+        /// <returns></returns>
         private static Task<bool> CheckCharacterFbxs(string unityExportPath)
         {
             var charactersPath = Path.Combine(unityExportPath, "EntityAssets", "Characters");
@@ -178,7 +178,8 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var folder = characterFolders[i];
                 var fbxes = Directory.GetFiles(folder)
-                    .Where(a => a.Substring(a.Length - 4, 4).ToLower().EndsWith(".fbx")).ToList();
+                    .Where(a => a.Substring(a.Length - 4, 4).ToLower()
+                        .EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToList();
 
 
                 var existence = fbxes.Count != 0;
@@ -204,6 +205,11 @@ namespace Retinize.Editor.AnimotiveImporter
             return Task.FromResult(true);
         }
 
+        /// <summary>
+        ///     Moves audio files into Unity editor and sorts them.
+        /// </summary>
+        /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
+        /// <returns></returns>
         private static Task MoveAudiosIntoUnity(string unityExportPath)
         {
             var charactersPath = Path.Combine(unityExportPath, "Clips");
@@ -234,40 +240,38 @@ namespace Retinize.Editor.AnimotiveImporter
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        ///     Deletes all accumulated files such as; Scenes, audios, animations and playables. But doesn't delete characters
+        /// </summary>
         private static void ClearAccumulatedFiles()
         {
-            try
+            string[] directories =
             {
-                string[] directories =
-                {
-                    IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
-                    IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
-                    IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
-                    IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
-                };
+                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
+            };
 
-                for (var i = 0; i < directories.Length; i++)
-                {
-                    Directory.Delete(directories[i], true);
-                }
+            for (var i = 0; i < directories.Length; i++)
+            {
+                Directory.Delete(directories[i], true);
+            }
 
-                ResetWindow();
-            }
-            catch
-            {
-            }
-            finally
-            {
-                AssetDatabase.Refresh();
-            }
+
+            ResetWindow();
+            AssetDatabase.Refresh();
         }
 
 
+        /// <summary>
+        ///     Resets plugin window to it's default state
+        /// </summary>
         private static void ResetWindow()
         {
             UserChosenDirectoryToImportUnityExports = "";
-            _IsAnimotiveFolderImported = false;
-            _ReimportAssets = false;
+            _isAnimotiveFolderImported = false;
+            _reimportAssets = false;
         }
     }
 }

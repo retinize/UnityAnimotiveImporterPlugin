@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.IO;
 using AnimotiveImporterDLL;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
+    //TODO: Add support for facial animation.
     public static class IT_BlendshapeAnimationClipEditor
     {
         /// <summary>

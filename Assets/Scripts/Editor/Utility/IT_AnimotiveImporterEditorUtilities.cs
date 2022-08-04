@@ -3,45 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AnimotiveImporterDLL;
-using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
-#if UNITY_EDITOR
+    /// <summary>
+    ///     Utility class for general utility methods to use around the plugin
+    /// </summary>
     public static class IT_AnimotiveImporterEditorUtilities
     {
         /// <summary>
-        ///     Deletes the asset if it already exists in the AssetDatabase
+        ///     Checks if the folder that user trying to import is compatible with the plugin
         /// </summary>
-        /// <param name="path">Path of the asset in the asset database.</param>
-        /// <param name="type">Type of the asset to look for and delete.</param>
-        public static void DeleteAssetIfExists(string path, Type type)
-        {
-            if (!string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(path)))
-            {
-                if (AssetDatabase.LoadAssetAtPath(path, type) != null)
-                    AssetDatabase.DeleteAsset(path);
-            }
-        }
-
-        /// <summary>
-        ///     Loads FBX from it's designated path and instantiates it to the current scene in the editor
-        /// </summary>
-        /// <returns>Tuple that contains instantiated character's root gameObject and it's Animator</returns>
-        public static IT_FbxData LoadFbx(string fbxAssetDatabasePath)
-        {
-            var characterRoot = AssetDatabase.LoadAssetAtPath(fbxAssetDatabasePath,
-                typeof(GameObject)) as GameObject;
-
-            characterRoot = Object.Instantiate(characterRoot);
-            characterRoot.AddComponent<AudioSource>();
-            var animator = characterRoot.GetComponent<Animator>();
-
-            return new IT_FbxData(characterRoot, animator);
-        }
-
+        /// <param name="path">Path to folder that user chose</param>
+        /// <returns>True: Yes folder is importable. False: No folder is not importable</returns>
         public static bool IsFolderInCorrectFormatToImport(string path)
         {
             var dirs = Directory.GetDirectories(path);
@@ -51,7 +26,13 @@ namespace Retinize.Editor.AnimotiveImporter
             return result;
         }
 
-        public static string ReturnClipDataFromPath(string clipsPath, string clipName)
+        /// <summary>
+        ///     Returns clip data (binary) path from "Clips" folder path using the clipname
+        /// </summary>
+        /// <param name="clipsPath">Clips folder path</param>
+        /// <param name="clipName">Name of the clip to search in Clips folder</param>
+        /// <returns>full path to binary clip data. If fails, returns empty</returns>
+        public static string ReturnClipDataPathFromPath(string clipsPath, string clipName)
         {
             var files = Directory.GetFiles(clipsPath);
 
@@ -63,6 +44,11 @@ namespace Retinize.Editor.AnimotiveImporter
             return "";
         }
 
+        /// <summary>
+        ///     Determines the clip type by using the clip name (Every clip has it's type written in the file name)
+        /// </summary>
+        /// <param name="clipName">Clip name to determine type of</param>
+        /// <returns>Type as IT_ClipType</returns>
         public static IT_ClipType GetClipTypeFromClipName(string clipName)
         {
             foreach (var pair in IT_AnimotiveImporterEditorConstants.ClipNamesByType)
@@ -73,25 +59,32 @@ namespace Retinize.Editor.AnimotiveImporter
             return IT_ClipType.None;
         }
 
-        public static T AddOrGetComponent<T>(this GameObject obj) where T : Component
-        {
-            var get = obj.GetComponent<T>();
-            if (get == null) return obj.AddComponent<T>();
-
-            return get;
-        }
-
-        public static string GetBodyAssetDatabasePath(string dataPath, string extension)
+        /// <summary>
+        ///     Converts full path of anything from UnityExports into usable asset database path under the UnityFiles
+        /// </summary>
+        /// <param name="unityFilesDirectory">
+        ///     Directory that user wants to put the new file in (Look
+        ///     IT_AnimotiveImporterEditorConstants class for more detail )
+        /// </param>
+        /// <param name="dataPath">Full path of data under the UnityExported directory</param>
+        /// <param name="extension">extension of file</param>
+        /// <returns> asset database path to create assets at</returns>
+        public static string ConvertFullFilePathIntoUnityFilesPath(string unityFilesDirectory, string dataPath,
+            string extension)
         {
             var baseBodyPathWithNameWithoutExtension = Path.Combine(
-                ConvertSystemPathToAssetDatabasePath(IT_AnimotiveImporterEditorConstants
-                    .UnityFilesBodyAnimationDirectory),
+                ConvertSystemPathToAssetDatabasePath(unityFilesDirectory),
                 Path.GetFileNameWithoutExtension(dataPath));
 
-            var bodyAnimationPath = string.Concat(baseBodyPathWithNameWithoutExtension, $".{extension}");
-            return bodyAnimationPath;
+            var path = string.Concat(baseBodyPathWithNameWithoutExtension, $"{extension}");
+            return path;
         }
 
+        /// <summary>
+        ///     Converts system path of unity assets to asset database path
+        /// </summary>
+        /// <param name="fullOsPath">Full path of unity asset</param>
+        /// <returns>asset database path</returns>
         public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
             var result = fullOsPath.Split(new[] {"Assets"}, StringSplitOptions.None)[1];
@@ -99,18 +92,28 @@ namespace Retinize.Editor.AnimotiveImporter
             return result;
         }
 
-
+        /// <summary>
+        ///     Converts asset database path to full os path (Item should exist in the Unity asset database)
+        /// </summary>
+        /// <param name="assetDbPath">asset database path of the asset</param>
+        /// <returns>Full OS path of unity asset</returns>
         public static string ConvertAssetDatabasePathToSystemPath(string assetDbPath)
         {
             return Path.Combine(Directory.GetCurrentDirectory(), assetDbPath);
         }
 
-        public static List<IT_GroupData> GetClipsPathByType(IT_SceneInternalData sceneData,
+        /// <summary>
+        ///     Collects and returns all usable group,cluster and take datas
+        /// </summary>
+        /// <param name="sceneData">Binary scene data</param>
+        /// <param name="clipsPath">Path to Clips folder</param>
+        /// <returns>List of IT_GroupData</returns>
+        public static List<IT_GroupData> GetGroupDataListByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
             var groupDatas = new List<IT_GroupData>();
 
-            IT_ClipCluster currentCluster = null;
+            IT_ClipCluster currentCluster;
 
             foreach (var groupData in sceneData.groupDataById.Values)
             {
@@ -138,7 +141,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var clip = track[k];
 
                                 var animationClipDataPath =
-                                    ReturnClipDataFromPath(clipsPath,
+                                    ReturnClipDataPathFromPath(clipsPath,
                                         clip.clipName);
 
 
@@ -156,30 +159,14 @@ namespace Retinize.Editor.AnimotiveImporter
                                         break;
                                     case IT_ClipType.TransformClip:
                                         currentCluster.SetTransformClip(clipdata);
+
                                         break;
                                     case IT_ClipType.AudioClip:
 
 
-                                        var files = Directory
-                                            .GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
-
-                                        var nameWithoutExtension = Path
-                                            .GetFileNameWithoutExtension(clip.clipName)
-                                            .ToLower();
-
-                                        var audioFiles =
-                                            files.Where(a => !a.EndsWith(".meta") &&
-                                                             a.EndsWith(IT_AnimotiveImporterEditorConstants
-                                                                 .AudioExtension))
-                                                .ToArray();
-
-                                        audioFiles = audioFiles.Where(a =>
-                                                a.ToLower().Contains(nameWithoutExtension.ToLower()))
-                                            .ToArray();
-
-                                        audioFiles = audioFiles.OrderByDescending(a =>
-                                            Path.GetFileNameWithoutExtension(a).Split(' ')[
-                                                Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
+                                        var audioFiles = Temp(clip,
+                                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                            IT_AnimotiveImporterEditorConstants.AudioExtension);
 
                                         if (audioFiles.Length > 1)
                                         {
@@ -218,7 +205,45 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
+        public static string[] Temp(IT_ClipPlayerData clip, string directory, string extension)
+        {
+            var files = Directory
+                .GetFiles(directory);
 
+            var nameWithoutExtension = Path
+                .GetFileNameWithoutExtension(clip.clipName)
+                .ToLower();
+
+            var clipFiles =
+                files.Where(a => !a.EndsWith(".meta") &&
+                                 a.EndsWith(extension))
+                    .ToArray();
+
+            clipFiles = clipFiles.Where(a =>
+                    a.ToLower().Contains(nameWithoutExtension.ToLower()))
+                .ToArray();
+
+            clipFiles = clipFiles.OrderByDescending(a =>
+                Path.GetFileNameWithoutExtension(a).Split(' ')[
+                    Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
+
+            return clipFiles;
+        }
+
+
+        /// <summary>
+        ///     Called when you already have a file saved in the asset database with the same name that you're trying to add.
+        ///     This function checks all the names and add distinctive number to end of name so that you can accumulate files.
+        /// </summary>
+        /// <param name="assetDatabaseDir">Asset database directory path to search similar files in</param>
+        /// <param name="fullSourceFilePath">Full OS path of file </param>
+        /// <param name="fileName">file name to search similarity</param>
+        /// <param name="extension">file extension</param>
+        /// <returns>
+        ///     Returns the new name of your file. Example: Let's say your input was File, and there was File 0005 in the related
+        ///     directory.
+        ///     This function will return File 0006 so you can save your file with a unique name
+        /// </returns>
         public static string GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
             string fileName,
             string extension)
@@ -256,6 +281,11 @@ namespace Retinize.Editor.AnimotiveImporter
             return targetFileName;
         }
 
+        /// <summary>
+        ///     Gets and returns some properties of entities  from the scene data to apply later on
+        /// </summary>
+        /// <param name="sceneData">Binary scene data</param>
+        /// <returns></returns>
         public static Dictionary<IT_EntityType, List<IT_BaseEntity>> GetPropertiesData(IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
@@ -334,7 +364,4 @@ namespace Retinize.Editor.AnimotiveImporter
             return 2 * Mathf.Atan(camera.sensorSize.x / (2 * newFocalLength)) * (180 / Mathf.PI);
         }
     }
-
-
-#endif
 }

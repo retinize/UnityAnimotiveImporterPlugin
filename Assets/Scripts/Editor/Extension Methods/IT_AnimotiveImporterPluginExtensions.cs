@@ -21,29 +21,18 @@ public static class IT_AnimotiveImporterPluginExtensions
         return null;
     }
 
-    public static string TrimStartByString(this string target, string trimString)
+    /// <summary>
+    ///     Adds given component to the given game object if it doesn't exist already and returns it. If it does, gets and
+    ///     returns it.
+    /// </summary>
+    /// <param name="obj">Object to add or get</param>
+    /// <typeparam name="T">Component type</typeparam>
+    /// <returns>Added/get component</returns>
+    public static T AddOrGetComponent<T>(this GameObject obj) where T : Component
     {
-        if (string.IsNullOrEmpty(trimString)) return target;
+        var get = obj.GetComponent<T>();
+        if (get == null) return obj.AddComponent<T>();
 
-        var result = target;
-        while (result.StartsWith(trimString))
-        {
-            result = result.Substring(trimString.Length);
-        }
-
-        return result;
-    }
-
-    public static string TrimEndByString(this string target, string trimString)
-    {
-        if (string.IsNullOrEmpty(trimString)) return target;
-
-        var result = target;
-        while (result.EndsWith(trimString))
-        {
-            result = result.Substring(0, result.Length - trimString.Length);
-        }
-
-        return result;
+        return get;
     }
 }
