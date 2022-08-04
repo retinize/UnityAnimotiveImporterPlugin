@@ -153,30 +153,37 @@ namespace Retinize.Editor.AnimotiveImporter
                                         currentCluster.SetPropertiesClip(clipdata);
                                         break;
                                     case IT_ClipType.TransformClip:
+
+
+                                        // var animationClipFiles = Temp(clip,
+                                        //     ConvertAssetDatabasePathToSystemPath(IT_AnimotiveImporterEditorConstants
+                                        //         .BodyAnimationDirectory), ".anim");
+                                        //
+                                        //
+                                        // if (animationClipFiles.Length > 1)
+                                        // {
+                                        //     var currentClipDataPath = animationClipFiles[1];
+                                        //     currentClipDataPath = currentClipDataPath.Split(
+                                        //         new[] {".anim"},
+                                        //         StringSplitOptions.None)[0];
+                                        //
+                                        //     currentClipDataPath =
+                                        //         ConvertAssetDatabasePathToSystemPath(currentClipDataPath);
+                                        //
+                                        //     currentCluster.SetTransformClip(new IT_ClipData(type,
+                                        //         clipdata.ClipPlayerData,
+                                        //         currentClipDataPath));
+                                        // }
+                                        // else
                                         currentCluster.SetTransformClip(clipdata);
+
+
                                         break;
                                     case IT_ClipType.AudioClip:
 
-                                        var files = Directory
-                                            .GetFiles(IT_AnimotiveImporterEditorWindow
-                                                .ImportedAudiosAssetdatabaseDirectory);
 
-                                        var nameWithoutExtension = Path
-                                            .GetFileNameWithoutExtension(clip.clipName)
-                                            .ToLower();
-
-                                        var audioFiles =
-                                            files.Where(a => !a.EndsWith(".meta") &&
-                                                             a.EndsWith(".wav"))
-                                                .ToArray();
-
-                                        audioFiles = audioFiles.Where(a =>
-                                                a.ToLower().Contains(nameWithoutExtension.ToLower()))
-                                            .ToArray();
-
-                                        audioFiles = audioFiles.OrderByDescending(a =>
-                                            Path.GetFileNameWithoutExtension(a).Split(' ')[
-                                                Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
+                                        var audioFiles = Temp(clip, IT_AnimotiveImporterEditorWindow
+                                            .ImportedAudiosAssetdatabaseDirectory, ".wav");
 
                                         if (audioFiles.Length > 1)
                                         {
@@ -216,6 +223,31 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
+
+        public static string[] Temp(IT_ClipPlayerData clip, string directory, string extension)
+        {
+            var files = Directory
+                .GetFiles(directory);
+
+            var nameWithoutExtension = Path
+                .GetFileNameWithoutExtension(clip.clipName)
+                .ToLower();
+
+            var clipFiles =
+                files.Where(a => !a.EndsWith(".meta") &&
+                                 a.EndsWith(extension))
+                    .ToArray();
+
+            clipFiles = clipFiles.Where(a =>
+                    a.ToLower().Contains(nameWithoutExtension.ToLower()))
+                .ToArray();
+
+            clipFiles = clipFiles.OrderByDescending(a =>
+                Path.GetFileNameWithoutExtension(a).Split(' ')[
+                    Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
+
+            return clipFiles;
+        }
 
         public static string GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
             string fileName,

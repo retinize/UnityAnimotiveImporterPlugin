@@ -115,7 +115,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 // END OF FACIAL ANIMATION
 
 
-                CreateAnimationTrack(asset, groupTrack, bodyAnimationPath, playableDirector, objToBind);
+                CreateAnimationTrack(clipCluster.TransformClip, asset, groupTrack, bodyAnimationPath, playableDirector,
+                    objToBind);
                 // CreateAnimationTrack(); //facial animation
                 CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.clipDataPath, playableDirector, objToBind);
             }
@@ -130,9 +131,20 @@ namespace Retinize.Editor.AnimotiveImporter
             return playableAsset;
         }
 
-        private static void CreateAnimationTrack(TimelineAsset asset, GroupTrack groupTrack, string bodyAnimationPath,
+        private static void CreateAnimationTrack(IT_ClipData clipData, TimelineAsset asset, GroupTrack groupTrack,
+            string bodyAnimationPath,
             PlayableDirector playableDirector, GameObject objToBind)
         {
+            var osPathToAnimations =
+                IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(
+                    IT_AnimotiveImporterEditorConstants.BodyAnimationDirectory);
+
+
+            var list = IT_AnimotiveImporterEditorUtilities.Temp(clipData.ClipPlayerData, osPathToAnimations, ".anim");
+
+            if (list.Length > 1)
+                bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(list[1]);
+
             if (string.IsNullOrEmpty(bodyAnimationPath)) return;
             var animationTrack = asset.CreateTrack<AnimationTrack>();
             animationTrack.SetGroup(groupTrack);
