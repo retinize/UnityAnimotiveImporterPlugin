@@ -2,6 +2,9 @@
 
 namespace Retinize.Editor.AnimotiveImporter
 {
+    /// <summary>
+    ///     Simple class to tuple values
+    /// </summary>
     public struct IT_TransformValues
     {
         public Quaternion Rotation { get; }

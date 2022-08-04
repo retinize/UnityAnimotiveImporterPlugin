@@ -279,7 +279,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         var boneGlobalRotationThisFrameFromAnimFile = globalQuaternionsByFrame[pair.Key][frame];
 
-                        var editorTPoseList = editorTPoseTransformInfoList.TransformsByStrings
+                        var editorTPoseList = editorTPoseTransformInfoList.transformsByStrings
                             .Where(a => a.Name == pair.Key).ToList();
 
                         var editorTPoseGlobalRotationForThisBone = Quaternion.identity;

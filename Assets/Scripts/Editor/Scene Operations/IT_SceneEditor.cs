@@ -8,7 +8,7 @@ namespace Retinize.Editor.AnimotiveImporter
     public static class IT_SceneEditor
     {
         /// <summary>
-        ///     Creates scene at the designated location.
+        ///     Creates scene asset at the designated location
         /// </summary>
         /// <param name="sceneName">Name of the scene to be created.</param>
         public static Scene CreateScene(string sceneName)

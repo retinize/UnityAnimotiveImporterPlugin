@@ -1,30 +1,37 @@
 using System.IO;
-using Retinize.Editor.AnimotiveImporter;
 using UnityEditor;
 
-public class IT_ModelCustomImportSteps : AssetPostprocessor
+namespace Retinize.Editor.AnimotiveImporter
 {
-    private void OnPreprocessModel()
+    /// <summary>
+    ///     Class to modify FBX imports for characters
+    /// </summary>
+    public class IT_ModelCustomImportSteps : AssetPostprocessor
     {
-        if (IT_AnimotiveImporterEditorWindow.EnableImportConfig) // @-sign in the name triggers this step
+        private void OnPreprocessModel()
         {
-            var modelImporter = assetImporter as ModelImporter;
-            if (modelImporter != null)
+            if (IT_AnimotiveImporterEditorWindow
+                .EnableImportConfig) // when plugin gives a green light to alter import settings this plugin will work
             {
-                modelImporter.animationType = ModelImporterAnimationType.Human;
-                modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
-                var directoryName = IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory;
-                var texturesPath = Path.Combine(directoryName, "Textures");
-                var fullOSPath = Path.Combine(Directory.GetCurrentDirectory(), texturesPath);
-                if (!Directory.Exists(fullOSPath))
+                var modelImporter = assetImporter as ModelImporter;
+
+                if (modelImporter != null)
                 {
-                    Directory.CreateDirectory(fullOSPath);
+                    modelImporter.animationType = ModelImporterAnimationType.Human;
+                    modelImporter.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                    var directoryName = IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory;
+                    var texturesPath = Path.Combine(directoryName, "Textures");
+                    var fullOSPath = Path.Combine(Directory.GetCurrentDirectory(), texturesPath);
+                    if (!Directory.Exists(fullOSPath))
+                    {
+                        Directory.CreateDirectory(fullOSPath);
+                        AssetDatabase.Refresh();
+                    }
+
+                    modelImporter.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+                    modelImporter.ExtractTextures(texturesPath);
                     AssetDatabase.Refresh();
                 }
-
-                modelImporter.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
-                modelImporter.ExtractTextures(texturesPath);
-                AssetDatabase.Refresh();
             }
         }
     }

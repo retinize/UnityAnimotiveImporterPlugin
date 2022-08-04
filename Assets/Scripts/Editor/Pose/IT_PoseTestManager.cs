@@ -18,18 +18,15 @@ namespace Retinize.Editor.AnimotiveImporter
         private static readonly string _posesBase =
             @"\Assets\AnimotivePluginExampleStructure\Example Data\Animation\Poses";
 
-        [Header("Load")]
-        public static string LoadJson = "";
+        [Header("Load")] public static string LoadJson = "";
 
         public static Animator LoadAnimator;
 
-        [Header("Save")]
-        public static string SaveJson = "";
+        [Header("Save")] public static string SaveJson = "";
 
         public static Animator SaveAnimator;
 
-        [Space]
-        [Header("For Loading Fixed Pose")]
+        [Space] [Header("For Loading Fixed Pose")]
         public static string EditorTPose = "";
 
         public static string AnimotiveTPose = "";
@@ -48,7 +45,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var transformInfoList = JsonUtility.FromJson<IT_TransformInfoList>(text);
 
-            foreach (var pair in transformInfoList.TransformsByStrings)
+            foreach (var pair in transformInfoList.transformsByStrings)
             {
                 var tr = LoadAnimator.GetBoneTransform(pair.Name);
                 if (tr != null)
@@ -82,11 +79,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0;
                  i < pluginTPoseTransformInfoList
-                     .TransformsByStrings.Count;
+                     .transformsByStrings.Count;
                  i++)
             {
                 var pair = pluginTPoseTransformInfoList
-                    .TransformsByStrings[i];
+                    .transformsByStrings[i];
                 var tr = LoadAnimator.GetBoneTransform(pair.Name);
 
                 if (tr != null)
@@ -94,10 +91,10 @@ namespace Retinize.Editor.AnimotiveImporter
                     tr.localPosition = pair.LocalPosition;
 
                     var inverseAnimotiveTpose =
-                        Quaternion.Inverse(animotiveTPoseTransformInfoList.TransformsByStrings[i].GlobalRotation);
+                        Quaternion.Inverse(animotiveTPoseTransformInfoList.transformsByStrings[i].GlobalRotation);
 
                     var poseRotation =
-                        frankGestureAnimotiveTransformInfoList.TransformsByStrings[i].GlobalRotation;
+                        frankGestureAnimotiveTransformInfoList.transformsByStrings[i].GlobalRotation;
 
                     var editorTPoseRotation = pair.GlobalRotation;
 
@@ -109,9 +106,11 @@ namespace Retinize.Editor.AnimotiveImporter
         }
 
         /// <summary>
-        ///     Saves the current values of the animator bone's recursively to a JSON file.
+        ///     Gets the pose from animator.
         /// </summary>
-        public static IT_TransformInfoList SavePoseToJson(Animator animator)
+        /// <param name="animator">Animator to create pose from</param>
+        /// <returns></returns>
+        public static IT_TransformInfoList GetPoseFromAnimator(Animator animator)
         {
             var transformInfoList = new IT_TransformInfoList();
 
@@ -120,7 +119,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 if (pair == HumanBodyBones.LastBone || !animator.GetBoneTransform(pair)) continue;
 
                 var boneTransform = animator.GetBoneTransform(pair);
-                transformInfoList.TransformsByStrings.Add(new IT_TransformsByString(boneTransform, pair));
+                transformInfoList.transformsByStrings.Add(new IT_TransformsByString(boneTransform, pair));
             }
 
 
