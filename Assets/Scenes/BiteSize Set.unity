@@ -666,7 +666,7 @@ PrefabInstance:
       objectReference: {fileID: 702290258}
     - target: {fileID: 7659007811715310307, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7659007812016554690, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_SceneBindings.Array.size
@@ -706,7 +706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7659007813523291065, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7659007813523291070, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_RootOrder
@@ -858,7 +858,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!320 &777384189
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -1027,6 +1027,10 @@ PrefabInstance:
     - target: {fileID: 1579305882029799214, guid: 3c04d27c89de421418e1441989707370, type: 3}
       propertyPath: m_Name
       value: Ep8_07_28_2022 12_23_38
+      objectReference: {fileID: 0}
+    - target: {fileID: 1579305882029799214, guid: 3c04d27c89de421418e1441989707370, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1579305882029799215, guid: 3c04d27c89de421418e1441989707370, type: 3}
       propertyPath: m_RootOrder
@@ -2075,7 +2079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!320 &1892790465
 PlayableDirector:
   m_ObjectHideFlags: 0
