@@ -96,7 +96,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 //create animation clips
                 var animationClipOperations =
-                    await IT_TransformAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsFolderPath);
+                    await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsFolderPath);
 
 
                 IT_EntityOperations.HandleEntityOperations(sceneData);
@@ -115,6 +115,9 @@ namespace Retinize.Editor.AnimotiveImporter
             EditorGUI.EndDisabledGroup();
 
             #endregion
+
+
+            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
         }
 
         /// <summary>
@@ -216,15 +219,15 @@ namespace Retinize.Editor.AnimotiveImporter
                 var fileName = Path.GetFileName(files[i]);
                 var targetFileName =
                     Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
-                if (!File.Exists(targetFileName))
-                    File.Copy(files[i], targetFileName, false);
-                else
+
+                if (File.Exists(targetFileName))
                 {
                     targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                        files[i], fileName, IT_AnimotiveImporterEditorConstants.AudioExtension);
-                    File.Copy(files[i], targetFileName, false);
+                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
+                        IT_AnimotiveImporterEditorConstants.AudioExtension);
                 }
+
+                File.Copy(files[i], targetFileName, false);
             }
 
             AssetDatabase.Refresh();
@@ -233,9 +236,38 @@ namespace Retinize.Editor.AnimotiveImporter
 
         private static void ClearAccumulatedFiles()
         {
-            Debug.Log(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
+            try
+            {
+                string[] directories =
+                {
+                    IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                    IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                    IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
+                    IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
+                };
 
-            var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
+                for (var i = 0; i < directories.Length; i++)
+                {
+                    Directory.Delete(directories[i], true);
+                }
+
+                ResetWindow();
+            }
+            catch
+            {
+            }
+            finally
+            {
+                AssetDatabase.Refresh();
+            }
+        }
+
+
+        private static void ResetWindow()
+        {
+            UserChosenDirectoryToImportUnityExports = "";
+            _IsAnimotiveFolderImported = false;
+            _ReimportAssets = false;
         }
     }
 }
