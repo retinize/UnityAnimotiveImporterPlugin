@@ -3,7 +3,17 @@ guid: 7392af128baa2c3418f10e8f899d8afc
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jumper_ALT_MAT
+    second: {fileID: 2100000, guid: 76e635521ee681a44b014772bbc6f076, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Quintin_Texture1
+    second: {fileID: 2100000, guid: 3b0b7ffd67cf9fd4ebdef650aec7b6e9, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
