@@ -981,6 +981,253 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4957679048520539650, guid: f21c0211b1b104a48999681dc6cf49fa, type: 3}
   m_PrefabInstance: {fileID: 374745295}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &380472245 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2244078737931095357, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+  m_PrefabInstance: {fileID: 1662332648}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &380472247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380472245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d5ab26285e294787a92bc8bba92c30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointsOfInterest:
+  - {fileID: 426030581}
+  - {fileID: 1525543369}
+  - {fileID: 1063805185}
+  lookAtPlayerRatio: 0.1
+  stareBackFactor: 0
+  noticePlayerDistance: 0
+  personalSpaceDistance: 0
+  minLookTime: 3
+  maxLookTime: 10
+  thirdPersonPlayerEyeCenter: {fileID: 0}
+  keepTargetEvenWhenLost: 1
+  OnStartLookingAtPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopLookingAtPlayer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPlayerEntersPersonalSpace:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLookAwayFromShyness:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &380472248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380472245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0359b2b84d8484d2281221cfda5470e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainWeight: 1
+  headChangeToNewTargetSpeed: 1
+  headTrackTargetSpeed: 1
+  headSpeedModifier: 0
+  headWeight: 0.75
+  bodyWeight: 0.1
+  neckHorizWeight: 0.5
+  neckVertWeight: 0.5
+  headPitchAngle: 0
+  headRollAngle: 0
+  headYawAngle: 0
+  neckPitchAngle: 0
+  neckRollAngle: 0
+  neckYawAngle: 0
+  resetHeadAtFrameStart: 0
+  headBoneNonMecanim: {fileID: 0}
+  headTarget: {fileID: 0}
+  neckBoneNonMecanim: {fileID: 0}
+  spineBoneNonMecanim: {fileID: 0}
+  headComponent:
+    headControl: 1
+    headAnimationType: 0
+  eyesWeight: 1
+  useMicroSaccades: 1
+  useMacroSaccades: 1
+  saccadeSpeed: 0.5
+  macroSaccadesPerMinute: 10
+  microSaccadesPerMinuteLookingIdle: 45
+  microSaccadesPerMinuteLookingAtPOI: 80
+  useHeadJitter: 1
+  headJitterFrequency: 0.2
+  headJitterAmplitude: 1
+  kDrawSightlinesInEditor: 1
+  areUpdatedControlledExternally: 0
+  updateType: 0
+  controlData:
+    eyeControl: 2
+    leftEye: {fileID: 724955307}
+    rightEye: {fileID: 1710989581}
+    maxEyeUpBoneAngle: 20
+    maxEyeDownBoneAngle: 20
+    maxEyeUpEyeballAngle: 20
+    maxEyeDownEyeballAngle: 20
+    isEyeBallDefaultSet: 1
+    isEyeBoneDefaultSet: 0
+    isEyeBallLookUpSet: 1
+    isEyeBoneLookUpSet: 0
+    isEyeBallLookDownSet: 1
+    isEyeBoneLookDownSet: 0
+    leftBoneEyeRotationLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      maxUpAngle: 0
+      maxDownAngle: 0
+      isLookUpSet: 0
+      isLookDownSet: 0
+    rightBoneEyeRotationLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      maxUpAngle: 0
+      maxDownAngle: 0
+      isLookUpSet: 0
+      isLookDownSet: 0
+    leftEyeballEyeRotationLimiter:
+      transform: {fileID: 724955307}
+      defaultQ: {x: 0, y: -0, z: -0, w: 1}
+      lookUpQ: {x: -0.21643952, y: 0, z: 0, w: 0.97629607}
+      lookDownQ: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
+      maxUpAngle: 25
+      maxDownAngle: 25
+      isLookUpSet: 1
+      isLookDownSet: 1
+    rightEyeballEyeRotationLimiter:
+      transform: {fileID: 1710989581}
+      defaultQ: {x: 0, y: -0, z: -0, w: 1}
+      lookUpQ: {x: -0.21643952, y: 0, z: 0, w: 0.97629607}
+      lookDownQ: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
+      maxUpAngle: 25
+      maxDownAngle: 25
+      isLookUpSet: 1
+      isLookDownSet: 1
+    eyelidControl: 0
+    eyelidBoneMode: 0
+    upperEyeLidLeft: {fileID: 0}
+    upperEyeLidRight: {fileID: 0}
+    lowerEyeLidLeft: {fileID: 0}
+    lowerEyeLidRight: {fileID: 0}
+    upperLeftEyelidBones: []
+    upperRightEyelidBones: []
+    lowerLeftEyelidBones: []
+    lowerRightEyelidBones: []
+    isEyelidBonesDefaultSet: 0
+    isEyelidBonesClosedSet: 0
+    isEyelidBonesLookUpSet: 0
+    isEyelidBonesLookDownSet: 0
+    upperLeftLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      closedQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      eyeMaxDownAngle: 0
+      eyeMaxUpAngle: 0
+      defaultPos: {x: 0, y: 0, z: 0}
+      closedPos: {x: 0, y: 0, z: 0}
+      lookUpPos: {x: 0, y: 0, z: 0}
+      lookDownPos: {x: 0, y: 0, z: 0}
+      isLookUpSet: 0
+      isLookDownSet: 0
+      isDefaultPosSet: 0
+      isClosedPosSet: 0
+      isLookUpPosSet: 0
+      isLookDownPosSet: 0
+    upperRightLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      closedQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      eyeMaxDownAngle: 0
+      eyeMaxUpAngle: 0
+      defaultPos: {x: 0, y: 0, z: 0}
+      closedPos: {x: 0, y: 0, z: 0}
+      lookUpPos: {x: 0, y: 0, z: 0}
+      lookDownPos: {x: 0, y: 0, z: 0}
+      isLookUpSet: 0
+      isLookDownSet: 0
+      isDefaultPosSet: 0
+      isClosedPosSet: 0
+      isLookUpPosSet: 0
+      isLookDownPosSet: 0
+    lowerLeftLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      closedQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      eyeMaxDownAngle: 0
+      eyeMaxUpAngle: 0
+      defaultPos: {x: 0, y: 0, z: 0}
+      closedPos: {x: 0, y: 0, z: 0}
+      lookUpPos: {x: 0, y: 0, z: 0}
+      lookDownPos: {x: 0, y: 0, z: 0}
+      isLookUpSet: 0
+      isLookDownSet: 0
+      isDefaultPosSet: 0
+      isClosedPosSet: 0
+      isLookUpPosSet: 0
+      isLookDownPosSet: 0
+    lowerRightLimiter:
+      transform: {fileID: 0}
+      defaultQ: {x: 0, y: 0, z: 0, w: 0}
+      closedQ: {x: 0, y: 0, z: 0, w: 0}
+      lookUpQ: {x: 0, y: 0, z: 0, w: 0}
+      lookDownQ: {x: 0, y: 0, z: 0, w: 0}
+      eyeMaxDownAngle: 0
+      eyeMaxUpAngle: 0
+      defaultPos: {x: 0, y: 0, z: 0}
+      closedPos: {x: 0, y: 0, z: 0}
+      lookUpPos: {x: 0, y: 0, z: 0}
+      lookDownPos: {x: 0, y: 0, z: 0}
+      isLookUpSet: 0
+      isLookDownSet: 0
+      isDefaultPosSet: 0
+      isClosedPosSet: 0
+      isLookUpPosSet: 0
+      isLookDownPosSet: 0
+    upperLeftLimiters: []
+    upperRightLimiters: []
+    lowerLeftLimiters: []
+    lowerRightLimiters: []
+    eyeWidenOrSquint: 0
+    blendshapesForBlinking: []
+    blendshapesForLookingUp: []
+    blendshapesForLookingDown: []
+    blendshapesConfigs: []
+    isEyelidBlendshapeDefaultSet: 0
+    isEyelidBlendshapeClosedSet: 0
+    isEyelidBlendshapeLookUpSet: 0
+    isEyelidBlendshapeLookDownSet: 0
+  eyelidsWeight: 1
+  kMinNextBlinkTime: 3
+  kMaxNextBlinkTime: 15
+  blinkSpeed: 1
+  eyelidsFollowEyesVertically: 1
+  maxEyeHorizAngle: 30
+  maxEyeHorizAngleTowardsNose: 20
+  idleTargetHorizAngle: 10
+  crossEyeCorrection: 1
+  limitHeadAngle: 0
 --- !u!1 &408223807
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,6 +1269,11 @@ Transform:
   m_Father: {fileID: 998305322}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &426030581 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4885153397181250698, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+  m_PrefabInstance: {fileID: 689190244641510303}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &457724652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1905,6 +2157,11 @@ Transform:
   m_Father: {fileID: 998305322}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &724955307 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+  m_PrefabInstance: {fileID: 1662332648}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &777384188
 GameObject:
   m_ObjectHideFlags: 0
@@ -2665,6 +2922,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 483344539901846741, guid: fce0bf7f96838704b9f36893262bae59, type: 3}
   m_PrefabInstance: {fileID: 1023272170}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1063805185 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4526780431411239475, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+  m_PrefabInstance: {fileID: 689190244641510303}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1072720394
 GameObject:
@@ -3787,6 +4049,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3926213282593536586, guid: e0846b2c2ace9ec4b9cdce3bbbbaf3d2, type: 3}
   m_PrefabInstance: {fileID: 1509193861}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1525543369 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8161831371341005881, guid: 3faa5ef2cc3efe14d9b4d086c02de9d9, type: 3}
+  m_PrefabInstance: {fileID: 702290257}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1529709480
 GameObject:
   m_ObjectHideFlags: 0
@@ -4227,6 +4494,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.97629607
+      objectReference: {fileID: 0}
+    - target: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.2164396
+      objectReference: {fileID: 0}
+    - target: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2327944876150399878, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 2339517281555775668, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -4250,6 +4537,26 @@ PrefabInstance:
     - target: {fileID: 5444851261316766571, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.97629607
+      objectReference: {fileID: 0}
+    - target: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.2164396
+      objectReference: {fileID: 0}
+    - target: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7818375765416497240, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4350,6 +4657,11 @@ Animator:
 --- !u!95 &1662332651 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4528369148920939347, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
+  m_PrefabInstance: {fileID: 1662332648}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1710989581 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6841152730456082997, guid: 05cebd33b09fc144c88b25647fe60c47, type: 3}
   m_PrefabInstance: {fileID: 1662332648}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1727253736
