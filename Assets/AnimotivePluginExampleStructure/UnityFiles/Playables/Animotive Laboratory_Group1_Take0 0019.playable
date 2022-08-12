@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 1
+  take: 2
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -62,7 +62,7 @@ MonoBehaviour:
       m_Leaf: Recordings
       m_ForceAssetFolder: 0
       m_AbsolutePath: E:\BBC Bitesize\Exports\Unity Renders
-    m_FileName: Intro_Frank Dancing_08_03_2022 16_33_50_Take_1_Camera6_V1
+    m_FileName: Intro_Frank Dancing_08_03_2022 16_33_50_Take_1_Camera6_ScreenTest
   outputFormat: 0
   videoBitRateMode: 2
   captureAlpha: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
           m_ImageAspect: 1
       source: 4
       cameraTag: Camera6
-      flipFinalOutput: 0
+      flipFinalOutput: 1
       captureUI: 0
     camera360InputSettings:
       source: 2
