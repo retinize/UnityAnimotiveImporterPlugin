@@ -5192,6 +5192,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 555455657}
     m_Modifications:
+    - target: {fileID: 4168189969935738171, guid: a0542e10af67c3d4187b5ba017e5c996, type: 3}
+      propertyPath: m_SceneBindings.Array.data[0].value
+      value: 
+      objectReference: {fileID: 1662332650}
+    - target: {fileID: 8038600257029277391, guid: a0542e10af67c3d4187b5ba017e5c996, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8184654436937170098, guid: a0542e10af67c3d4187b5ba017e5c996, type: 3}
       propertyPath: m_Name
       value: Ep4_07_27_2022 13_28_53
@@ -5260,6 +5268,10 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[3].value
       value: 
       objectReference: {fileID: 302423678}
+    - target: {fileID: 8184654437355400354, guid: a0542e10af67c3d4187b5ba017e5c996, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8184654437936796853, guid: a0542e10af67c3d4187b5ba017e5c996, type: 3}
       propertyPath: m_IsActive
       value: 0
