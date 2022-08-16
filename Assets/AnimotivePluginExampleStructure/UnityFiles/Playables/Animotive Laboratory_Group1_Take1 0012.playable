@@ -891,7 +891,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 5
+  take: 6
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -936,7 +936,7 @@ MonoBehaviour:
           m_ImageAspect: 1
       source: 4
       cameraTag: Camera5
-      flipFinalOutput: 1
+      flipFinalOutput: 0
       captureUI: 0
     camera360InputSettings:
       source: 2
@@ -1196,7 +1196,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 1
+  m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
@@ -1515,7 +1515,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 5
+  take: 8
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -2861,7 +2861,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 5
+  take: 8
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
