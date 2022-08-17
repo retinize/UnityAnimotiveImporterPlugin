@@ -152,7 +152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5110370684127057805, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5110370684127057807, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
       propertyPath: m_DirectorUpdateMode
@@ -196,7 +196,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5110370684283216548, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5110370684283216549, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
       propertyPath: m_RootOrder
@@ -276,7 +276,7 @@ PrefabInstance:
       objectReference: {fileID: 1662332649}
     - target: {fileID: 5110370685166837286, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3eeff819b721bc4a9fdd3fddc1ef1a6, type: 3}
@@ -644,7 +644,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 0.298
-    m_Bias: 0
+    m_Bias: 0.004
     m_NormalBias: 0
     m_NearPlane: 0.1
     m_CullingMatrixOverride:
@@ -993,21 +993,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380472245}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d5ab26285e294787a92bc8bba92c30a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pointsOfInterest:
+  - {fileID: 2031089216}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  lookAtPlayerRatio: 0.1
+  lookAtPlayerRatio: 0
   stareBackFactor: 0
   noticePlayerDistance: 0
   personalSpaceDistance: 0
   minLookTime: 3
-  maxLookTime: 10
+  maxLookTime: 100
   thirdPersonPlayerEyeCenter: {fileID: 0}
   keepTargetEvenWhenLost: 1
   OnStartLookingAtPlayer:
@@ -1029,7 +1029,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380472245}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0359b2b84d8484d2281221cfda5470e3, type: 3}
   m_Name: 
@@ -1057,8 +1057,8 @@ MonoBehaviour:
     headControl: 1
     headAnimationType: 0
   eyesWeight: 1
-  useMicroSaccades: 1
-  useMacroSaccades: 1
+  useMicroSaccades: 0
+  useMacroSaccades: 0
   saccadeSpeed: 0.5
   macroSaccadesPerMinute: 10
   microSaccadesPerMinuteLookingIdle: 45
@@ -1282,7 +1282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1813609671856047349, guid: e5b1098524e0ad44ebd754efd9e66c1b, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1813609671856047350, guid: e5b1098524e0ad44ebd754efd9e66c1b, type: 3}
       propertyPath: m_RootOrder
@@ -3799,7 +3799,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289707429}
   m_LocalRotation: {x: 0.006495415, y: 0.9280201, z: 0.016198691, w: -0.37212116}
-  m_LocalPosition: {x: 0.945, y: 0.957, z: 2.229}
+  m_LocalPosition: {x: 0.711, y: 0.967, z: 2.074}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -6288,6 +6288,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d64a01dc967bed478b7a20bfa5f5404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &2031089216 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3821591420517428079, guid: 26f2fadb133e0b047809d1474c3cb7cd, type: 3}
+  m_PrefabInstance: {fileID: 689190244641510303}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2041935469
 GameObject:
   m_ObjectHideFlags: 0
