@@ -87,7 +87,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>asset database path</returns>
         public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
-            var result = fullOsPath.Split(new[] {"Assets"}, StringSplitOptions.None)[1];
+            var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
             result = string.Concat("Assets", result);
             return result;
         }
@@ -148,7 +148,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var type =
                                     GetClipTypeFromClipName(clip.clipName);
 
-                                var clipdata = new IT_ClipData(type, clip, animationClipDataPath);
+                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
 
                                 switch (type)
                                 {
@@ -157,25 +157,25 @@ namespace Retinize.Editor.AnimotiveImporter
                                     case IT_ClipType.PropertiesClip:
                                         currentCluster.SetPropertiesClip(clipdata);
                                         break;
-                                    case IT_ClipType.TransformClip:
+                                    case IT_ClipType.TransformAnimationClip:
                                         currentCluster.SetTransformClip(clipdata);
 
                                         break;
                                     case IT_ClipType.AudioClip:
 
-
-                                        var audioFiles = Temp(clip,
+                                        var fileName = FindLatestFileName(clip.clipName,
                                             IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                                             IT_AnimotiveImporterEditorConstants.AudioExtension);
 
-                                        if (audioFiles.Length > 1)
+                                        if (!string.IsNullOrEmpty(fileName))
                                         {
-                                            var currentClipDataPath = audioFiles[1];
+                                            var currentClipDataPath = fileName;
                                             currentClipDataPath = currentClipDataPath.Split(
-                                                new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                                new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
                                                 StringSplitOptions.None)[0];
 
-                                            currentCluster.SetAudioClip(new IT_ClipData(type, clipdata.ClipPlayerData,
+                                            currentCluster.SetAudioClip(new IT_ClipData<IT_ClipPlayerData>(type,
+                                                clipdata.ClipPlayerData,
                                                 currentClipDataPath));
                                         }
                                         else
@@ -205,13 +205,13 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
-        public static string[] Temp(IT_ClipPlayerData clip, string directory, string extension)
+        public static string FindLatestFileName(string clipName, string directory, string extension)
         {
             var files = Directory
                 .GetFiles(directory);
 
             var nameWithoutExtension = Path
-                .GetFileNameWithoutExtension(clip.clipName)
+                .GetFileNameWithoutExtension(clipName)
                 .ToLower();
 
             var clipFiles =
@@ -227,7 +227,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 Path.GetFileNameWithoutExtension(a).Split(' ')[
                     Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
 
-            return clipFiles;
+            if (clipFiles.Length > 1) return clipFiles[1];
+            return string.Empty;
         }
 
 
@@ -313,17 +314,17 @@ namespace Retinize.Editor.AnimotiveImporter
                                 entitiesWithType.Add(entityType, new List<IT_BaseEntity>());
 
                             var holderPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
 
                             var holderRotation =
-                                (Quaternion) propertyDatasDict[
+                                (Quaternion)propertyDatasDict[
                                     IT_AnimotiveImporterEditorConstants.HolderRotationString];
 
                             var rootPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
 
                             var rootRotation =
-                                (Quaternion) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
 
                             IT_BaseEntity itEntity;
@@ -332,7 +333,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 case IT_EntityType.Camera:
                                 {
-                                    var focalLength = (float) propertyDatasDict["DepthOfFieldFocalLength"];
+                                    var focalLength = (float)propertyDatasDict["DepthOfFieldFocalLength"];
                                     itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 

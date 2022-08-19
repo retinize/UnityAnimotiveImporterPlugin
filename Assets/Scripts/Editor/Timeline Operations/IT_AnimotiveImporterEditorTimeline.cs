@@ -84,13 +84,16 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AssetDatabase.CreateAsset(asset, assetPath);
 
-
             for (var i = 0; i < timelineData.ClipClustersInTake.Count; i++)
             {
                 var clipCluster = timelineData.ClipClustersInTake[i];
-                if (clipCluster.IsAnimationProcessInterrupted) continue;
+                if (clipCluster.IsAnimationProcessInterrupted)
+                {
+                    AssetDatabase.DeleteAsset(assetPath);
+                    continue;
+                }
 
-                //TODO: Will be updated to add the audio clip and facial animations as well
+                //TODO: Will be updated to add facial animations as well
 
                 var groupTrack = asset.CreateTrack<GroupTrack>();
                 groupTrack.name = timelineData.GroupName;
@@ -119,9 +122,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 // END OF FACIAL ANIMATION
 
-
-                CreateAnimationTrack(clipCluster.TransformClip, asset, groupTrack, bodyAnimationPath, playableDirector,
-                    objToBind);
+                var bodyClipData = clipCluster.TransformClip;
+                CreateBodyAnimationTrack(bodyClipData.ClipPlayerData.clipName, asset, groupTrack,
+                    bodyAnimationPath,
+                    playableDirector,
+                    objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
                 // CreateAnimationTrack(); //facial animation
                 CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.ClipDataPath, playableDirector, objToBind);
             }
@@ -139,21 +144,22 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Creates animation track in the given group track.
         /// </summary>
+        /// <param name="clipName"></param>
         /// <param name="asset">Timeline asset to create track in</param>
         /// <param name="groupTrack">group to assign created animation track</param>
         /// <param name="animationPath">Path to animation clip</param>
         /// <param name="playableDirector">Playable director to bind this track to. </param>
         /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
-        private static void CreateAnimationTrack(IT_ClipData transformClip, TimelineAsset asset,
+        /// <param name="directory"></param>
+        private static void CreateBodyAnimationTrack(string clipName, TimelineAsset asset,
             GroupTrack groupTrack, string animationPath,
-            PlayableDirector playableDirector, GameObject objToBind)
+            PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
-            var files = IT_AnimotiveImporterEditorUtilities.Temp(transformClip.ClipPlayerData,
-                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.AnimationExtension);
+            var fileName = IT_AnimotiveImporterEditorUtilities.FindLatestFileName(clipName,
+                directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
-            if (files.Length > 1)
-                animationPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(files[1]);
+            if (!string.IsNullOrEmpty(fileName))
+                animationPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(fileName);
 
             if (string.IsNullOrEmpty(animationPath)) return;
             var animationTrack = asset.CreateTrack<AnimationTrack>();

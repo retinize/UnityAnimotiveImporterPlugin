@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using UnityEditor;
 using UnityEngine;
@@ -14,12 +15,13 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     that
         /// </summary>
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
-        private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation()
+        private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation(
+            string facialAnimationAssetDatabasePath)
         {
-            var hardCodedJsonPath = string.Concat(Directory.GetCurrentDirectory(),
-                IT_AnimotiveImporterEditorConstants.FacialAnimationSourcePath);
+            var jsonFileSystemFullPath = string.Concat(Directory.GetCurrentDirectory(),
+                facialAnimationAssetDatabasePath);
 
-            var reader = new StreamReader(hardCodedJsonPath);
+            var reader = new StreamReader(jsonFileSystemFullPath);
             var jsonData = reader.ReadToEnd();
 
             reader.Close();
@@ -88,19 +90,14 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
-        public static void HandleFacialAnimationOperations()
+        public static async Task HandleFacialAnimationOperations(List<IT_GroupData> groupDatas,
+            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
             // var wrapper =
-            //     HandleBlendShapeAnimationCreation();
-            //
-            // var itFbxData = IT_AnimotiveImporterEditorUtilities.LoadFbx();
-            // var clip = CreateBlendShapeAnimationClip(wrapper, itFbxData);
-            // var animatorController =
-            //     AnimatorController.CreateAnimatorControllerAtPathWithClip(IT_AnimotiveImporterEditorConstants
-            //         .FacialAnimationController, clip);
-            //
-            // itFbxData.FbxAnimator.runtimeAnimatorController = animatorController;
-            // AssetDatabase.Refresh();
+            //     HandleBlendShapeAnimationCreation(jsonFileAssetDbPath);
+            // var clip = CreateBlendShapeAnimationClip(wrapper, fbxData);
+
+            AssetDatabase.Refresh();
         }
     }
 }

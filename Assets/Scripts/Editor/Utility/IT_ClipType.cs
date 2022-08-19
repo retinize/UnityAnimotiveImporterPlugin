@@ -4,7 +4,8 @@
     {
         None,
         PropertiesClip,
-        TransformClip,
+        TransformAnimationClip,
+        FacialAnimationClip,
         AudioClip
     }
 }

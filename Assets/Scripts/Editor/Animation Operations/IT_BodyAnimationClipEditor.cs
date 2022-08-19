@@ -35,7 +35,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -400,7 +400,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="clipsFolderPath">Path to "Clips" folder that's inside the "UnityExported"</param>
         /// <returns>Tuple of list of group data and dictionary with fbx datas tuple</returns>
         public static Task<Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>>
-            HandleBodyAnimationClipOperations(IT_SceneInternalData sceneData, string clipsFolderPath)
+            HandleBodyAnimationClipOperations(List<IT_GroupData> groupDatas,
+                Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
             string[] animationDirectories =
             {
@@ -414,14 +415,10 @@ namespace Retinize.Editor.AnimotiveImporter
                 if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
             }
 
-            var transformGroupDatas =
-                IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
 
-            var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(transformGroupDatas);
-
-            for (var i = 0; i < transformGroupDatas.Count; i++)
+            for (var i = 0; i < groupDatas.Count; i++)
             {
-                var groupData = transformGroupDatas[i];
+                var groupData = groupDatas[i];
 
 
                 foreach (var pair in groupData.TakeDatas)
@@ -466,7 +463,6 @@ namespace Retinize.Editor.AnimotiveImporter
                                 "OK");
 
                             clipCluster.SetInterruptionValue(true);
-
                             continue;
                         }
 
@@ -512,7 +508,7 @@ namespace Retinize.Editor.AnimotiveImporter
             AssetDatabase.Refresh();
 
             var tuple = new Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>(
-                transformGroupDatas,
+                groupDatas,
                 fbxDatasAndHoldersTuples);
 
             return Task.FromResult(tuple);

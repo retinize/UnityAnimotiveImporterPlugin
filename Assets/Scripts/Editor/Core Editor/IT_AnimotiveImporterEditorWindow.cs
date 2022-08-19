@@ -9,13 +9,13 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
+        public static bool ReimportAssets { get; private set; }
         private static bool _disableImport;
         private static bool _isAnimotiveFolderImported;
 
         public static string UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
-        public static bool ReimportAssets { get; private set; }
 
         private async void OnGUI()
         {
@@ -81,14 +81,20 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
-                var sceneData = IT_SceneDataOperations.LoadSceneData(clipsFolderPath);
+                var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
                 var scene = IT_SceneEditor.CreateScene(sceneData.currentSetName);
+
+                var groupDatas =
+                    IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
+                var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
 
                 //create animation clips
                 var animationClipOperations =
-                    await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(sceneData, clipsFolderPath);
-
+                    await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(groupDatas,
+                        fbxDatasAndHoldersTuples);
+                await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                    fbxDatasAndHoldersTuples);
 
                 IT_EntityOperations.HandleEntityOperations(sceneData);
 

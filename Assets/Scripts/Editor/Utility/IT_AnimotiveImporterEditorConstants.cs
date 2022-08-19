@@ -45,15 +45,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
-            {IT_ClipType.PropertiesClip, _PropertyClipName},
-            {IT_ClipType.TransformClip, _TransformClipName},
-            {IT_ClipType.AudioClip, _AudioClipName}
+            { IT_ClipType.PropertiesClip, _PropertyClipName },
+            { IT_ClipType.TransformAnimationClip, _TransformClipName },
+            { IT_ClipType.AudioClip, _AudioClipName }
         };
 
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
             new Dictionary<IT_EntityType, string>
             {
-                {IT_EntityType.Camera, "Camera"}, {IT_EntityType.Spotlight, "Spot Light"}
+                { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
             };
 
 

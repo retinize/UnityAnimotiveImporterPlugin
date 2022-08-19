@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AnimotiveImporterDLL;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -7,18 +8,18 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_GroupData
     {
+        public int SerializedId { get; }
+
+        public string GroupName { get; }
+
+        public Dictionary<int, IT_TakeData> TakeDatas { get; set; }
+
         public IT_GroupData(int serializedId, string groupName)
         {
             SerializedId = serializedId;
             GroupName = groupName;
             TakeDatas = new Dictionary<int, IT_TakeData>();
         }
-
-        public int SerializedId { get; }
-
-        public string GroupName { get; }
-
-        public Dictionary<int, IT_TakeData> TakeDatas { get; set; }
     }
 
     /// <summary>
@@ -28,13 +29,13 @@ namespace Retinize.Editor.AnimotiveImporter
     {
         public List<IT_ClipCluster> Clusters;
 
+        public int TakeIndex { get; }
+
         public IT_TakeData(int takeIndex)
         {
             TakeIndex = takeIndex;
             Clusters = new List<IT_ClipCluster>();
         }
-
-        public int TakeIndex { get; }
     }
 
     /// <summary>
@@ -42,36 +43,36 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_ClipCluster
     {
-        public IT_ClipCluster()
-        {
-            AudioClip = new IT_ClipData();
-            TransformClip = new IT_ClipData();
-            PropertiesClip = new IT_ClipData();
-            IsInit = true;
-            IsAnimationProcessInterrupted = false;
-        }
-
-        public IT_ClipData AudioClip { get; private set; }
-        public IT_ClipData TransformClip { get; private set; }
-        public IT_ClipData PropertiesClip { get; private set; }
+        public IT_ClipData<IT_ClipPlayerData> AudioClip { get; private set; }
+        public IT_ClipData<IT_ClipPlayerData> TransformClip { get; private set; }
+        public IT_ClipData<IT_ClipPlayerData> PropertiesClip { get; private set; }
 
         public bool IsAnimationProcessInterrupted { get; private set; }
         public string ModelName { get; set; }
         public int TakeIndex { get; set; }
         public bool IsInit { get; }
 
+        public IT_ClipCluster()
+        {
+            AudioClip = new IT_ClipData<IT_ClipPlayerData>();
+            TransformClip = new IT_ClipData<IT_ClipPlayerData>();
+            PropertiesClip = new IT_ClipData<IT_ClipPlayerData>();
+            IsInit = true;
+            IsAnimationProcessInterrupted = false;
+        }
 
-        public void SetAudioClip(IT_ClipData clipData)
+
+        public void SetAudioClip(IT_ClipData<IT_ClipPlayerData> clipData)
         {
             AudioClip = clipData;
         }
 
-        public void SetTransformClip(IT_ClipData clipData)
+        public void SetTransformClip(IT_ClipData<IT_ClipPlayerData> clipData)
         {
             TransformClip = clipData;
         }
 
-        public void SetPropertiesClip(IT_ClipData clipData)
+        public void SetPropertiesClip(IT_ClipData<IT_ClipPlayerData> clipData)
         {
             PropertiesClip = clipData;
         }
