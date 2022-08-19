@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 2
+  take: 8
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -172,16 +172,17 @@ MonoBehaviour:
       m_Leaf: Recordings
       m_ForceAssetFolder: 0
       m_AbsolutePath: E:\BBC Bitesize\Exports\Unity Renders
-    m_FileName: Intro_Frank Dancing_08_03_2022 16_33_50_Take_1_Camera6_ScreenTest
+    m_FileName: Intro_Frank Dancing_08_03_2022 16_33_50_Take_1_Camera6_New Screen
+      V2
   outputFormat: 0
   videoBitRateMode: 2
   captureAlpha: 0
   containerFormatSelected: 0
   encoderSelected: 0
-  encoderPresetSelected: 0
-  encoderPresetSelectedName: 
+  encoderPresetSelected: 3
+  encoderPresetSelectedName: Apple ProRes 422 (apcn)
   encoderPresetSelectedOptions: 
-  encoderPresetSelectedSuffixes: 
+  encoderPresetSelectedSuffixes: .mov
   encoderColorDefinitionSelected: 0
   encoderCustomOptions: 
   m_ImageInputSelector:
@@ -987,7 +988,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 1
+  m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
