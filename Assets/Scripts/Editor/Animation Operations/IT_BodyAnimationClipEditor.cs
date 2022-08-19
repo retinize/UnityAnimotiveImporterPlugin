@@ -187,7 +187,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     File.ReadAllBytes(animationClipDataPath),
                     DataFormat.Binary);
 
-
             var animator = loadedFbXofCharacter.FbxAnimator;
 
             var boneTransformDictionaries =
@@ -195,7 +194,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     clip.humanoidBonesEnumThatAreUsed);
 
             // animator.avatar = null;
-
             AssetDatabase.Refresh();
             return new IT_ClipByDictionaryTuple(clip, boneTransformDictionaries);
         }
@@ -396,12 +394,12 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     given (shows a display dialog if not), gets fbx data and holders and assigns world position and rotations to
         ///     holders.
         /// </summary>
-        /// <param name="sceneData">Binary scene data</param>
-        /// <param name="clipsFolderPath">Path to "Clips" folder that's inside the "UnityExported"</param>
+        /// <param name="groupDatas"></param>
+        /// <param name="fbxDatasAndHoldersTuples"></param>
         /// <returns>Tuple of list of group data and dictionary with fbx datas tuple</returns>
-        public static Task<Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>>
-            HandleBodyAnimationClipOperations(List<IT_GroupData> groupDatas,
-                Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
+        public static async Task HandleBodyAnimationClipOperations(
+            List<IT_GroupData> groupDatas,
+            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
             string[] animationDirectories =
             {
@@ -414,7 +412,6 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
             }
-
 
             for (var i = 0; i < groupDatas.Count; i++)
             {
@@ -434,7 +431,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var holderObject = fbxDataTuple.HolderObject;
 
-                        var animationClipDataPath = clipCluster.TransformClip.ClipDataPath;
+                        var animationClipDataPath = clipCluster.BodyAnimationClipData.ClipDataPath;
 
 
                         var bodyAnimationPath =
@@ -454,7 +451,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         if (isAvatarHasAllRequiredBones)
                         {
                             var message =
-                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.TransformClip.ClipPlayerData.clipName}' clip don't match !
+                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.BodyAnimationClipData.ClipPlayerData.clipName}' clip don't match !
   Make sure that the avatar has all the required bones and you're using correct FBX for this clip";
 
                             EditorUtility.DisplayDialog(
@@ -466,6 +463,8 @@ namespace Retinize.Editor.AnimotiveImporter
                             continue;
                         }
 
+                        clipCluster.NumberOfCaptureInWhichItWasCaptured =
+                            clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
 
                         fbxData.FbxGameObject.transform.localScale =
                             clipAndDictionariesTuple.Clip.lossyScaleRoot *
@@ -480,7 +479,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length))
                         {
                             var message =
-                                $@"Bone count with the {clipCluster.ModelName} and {clipCluster.TransformClip.ClipPlayerData.clipName} doesn't match !
+                                $@"Bone count with the {clipCluster.ModelName} and {clipCluster.BodyAnimationClipData.ClipPlayerData.clipName} doesn't match !
  Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
                                 IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation",
@@ -490,6 +489,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                             continue;
                         }
+
 
                         CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
                             fbxData.FbxGameObject, fbxDataTuple.EditorTPose, bodyAnimationPath);
@@ -506,12 +506,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             AssetDatabase.Refresh();
-
-            var tuple = new Tuple<List<IT_GroupData>, Dictionary<string, IT_FbxDatasAndHoldersTuple>>(
-                groupDatas,
-                fbxDatasAndHoldersTuples);
-
-            return Task.FromResult(tuple);
         }
 
         /// <summary>

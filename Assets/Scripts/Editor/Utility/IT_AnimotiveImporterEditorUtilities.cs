@@ -122,11 +122,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
-
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
-
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
 
@@ -135,7 +133,6 @@ namespace Retinize.Editor.AnimotiveImporter
                         for (var j = 0; j < take.Count; j++)
                         {
                             var track = take[j];
-
                             for (var k = 0; k < track.Count; k++)
                             {
                                 var clip = track[k];
@@ -143,7 +140,6 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
                                         clip.clipName);
-
 
                                 var type =
                                     GetClipTypeFromClipName(clip.clipName);
@@ -155,11 +151,10 @@ namespace Retinize.Editor.AnimotiveImporter
                                     case IT_ClipType.None:
                                         throw new ArgumentOutOfRangeException();
                                     case IT_ClipType.PropertiesClip:
-                                        currentCluster.SetPropertiesClip(clipdata);
+                                        currentCluster.SetPropertiesClipData(clipdata);
                                         break;
                                     case IT_ClipType.TransformAnimationClip:
-                                        currentCluster.SetTransformClip(clipdata);
-
+                                        currentCluster.SetTransformClipData(clipdata);
                                         break;
                                     case IT_ClipType.AudioClip:
 
@@ -173,15 +168,15 @@ namespace Retinize.Editor.AnimotiveImporter
                                             currentClipDataPath = currentClipDataPath.Split(
                                                 new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
                                                 StringSplitOptions.None)[0];
-
-                                            currentCluster.SetAudioClip(new IT_ClipData<IT_ClipPlayerData>(type,
+                                            clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                                 clipdata.ClipPlayerData,
-                                                currentClipDataPath));
+                                                currentClipDataPath);
                                         }
-                                        else
-                                            currentCluster.SetAudioClip(clipdata);
+
+                                        currentCluster.SetAudioClipData(clipdata);
 
                                         break;
+
                                     default:
                                         throw new ArgumentOutOfRangeException();
                                 }
@@ -190,7 +185,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 currentCluster.ModelName = entityData.entityInstantiationTokenData;
                             }
 
-                            if (currentCluster.AudioClip.ClipPlayerData != null)
+                            if (currentCluster.AudioClipData.ClipPlayerData != null)
                                 readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
                         }
                     }

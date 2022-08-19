@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using UnityEditor;
@@ -16,11 +17,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
         private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation(
-            string facialAnimationAssetDatabasePath)
+            string jsonFileSystemFullPath)
         {
-            var jsonFileSystemFullPath = string.Concat(Directory.GetCurrentDirectory(),
-                facialAnimationAssetDatabasePath);
-
             var reader = new StreamReader(jsonFileSystemFullPath);
             var jsonData = reader.ReadToEnd();
 
@@ -91,13 +89,51 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
         public static async Task HandleFacialAnimationOperations(List<IT_GroupData> groupDatas,
-            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
+            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples, string clipsFolderPath)
         {
-            // var wrapper =
-            //     HandleBlendShapeAnimationCreation(jsonFileAssetDbPath);
             // var clip = CreateBlendShapeAnimationClip(wrapper, fbxData);
 
+            // IT_FixedCharacterPropertyClip
+
+            var blendshapesDictionary = await GetAllFacialAnimations(clipsFolderPath);
+
+            for (var i = 0; i < groupDatas.Count; i++)
+            {
+                var groupData = groupDatas[i];
+                for (var j = 0; j < groupData.TakeDatas.Count; j++)
+                {
+                    var takeData = groupData.TakeDatas[j];
+                    for (var k = 0; k < takeData.Clusters.Count; k++)
+                    {
+                        var cluster = takeData.Clusters[k];
+                        var groupName = groupData.GroupName;
+                        var takeIndex = takeData.TakeIndex;
+                        var clipNumber = cluster.NumberOfCaptureInWhichItWasCaptured;
+                    }
+                }
+            }
+
             AssetDatabase.Refresh();
+        }
+
+        private static async Task<Dictionary<string, FacialAnimationExportWrapper>> GetAllFacialAnimations(
+            string clipsFolder)
+        {
+            var jsonFiles = Directory.GetFiles(clipsFolder).Where(a =>
+                a.EndsWith(".json") && IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(a) ==
+                IT_ClipType.FacialAnimationClip).ToList();
+
+            var blendShapesFullPathAndWrappers = new Dictionary<string, FacialAnimationExportWrapper>();
+
+            for (var i = 0; i < jsonFiles.Count; i++)
+            {
+                var jsonFileOsPath = jsonFiles[i];
+                var wrapper =
+                    HandleBlendShapeAnimationCreation(jsonFileOsPath);
+                blendShapesFullPathAndWrappers.Add(jsonFileOsPath, wrapper);
+            }
+
+            return blendShapesFullPathAndWrappers;
         }
     }
 }

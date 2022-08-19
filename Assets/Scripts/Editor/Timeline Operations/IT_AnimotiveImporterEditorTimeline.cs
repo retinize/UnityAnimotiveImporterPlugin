@@ -101,7 +101,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 var objToBind = timelineData.FbxDataWithHolders[clipCluster.ModelName].FbxData.FbxGameObject;
                 var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
                     IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
-                    clipCluster.TransformClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                    clipCluster.BodyAnimationClipData.ClipDataPath,
+                    IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 
@@ -122,13 +123,14 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 // END OF FACIAL ANIMATION
 
-                var bodyClipData = clipCluster.TransformClip;
+                var bodyClipData = clipCluster.BodyAnimationClipData;
                 CreateBodyAnimationTrack(bodyClipData.ClipPlayerData.clipName, asset, groupTrack,
                     bodyAnimationPath,
                     playableDirector,
                     objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
                 // CreateAnimationTrack(); //facial animation
-                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClip.ClipDataPath, playableDirector, objToBind);
+                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClipData.ClipDataPath, playableDirector,
+                    objToBind);
             }
 
 

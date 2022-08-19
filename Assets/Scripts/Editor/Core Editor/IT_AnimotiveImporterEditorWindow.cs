@@ -90,18 +90,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                 //create animation clips
-                var animationClipOperations =
-                    await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(groupDatas,
-                        fbxDatasAndHoldersTuples);
-                await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
+                    groupDatas,
                     fbxDatasAndHoldersTuples);
+
+
+                await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                    fbxDatasAndHoldersTuples, clipsFolderPath);
 
                 IT_EntityOperations.HandleEntityOperations(sceneData);
 
 
                 //create timeline using animation clips
-                IT_AnimotiveImporterEditorTimeline.HandleGroups(animationClipOperations.Item1,
-                    animationClipOperations.Item2, sceneData);
+                IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
 
                 EditorSceneManager.SaveScene(scene);
 

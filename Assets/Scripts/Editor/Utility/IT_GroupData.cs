@@ -43,38 +43,46 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_ClipCluster
     {
-        public IT_ClipData<IT_ClipPlayerData> AudioClip { get; private set; }
-        public IT_ClipData<IT_ClipPlayerData> TransformClip { get; private set; }
-        public IT_ClipData<IT_ClipPlayerData> PropertiesClip { get; private set; }
+        public string ModelName;
+        public int NumberOfCaptureInWhichItWasCaptured = -1;
+        public int TakeIndex;
+        public IT_ClipData<IT_ClipPlayerData> AudioClipData { get; private set; }
+        public IT_ClipData<IT_ClipPlayerData> BodyAnimationClipData { get; private set; }
+        public IT_ClipData<FacialAnimationExportWrapper> FacialAnimationClipData { get; private set; }
+        public IT_ClipData<IT_ClipPlayerData> PropertiesClipData { get; private set; }
 
         public bool IsAnimationProcessInterrupted { get; private set; }
-        public string ModelName { get; set; }
-        public int TakeIndex { get; set; }
         public bool IsInit { get; }
 
         public IT_ClipCluster()
         {
-            AudioClip = new IT_ClipData<IT_ClipPlayerData>();
-            TransformClip = new IT_ClipData<IT_ClipPlayerData>();
-            PropertiesClip = new IT_ClipData<IT_ClipPlayerData>();
+            AudioClipData = new IT_ClipData<IT_ClipPlayerData>();
+            BodyAnimationClipData = new IT_ClipData<IT_ClipPlayerData>();
+            PropertiesClipData = new IT_ClipData<IT_ClipPlayerData>();
+            FacialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>();
             IsInit = true;
             IsAnimationProcessInterrupted = false;
         }
 
 
-        public void SetAudioClip(IT_ClipData<IT_ClipPlayerData> clipData)
+        public void SetAudioClipData(IT_ClipData<IT_ClipPlayerData> clipData)
         {
-            AudioClip = clipData;
+            AudioClipData = clipData;
         }
 
-        public void SetTransformClip(IT_ClipData<IT_ClipPlayerData> clipData)
+        public void SetTransformClipData(IT_ClipData<IT_ClipPlayerData> clipData)
         {
-            TransformClip = clipData;
+            BodyAnimationClipData = clipData;
         }
 
-        public void SetPropertiesClip(IT_ClipData<IT_ClipPlayerData> clipData)
+        public void SetPropertiesClipData(IT_ClipData<IT_ClipPlayerData> clipData)
         {
-            PropertiesClip = clipData;
+            PropertiesClipData = clipData;
+        }
+
+        public void SetFacialAnimationData(IT_ClipData<FacialAnimationExportWrapper> clipData)
+        {
+            FacialAnimationClipData = clipData;
         }
 
         public void SetInterruptionValue(bool value)

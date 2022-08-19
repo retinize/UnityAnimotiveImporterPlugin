@@ -15,6 +15,7 @@ namespace Retinize.Editor.AnimotiveImporter
         private const string _TransformClipName = "TransformClip";
         private const string _PropertyClipName = "PropertiesClip";
         private const string _AudioClipName = "AudioClip";
+        private const string _FacialAnimationClip = "FacialParametersAnimation";
 
         public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
@@ -47,7 +48,8 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             { IT_ClipType.PropertiesClip, _PropertyClipName },
             { IT_ClipType.TransformAnimationClip, _TransformClipName },
-            { IT_ClipType.AudioClip, _AudioClipName }
+            { IT_ClipType.AudioClip, _AudioClipName },
+            { IT_ClipType.FacialAnimationClip, _FacialAnimationClip }
         };
 
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
