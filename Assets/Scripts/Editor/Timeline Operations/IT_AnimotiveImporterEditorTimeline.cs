@@ -85,6 +85,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AssetDatabase.CreateAsset(asset, assetPath);
 
+            //create tracks
             for (var i = 0; i < timelineData.ClipClustersInTake.Count; i++)
             {
                 var clipCluster = timelineData.ClipClustersInTake[i];
@@ -109,23 +110,20 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 // TODO: REMOVE FACIAL ANIMATION PART LATER.
                 // FACIAL ANIMATION 
-                var facialPerformanceAnimationTrack = asset.CreateTrack<AnimationTrack>();
-                facialPerformanceAnimationTrack.SetGroup(groupTrack);
-                var blendshapeAnimationClip =
-                    AssetDatabase.LoadAssetAtPath<AnimationClip>(IT_AnimotiveImporterEditorConstants
-                        .FacialAnimationCreatedPath);
 
-                if (blendshapeAnimationClip)
-                {
-                    var facialPerformanceClip = facialPerformanceAnimationTrack.CreateDefaultClip();
-                    facialPerformanceClip.start = 0;
-                    playableDirector.SetGenericBinding(facialPerformanceAnimationTrack, objToBind);
-                }
+                var facialAnimationClipData = clipCluster.FacialAnimationClipData;
+                var facialAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
+                    IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+                    clipCluster.FacialAnimationClipData.ClipDataPath,
+                    IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                var clipName = Path.GetFileNameWithoutExtension(facialAnimationClipData.ClipDataPath);
+                CreateAnimationTrack(clipName, asset, groupTrack, facialAnimationPath, playableDirector,
+                    objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory);
 
                 // END OF FACIAL ANIMATION
 
-                var bodyClipData = clipCluster.BodyAnimationClipData;
-                CreateBodyAnimationTrack(bodyClipData.ClipPlayerData.clipName, asset, groupTrack,
+                var bodyAnimationClipData = clipCluster.BodyAnimationClipData;
+                CreateAnimationTrack(bodyAnimationClipData.ClipPlayerData.clipName, asset, groupTrack,
                     bodyAnimationPath,
                     playableDirector,
                     objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
@@ -154,7 +152,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="playableDirector">Playable director to bind this track to. </param>
         /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
         /// <param name="directory"></param>
-        private static void CreateBodyAnimationTrack(string clipName, TimelineAsset asset,
+        private static void CreateAnimationTrack(string clipName, TimelineAsset asset,
             GroupTrack groupTrack, string animationPath,
             PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
