@@ -9,15 +9,15 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public class IT_AnimotiveImporterEditorWindow : EditorWindow
     {
-        public static bool ReimportAssets { get; private set; }
         private static bool _disableImport;
         private static bool _isAnimotiveFolderImported;
 
         public static string UserChosenDirectoryToImportUnityExports = "";
 
         public static bool EnableImportConfig;
+        public static bool ReimportAssets { get; private set; }
 
-        private async void OnGUI()
+        public async void OnGUI()
         {
             #region Choose Animotive folder
 
@@ -65,11 +65,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
             GUILayout.EndHorizontal();
 
-
             #endregion
 
 
-            #region Import Animotive Button
+            #region Import Animotive Scene
 
             _disableImport = _isAnimotiveFolderImported;
             EditorGUI.BeginDisabledGroup(!_disableImport);
