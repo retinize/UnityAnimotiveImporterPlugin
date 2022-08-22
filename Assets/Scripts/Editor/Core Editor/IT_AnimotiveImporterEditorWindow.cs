@@ -65,7 +65,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             GUILayout.EndHorizontal();
 
-            // if (GUILayout.Button("Clear Accumulated Files")) ClearAccumulatedFiles();
 
             #endregion
 

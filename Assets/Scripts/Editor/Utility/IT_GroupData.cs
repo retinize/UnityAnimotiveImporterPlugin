@@ -10,14 +10,16 @@ namespace Retinize.Editor.AnimotiveImporter
     {
         public int SerializedId { get; }
 
-        public string GroupName { get; }
+        public string TrimmedGroupName { get; }
+        public string OriginalGroupName { get; }
 
         public Dictionary<int, IT_TakeData> TakeDatas { get; set; }
 
         public IT_GroupData(int serializedId, string groupName)
         {
             SerializedId = serializedId;
-            GroupName = groupName;
+            TrimmedGroupName = groupName.Trim().Replace(" ", "");
+            OriginalGroupName = groupName;
             TakeDatas = new Dictionary<int, IT_TakeData>();
         }
     }
@@ -27,9 +29,8 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_TakeData
     {
-        public List<IT_ClipCluster> Clusters;
-
         public int TakeIndex { get; }
+        public List<IT_ClipCluster> Clusters;
 
         public IT_TakeData(int takeIndex)
         {
@@ -43,9 +44,6 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_ClipCluster
     {
-        public string ModelName;
-        public int NumberOfCaptureInWhichItWasCaptured = -1;
-        public int TakeIndex;
         public IT_ClipData<IT_ClipPlayerData> AudioClipData { get; private set; }
         public IT_ClipData<IT_ClipPlayerData> BodyAnimationClipData { get; private set; }
         public IT_ClipData<FacialAnimationExportWrapper> FacialAnimationClipData { get; private set; }
@@ -53,6 +51,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public bool IsAnimationProcessInterrupted { get; private set; }
         public bool IsInit { get; }
+        public string ModelName;
+        public int NumberOfCaptureInWhichItWasCaptured = -1;
+        public int TakeIndex;
 
         public IT_ClipCluster()
         {

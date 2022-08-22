@@ -28,7 +28,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var groupData = transformGroupDatas[i];
 
-                var groupObject = new GameObject(groupData.GroupName);
+                var groupObject = new GameObject(groupData.TrimmedGroupName);
 
                 foreach (var pair in groupData.TakeDatas)
                 {
@@ -41,7 +41,8 @@ namespace Retinize.Editor.AnimotiveImporter
                     var playableDirector = takeObjectInScene.AddOrGetComponent<PlayableDirector>();
 
 
-                    var timelineData = new IT_TimelineData(groupData.GroupName, takeData.Clusters, playableDirector,
+                    var timelineData = new IT_TimelineData(groupData.TrimmedGroupName, takeData.Clusters,
+                        playableDirector,
                         fbxDatasAndHoldersTuples, takeData);
 
                     playableDirector.playableAsset = CreatePlayableAssets(timelineData, sceneInternalData);

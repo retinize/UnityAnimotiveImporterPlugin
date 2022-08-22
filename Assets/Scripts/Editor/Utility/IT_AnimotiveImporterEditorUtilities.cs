@@ -87,7 +87,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>asset database path</returns>
         public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
-            var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
+            var result = fullOsPath.Split(new[] {"Assets"}, StringSplitOptions.None)[1];
             result = string.Concat("Assets", result);
             return result;
         }
@@ -118,7 +118,7 @@ namespace Retinize.Editor.AnimotiveImporter
             foreach (var groupData in sceneData.groupDataById.Values)
             {
                 var readerGroupData =
-                    new IT_GroupData(groupData.serializedId, groupData.groupName.Trim().Replace(" ", ""));
+                    new IT_GroupData(groupData.serializedId, groupData.groupName);
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
@@ -166,7 +166,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                         {
                                             var currentClipDataPath = fileName;
                                             currentClipDataPath = currentClipDataPath.Split(
-                                                new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
+                                                new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
                                                 StringSplitOptions.None)[0];
                                             clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                                 clipdata.ClipPlayerData,
@@ -309,17 +309,17 @@ namespace Retinize.Editor.AnimotiveImporter
                                 entitiesWithType.Add(entityType, new List<IT_BaseEntity>());
 
                             var holderPosition =
-                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
 
                             var holderRotation =
-                                (Quaternion)propertyDatasDict[
+                                (Quaternion) propertyDatasDict[
                                     IT_AnimotiveImporterEditorConstants.HolderRotationString];
 
                             var rootPosition =
-                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
 
                             var rootRotation =
-                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+                                (Quaternion) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
 
                             IT_BaseEntity itEntity;
@@ -328,7 +328,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 case IT_EntityType.Camera:
                                 {
-                                    var focalLength = (float)propertyDatasDict["DepthOfFieldFocalLength"];
+                                    var focalLength = (float) propertyDatasDict["DepthOfFieldFocalLength"];
                                     itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 

@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
-    //TODO: Add support for facial animation.
     public static class IT_BlendshapeAnimationClipEditor
     {
         /// <summary>
@@ -16,15 +17,16 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     that
         /// </summary>
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
-        private static FacialAnimationExportWrapper HandleBlendShapeAnimationCreation(
+        private static async Task<FacialAnimationExportWrapper> GetBlendShapeAnimationDataFromFile(
             string jsonFileSystemFullPath)
         {
-            var reader = new StreamReader(jsonFileSystemFullPath);
-            var jsonData = reader.ReadToEnd();
+            FacialAnimationExportWrapper clip = null;
+            await Task.Run(delegate
+            {
+                var json = File.ReadAllText(jsonFileSystemFullPath);
+                clip = JsonConvert.DeserializeObject<FacialAnimationExportWrapper>(json);
+            });
 
-            reader.Close();
-            reader.Dispose();
-            var clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(jsonData);
             return clip;
         }
 
@@ -36,8 +38,9 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Tuple of character to apply animation . Tuple contains GameObject which is root of the character
         ///     and the animator of the character.
         /// </param>
-        private static AnimationClip CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
-            IT_FbxData itFbxData)
+        /// <param name="fileNameWithoutExtension"></param>
+        private static void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
+            IT_FbxData itFbxData, string fileNameWithoutExtension)
         {
             var animationClip = new AnimationClip();
 
@@ -49,20 +52,32 @@ namespace Retinize.Editor.AnimotiveImporter
                 blendshapeCurves.Add(clip.characterGeos[i].name, new AnimationCurve());
             }
 
+            var isInnerLayerBroken = false;
             for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
                 var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
                 for (var j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
                 {
-                    var
-                        blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
+                    var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
                     var characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
 
                     var skinnedMeshRendererName = characterGeoDescriptor.name;
 
-                    var tr = itFbxData.FbxGameObject.transform.FindChildRecursively(skinnedMeshRendererName);
+                    Transform tr;
+                    var skinnedMeshRenderers = itFbxData.FbxGameObject.GetComponentsInChildren<SkinnedMeshRenderer>()
+                        .Where(a => a.name == skinnedMeshRendererName).ToList();
+
+                    if (skinnedMeshRenderers.Count == 0)
+                    {
+                        throw new Exception(
+                            "Couldn't find the skinnedmeshrenderer that you recorded with. Please make sure that you're using the correct character model that you recorded the animation with");
+                    }
+
+                    tr = skinnedMeshRenderers[0].transform;
+
                     var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
+
                     var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
                     var blendshapeValue = blendShapeData.value;
                     var keyframe = new Keyframe(time, blendshapeValue);
@@ -77,12 +92,19 @@ namespace Retinize.Editor.AnimotiveImporter
                 }
             }
 
-
             itFbxData.FbxAnimator.avatar = null;
-            AssetDatabase.CreateAsset(animationClip, IT_AnimotiveImporterEditorConstants.FacialAnimationCreatedPath);
-            AssetDatabase.Refresh();
 
-            return animationClip;
+
+            var fullOsPathToSave =
+                Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+                    fileNameWithoutExtension);
+            fullOsPathToSave = string.Concat(fullOsPathToSave, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+            var assetDbPathToSave =
+                IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(fullOsPathToSave);
+
+            AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
+            AssetDatabase.Refresh();
         }
 
         /// <summary>
@@ -91,10 +113,6 @@ namespace Retinize.Editor.AnimotiveImporter
         public static async Task HandleFacialAnimationOperations(List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples, string clipsFolderPath)
         {
-            // var clip = CreateBlendShapeAnimationClip(wrapper, fbxData);
-
-            // IT_FixedCharacterPropertyClip
-
             var blendshapesDictionary = await GetAllFacialAnimations(clipsFolderPath);
 
             for (var i = 0; i < groupDatas.Count; i++)
@@ -103,12 +121,36 @@ namespace Retinize.Editor.AnimotiveImporter
                 for (var j = 0; j < groupData.TakeDatas.Count; j++)
                 {
                     var takeData = groupData.TakeDatas[j];
+
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
                         var cluster = takeData.Clusters[k];
-                        var groupName = groupData.GroupName;
+                        var groupName = groupData.OriginalGroupName;
                         var takeIndex = takeData.TakeIndex;
                         var clipNumber = cluster.NumberOfCaptureInWhichItWasCaptured;
+
+                        var fullFileName = string.Concat(cluster.ModelName, "_",
+                            IT_AnimotiveImporterEditorConstants.FacialAnimationClipContentString, "_Clip_", clipNumber,
+                            "_", groupName, "_Take_", takeIndex,
+                            IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension);
+
+                        var jsonFullName = Path.Combine(clipsFolderPath, fullFileName);
+
+                        var contains = blendshapesDictionary.ContainsKey(jsonFullName);
+
+                        if (contains)
+                        {
+                            var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
+                            var wrappedData = blendshapesDictionary[jsonFullName];
+
+                            CreateBlendShapeAnimationClip(wrappedData, fbxData,
+                                Path.GetFileNameWithoutExtension(fullFileName));
+
+                            var facialAnimationClipData =
+                                new IT_ClipData<FacialAnimationExportWrapper>(IT_ClipType.FacialAnimationClip,
+                                    wrappedData, jsonFullName);
+                            cluster.SetFacialAnimationData(facialAnimationClipData);
+                        }
                     }
                 }
             }
@@ -120,7 +162,8 @@ namespace Retinize.Editor.AnimotiveImporter
             string clipsFolder)
         {
             var jsonFiles = Directory.GetFiles(clipsFolder).Where(a =>
-                a.EndsWith(".json") && IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(a) ==
+                a.EndsWith(IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension) &&
+                IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(a) ==
                 IT_ClipType.FacialAnimationClip).ToList();
 
             var blendShapesFullPathAndWrappers = new Dictionary<string, FacialAnimationExportWrapper>();
@@ -128,8 +171,7 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < jsonFiles.Count; i++)
             {
                 var jsonFileOsPath = jsonFiles[i];
-                var wrapper =
-                    HandleBlendShapeAnimationCreation(jsonFileOsPath);
+                var wrapper = await GetBlendShapeAnimationDataFromFile(jsonFileOsPath);
                 blendShapesFullPathAndWrappers.Add(jsonFileOsPath, wrapper);
             }
 
