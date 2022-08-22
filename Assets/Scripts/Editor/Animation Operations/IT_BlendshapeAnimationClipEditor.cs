@@ -103,6 +103,21 @@ namespace Retinize.Editor.AnimotiveImporter
             var assetDbPathToSave =
                 IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(fullOsPathToSave);
 
+
+            if (File.Exists(fullOsPathToSave))
+            {
+                var assetDbDir =
+                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(assetDbPathToSave);
+                assetDbDir = Path.GetDirectoryName(assetDbDir);
+
+                var similarFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDbDir,
+                    fullOsPathToSave,
+                    Path.GetFileName(fullOsPathToSave), IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+                assetDbPathToSave =
+                    IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
+            }
+
             AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
             AssetDatabase.Refresh();
         }
