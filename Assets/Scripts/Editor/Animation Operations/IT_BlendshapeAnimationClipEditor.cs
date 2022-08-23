@@ -47,12 +47,18 @@ namespace Retinize.Editor.AnimotiveImporter
             var blendshapeCurves =
                 new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
 
+            var auxiliary = new Dictionary<string, Tuple<string, string>>();
+
             for (var i = 0; i < clip.characterGeos.Count; i++)
             {
-                blendshapeCurves.Add(clip.characterGeos[i].name, new AnimationCurve());
+                for (var j = 0; j < clip.characterGeos[i].blendShapeNames.Count; j++)
+                {
+                    var blendShapeName = clip.characterGeos[i].blendShapeNames[j];
+                    blendshapeCurves.Add(blendShapeName, new AnimationCurve());
+                    auxiliary.Add(blendShapeName, new Tuple<string, string>("", ""));
+                }
             }
 
-            var isInnerLayerBroken = false;
             for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
                 var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
@@ -77,19 +83,31 @@ namespace Retinize.Editor.AnimotiveImporter
                     tr = skinnedMeshRenderers[0].transform;
 
                     var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
-
                     var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
                     var blendshapeValue = blendShapeData.value;
                     var keyframe = new Keyframe(time, blendshapeValue);
 
                     var relativePath = AnimationUtility.CalculateTransformPath(tr, itFbxData.FbxGameObject.transform);
-                    var curve = blendshapeCurves[skinnedMeshRendererName];
+
+                    var blendshapeSplittedName = blendshapeName.Split('.')[1];
+
+                    var curve = blendshapeCurves[blendshapeSplittedName];
                     curve.AddKey(keyframe);
 
                     var propertyName = string.Concat("blendShape.", blendshapeName);
-                    animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
-                        curve);
+                    auxiliary[blendshapeSplittedName] = new Tuple<string, string>(relativePath, propertyName);
                 }
+            }
+
+
+            foreach (var pair in blendshapeCurves)
+            {
+                var relativePath = auxiliary[pair.Key].Item1;
+                var propertyName = auxiliary[pair.Key].Item2;
+                var curve = pair.Value;
+
+                animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
+                    curve);
             }
 
             itFbxData.FbxAnimator.avatar = null;
