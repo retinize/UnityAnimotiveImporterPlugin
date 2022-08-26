@@ -35,7 +35,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -323,14 +323,17 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
+                    HumanBodyBones[] positionAllowedBones =
+                        {HumanBodyBones.Hips, HumanBodyBones.LastBone};
+
                     //add the position of selected bones to animationclip
-                    if (pair.Key == HumanBodyBones.Hips || pair.Key == HumanBodyBones.LastBone)
+                    if (positionAllowedBones.Any(a => a == pair.Key))
                     {
                         var position = localTransformValuesFromAnimFile[pair.Key][frame].Position;
-                        var inversedPosition = pair.Value.InverseTransformPoint(position);
+                        // var inversedPosition = pair.Value.InverseTransformPoint(position);
 
                         var localPositionX = new Keyframe(time, position.x);
-                        var localPositionY = new Keyframe(time, inversedPosition.y);
+                        var localPositionY = new Keyframe(time, position.y);
                         var localPositionZ = new Keyframe(time, position.z);
 
                         pathAndKeyframesDictionary[relativePath][0].Add(localPositionX);
