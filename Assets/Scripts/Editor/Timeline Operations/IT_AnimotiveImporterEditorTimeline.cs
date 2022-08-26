@@ -108,17 +108,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
 
-                // TODO: REMOVE FACIAL ANIMATION PART LATER.
                 // FACIAL ANIMATION 
 
-                var facialAnimationClipData = clipCluster.FacialAnimationClipData;
-                var facialAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
-                    IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
-                    clipCluster.FacialAnimationClipData.ClipDataPath,
-                    IT_AnimotiveImporterEditorConstants.AnimationExtension);
-                var clipName = Path.GetFileNameWithoutExtension(facialAnimationClipData.ClipDataPath);
-                CreateAnimationTrack(clipName, asset, groupTrack, facialAnimationPath, playableDirector,
-                    objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory);
+                if (!string.IsNullOrEmpty(clipCluster.FacialAnimationClipData.ClipDataPath))
+                {
+                    var facialAnimationClipData = clipCluster.FacialAnimationClipData;
+                    var facialAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
+                        IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+                        clipCluster.FacialAnimationClipData.ClipDataPath,
+                        IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                    var clipName = Path.GetFileNameWithoutExtension(facialAnimationClipData.ClipDataPath);
+                    CreateAnimationTrack(clipName, asset, groupTrack, facialAnimationPath, playableDirector,
+                        objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory);
+                }
 
                 // END OF FACIAL ANIMATION
 
