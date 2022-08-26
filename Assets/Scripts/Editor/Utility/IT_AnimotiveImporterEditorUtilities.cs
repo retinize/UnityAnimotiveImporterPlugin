@@ -22,7 +22,7 @@ namespace Retinize.Editor.AnimotiveImporter
             var dirs = Directory.GetDirectories(path);
 
             var result = dirs.Any(a => a.EndsWith("Clips")) && dirs.Any(a => a.EndsWith("SetAssets")) &&
-                         dirs.Any(a => a.EndsWith("EntityAssets"));
+                         dirs.Any(a => a.EndsWith("EntityAssets")) && dirs.Any(a => a.EndsWith("SceneDatas"));
             return result;
         }
 
