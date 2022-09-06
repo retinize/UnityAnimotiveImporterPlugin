@@ -3,7 +3,17 @@ guid: fc61118c235509c4497f4e73f24ae21f
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chloe_MAT2
+    second: {fileID: 2100000, guid: c10e03fa924e99742ba8d783fdf0eaa0, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Cat diffuse
+    second: {fileID: 2800000, guid: f6a7586cc7dd4dd44bf04e3002aa0ffd, type: 3}
   materials:
     materialImportMode: 1
     materialName: 0
