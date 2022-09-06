@@ -35,7 +35,7 @@ MonoBehaviour:
     m_Value: 1
   focusDistance:
     m_OverrideState: 1
-    m_Value: 1.42
+    m_Value: 1.38
     min: 0.1
   aperture:
     m_OverrideState: 1
@@ -44,7 +44,7 @@ MonoBehaviour:
     max: 32
   focalLength:
     m_OverrideState: 1
-    m_Value: 77
+    m_Value: 59.5
     min: 1
     max: 300
   bladeCount:
@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: Camera Chloe Post
+  m_Name: CAM4 PP Global Volume
   m_EditorClassIdentifier: 
   components:
   - {fileID: -8266475645044154389}
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29fa0085f50d5e54f8144f766051a691, type: 3}
   m_Name: FilmGrain
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   type:
     m_OverrideState: 1
@@ -124,11 +124,11 @@ MonoBehaviour:
   m_AdvancedMode: 0
   threshold:
     m_OverrideState: 1
-    m_Value: 1.23
+    m_Value: 1.22
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 2.91
+    m_Value: 50
     min: 0
   scatter:
     m_OverrideState: 1
@@ -141,7 +141,7 @@ MonoBehaviour:
     min: 0
   tint:
     m_OverrideState: 1
-    m_Value: {r: 0.9528302, g: 0.7257998, b: 0.5273525, a: 1}
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
     hdr: 0
     showAlpha: 0
     showEyeDropper: 1
