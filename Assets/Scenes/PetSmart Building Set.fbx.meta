@@ -3,7 +3,57 @@ guid: 5e21ef32ada38bf46b939b4bf52a0bdf
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BrickMat
+    second: {fileID: 2100000, guid: c3ed77371992ccb4d81fe030b906b555, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GroundMat
+    second: {fileID: 2100000, guid: 5fb12f57bfb1e0748a999ddabf3e5975, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: c306a97809c8f7f43a842b2609d8c8af, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: 2e60ee2b15a694a49a7513dcbe35162d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MortarMat
+    second: {fileID: 2100000, guid: 6cb947214f3dcc448bc94c0c025d5d23, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RoofMat
+    second: {fileID: 2100000, guid: aca7cf4afd107cb4a9af6bac7b424e37, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: blue
+    second: {fileID: 2100000, guid: 067543bfa2e5def4eabb58a6b2cfe954, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: building
+    second: {fileID: 2100000, guid: c24da4185d4dd3b428aeabcf97359a41, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: red
+    second: {fileID: 2100000, guid: 9466a2f277d828a4f9afa0ea4c57b454, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: windows
+    second: {fileID: 2100000, guid: d8d391e2c5ed854499756d92c8900453, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -45,7 +95,7 @@ ModelImporter:
     importLights: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
