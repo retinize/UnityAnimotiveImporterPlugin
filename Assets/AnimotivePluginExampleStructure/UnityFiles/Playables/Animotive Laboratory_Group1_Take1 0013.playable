@@ -1569,6 +1569,7 @@ MonoBehaviour:
   - {fileID: 8972518521512266414}
   - {fileID: -5348610768025643640}
   - {fileID: 2047248180179999956}
+  - {fileID: 8603384897547153607}
   m_Clips: []
   m_Markers:
     m_Objects: []
@@ -1759,7 +1760,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 0
+  m_Muted: 1
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 903738316472296246}
@@ -2555,6 +2556,33 @@ MonoBehaviour:
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
     m_DisplayName: Frank_Prod Holder_AudioClip_Capture2_InitTime_00_00_00_Local 0013
+  m_Markers:
+    m_Objects: []
+  m_TrackProperties:
+    volume: 1
+    stereoPan: 0
+    spatialBlend: 0
+--- !u!114 &8603384897547153607
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b22792c3b570444eb18cb78c2af3a74, type: 3}
+  m_Name: Audio Track (1)
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_AnimClip: {fileID: 0}
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_Curves: {fileID: 0}
+  m_Parent: {fileID: 903738316472296246}
+  m_Children: []
+  m_Clips: []
   m_Markers:
     m_Objects: []
   m_TrackProperties:
