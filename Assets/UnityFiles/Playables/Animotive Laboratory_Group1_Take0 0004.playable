@@ -4571,7 +4571,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 8
+  take: 9
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -4579,7 +4579,7 @@ MonoBehaviour:
       m_Leaf: Recordings
       m_ForceAssetFolder: 0
       m_AbsolutePath: E:\PetSmart\Exports\Unity Exports
-    m_FileName: MAIN_08_23_2022 12_26_46_CAT_Take_1_CAM7_DOG TAKE 2_BEAUTY PASS
+    m_FileName: MAIN_08_23_2022 12_26_46_CAT_Take_1_CAM7_DOG TAKE 2_BEAUTY PASS V2
   outputFormat: 0
   videoBitRateMode: 2
   captureAlpha: 0
@@ -9533,7 +9533,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 0
+  m_Muted: 1
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
@@ -10740,7 +10740,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 16.333334
-        value: {x: 0.788, y: 0, z: -0.000000029802322}
+        value: {x: 1.874, y: 0, z: -0.00000008940697}
         inSlope: {x: -11.542806, y: 0, z: 0}
         outSlope: {x: -11.542806, y: 0, z: 0}
         tangentMode: 0
@@ -10748,13 +10748,22 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.020349044, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 16.6
-        value: {x: 0, y: 0, z: 0}
-        inSlope: {x: -0.19563918, y: 0, z: 0}
-        outSlope: {x: -0.19563918, y: 0, z: 0}
+        time: 16.5
+        value: {x: 0.075310014, y: 0, z: -0.000000028289147}
+        inSlope: {x: -4.254047, y: 0, z: 0.00000047148336}
+        outSlope: {x: -4.254047, y: 0, z: 0.00000047148336}
         tangentMode: 0
         weightedMode: 0
-        inWeight: {x: 0.060432013, y: 0.33333334, z: 0.33333334}
+        inWeight: {x: 0.05378754, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 16.6
+        value: {x: 0, y: 0, z: 0}
+        inSlope: {x: -0.6756586, y: 0, z: 0}
+        outSlope: {x: -0.6756586, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.047493026, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -10811,7 +10820,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 16.333334
-        value: 0.788
+        value: 1.874
         inSlope: -11.542806
         outSlope: -11.542806
         tangentMode: 0
@@ -10819,13 +10828,22 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.020349044
       - serializedVersion: 3
-        time: 16.6
-        value: 0
-        inSlope: -0.19563918
-        outSlope: -0.19563918
+        time: 16.5
+        value: 0.075310014
+        inSlope: -4.254047
+        outSlope: -4.254047
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.060432013
+        inWeight: 0.05378754
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 16.6
+        value: 0
+        inSlope: -0.6756586
+        outSlope: -0.6756586
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.047493026
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -10867,7 +10885,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 16.333334
-        value: -0.000000029802322
+        value: -0.00000008940697
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -13714,7 +13732,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 1
+  m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
@@ -16996,7 +17014,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 1
+  m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
@@ -19232,7 +19250,7 @@ MonoBehaviour:
   m_Name: RecorderClip
   m_EditorClassIdentifier: 
   enabled: 1
-  take: 9
+  take: 10
   captureEveryNthFrame: 1
   fileNameGenerator:
     m_Path:
@@ -19240,7 +19258,7 @@ MonoBehaviour:
       m_Leaf: Recordings
       m_ForceAssetFolder: 0
       m_AbsolutePath: E:\PetSmart\Exports\Unity Exports
-    m_FileName: MAIN_08_23_2022 12_26_46_CAT_Take_1_CAM5_DOG TAKE 2_BEAUTY PASS
+    m_FileName: MAIN_08_23_2022 12_26_46_CAT_Take_1_CAM5_DOG TAKE 2_BEAUTY PASS V2
   outputFormat: 0
   videoBitRateMode: 2
   captureAlpha: 0
