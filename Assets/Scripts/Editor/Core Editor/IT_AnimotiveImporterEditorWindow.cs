@@ -70,7 +70,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
-            _disableImport = _isAnimotiveFolderImported && !IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
+
+            bool isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
+
+            if (isCharactersFolderEmpty)
+            {
+                Debug.LogError("No character found under Characters folder. Can't start the process...");
+            }
+            
+            _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
             EditorGUI.BeginDisabledGroup(!_disableImport);
 
             if (GUILayout.Button("Import Animotive Scene"))
