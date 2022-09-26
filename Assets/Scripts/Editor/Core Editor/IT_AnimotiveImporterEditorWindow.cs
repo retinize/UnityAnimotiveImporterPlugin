@@ -70,20 +70,20 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
-
             bool isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
 
-            if (isCharactersFolderEmpty)
+            if (isCharactersFolderEmpty && _isAnimotiveFolderImported)
             {
                 Debug.LogError("No character found under Characters folder. Can't start the process...");
             }
-            
+
             _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
             EditorGUI.BeginDisabledGroup(!_disableImport);
 
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+                await Task.Yield();
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
@@ -99,10 +99,12 @@ namespace Retinize.Editor.AnimotiveImporter
                 await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
                     fbxDatasAndHoldersTuples);
+                await Task.Yield();
 
 
                 await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
                     fbxDatasAndHoldersTuples, clipsFolderPath);
+                await Task.Yield();
 
                 IT_EntityOperations.HandleEntityOperations(sceneData);
 
@@ -142,32 +144,32 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns></returns>
         private static Task MoveAudiosIntoUnity(string unityExportPath)
         {
-            var charactersPath = Path.Combine(unityExportPath, "Clips");
-
-            var files = Directory.GetFiles(charactersPath)
-                .Where(a => !a.EndsWith(".meta") &&
-                            a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
-
-            if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
-                Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
-            for (var i = 0; i < files.Count; i++)
+            return Task.Run(delegate
             {
-                var fileName = Path.GetFileName(files[i]);
-                var targetFileName =
-                    Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
+                var charactersPath = Path.Combine(unityExportPath, "Clips");
 
-                if (File.Exists(targetFileName))
+                var files = Directory.GetFiles(charactersPath)
+                    .Where(a => !a.EndsWith(".meta") &&
+                                a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
+
+                if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
+                    Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
+                for (var i = 0; i < files.Count; i++)
                 {
-                    targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
-                        IT_AnimotiveImporterEditorConstants.AudioExtension);
+                    var fileName = Path.GetFileName(files[i]);
+                    var targetFileName =
+                        Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
+
+                    if (File.Exists(targetFileName))
+                    {
+                        targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
+                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
+                            IT_AnimotiveImporterEditorConstants.AudioExtension);
+                    }
+
+                    File.Copy(files[i], targetFileName, false);
                 }
-
-                File.Copy(files[i], targetFileName, false);
-            }
-
-            AssetDatabase.Refresh();
-            return Task.CompletedTask;
+            });
         }
 
         /// <summary>
