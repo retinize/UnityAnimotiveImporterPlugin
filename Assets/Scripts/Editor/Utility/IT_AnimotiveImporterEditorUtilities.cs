@@ -366,9 +366,6 @@ namespace Retinize.Editor.AnimotiveImporter
             var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory)
                 .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
             
-            
-            
-            
             return files.Length==0;
         }
     }
