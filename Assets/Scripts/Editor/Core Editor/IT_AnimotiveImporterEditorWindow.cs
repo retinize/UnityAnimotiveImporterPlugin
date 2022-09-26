@@ -70,7 +70,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
-            _disableImport = _isAnimotiveFolderImported;
+            _disableImport = _isAnimotiveFolderImported && !IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
             EditorGUI.BeginDisabledGroup(!_disableImport);
 
             if (GUILayout.Button("Import Animotive Scene"))

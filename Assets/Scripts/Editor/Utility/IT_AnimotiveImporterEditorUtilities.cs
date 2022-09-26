@@ -359,5 +359,17 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             return 2 * Mathf.Atan(camera.sensorSize.x / (2 * newFocalLength)) * (180 / Mathf.PI);
         }
+
+        public static bool IsCharactersFolderEmpty()
+        {
+
+            var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory)
+                .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
+            
+            
+            
+            
+            return files.Length==0;
+        }
     }
 }
