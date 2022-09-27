@@ -6,9 +6,9 @@ using UnityEngine;
 
 public static class IT_EntityOperations
 {
-    public static void HandleEntityOperations(IT_SceneInternalData sceneData)
+    public static async void HandleEntityOperations(IT_SceneInternalData sceneData)
     {
-        var entityTypeList = IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
+        var entityTypeList = await IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
 
 
         var entitiesRoot = new GameObject("Entities");

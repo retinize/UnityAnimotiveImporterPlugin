@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
         /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
         /// <param name="sceneInternalData">Binary scene data.</param>
-        public static void HandleGroups(List<IT_GroupData> transformGroupDatas,
+        public static async void HandleGroups(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
         {
@@ -45,7 +46,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         playableDirector,
                         fbxDatasAndHoldersTuples, takeData);
 
-                    playableDirector.playableAsset = CreatePlayableAssets(timelineData, sceneInternalData);
+                    playableDirector.playableAsset = await CreatePlayableAssets(timelineData, sceneInternalData);
                 }
             }
         }
@@ -56,7 +57,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="timelineData"></param>
         /// <param name="sceneInternalData"></param>
         /// <returns></returns>
-        public static PlayableAsset CreatePlayableAssets(IT_TimelineData timelineData,
+        public static async Task<PlayableAsset> CreatePlayableAssets(IT_TimelineData timelineData,
             IT_SceneInternalData sceneInternalData)
         {
             var playableDirector = timelineData.PlayableDirector;
@@ -77,7 +78,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             if (File.Exists(fullOsPath))
             {
-                var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetPathDir,
+                var similarName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetPathDir,
                     fullOsPath, Path.GetFileName(fullOsPath), IT_AnimotiveImporterEditorConstants.PlayableExtension);
                 similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
                 assetPath = similarName;
@@ -154,11 +155,11 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="playableDirector">Playable director to bind this track to. </param>
         /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
         /// <param name="directory"></param>
-        private static void CreateAnimationTrack(string clipName, TimelineAsset asset,
+        private static async void CreateAnimationTrack(string clipName, TimelineAsset asset,
             GroupTrack groupTrack, string animationPath,
             PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
-            var fileName = IT_AnimotiveImporterEditorUtilities.FindLatestFileName(clipName,
+            var fileName = await IT_AnimotiveImporterEditorUtilities.FindLatestFileName(clipName,
                 directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
             if (!string.IsNullOrEmpty(fileName))

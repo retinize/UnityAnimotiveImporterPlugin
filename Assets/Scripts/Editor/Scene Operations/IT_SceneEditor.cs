@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
@@ -11,7 +12,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates scene asset at the designated location
         /// </summary>
         /// <param name="sceneName">Name of the scene to be created.</param>
-        public static Scene CreateScene(string sceneName)
+        public static async Task<Scene> CreateScene(string sceneName)
         {
             if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory))
                 Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory);
@@ -29,7 +30,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             var fullSourcePath = Path.Combine(fullOsPath, unitySceneName);
-            var similarName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath, fullSourcePath,
+            var similarName =await  IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath, fullSourcePath,
                 unitySceneName,
                 IT_AnimotiveImporterEditorConstants.UnitySceneExtension);
 
@@ -42,7 +43,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             EditorSceneManager.SaveScene(scene, sceneFullPath);
 
-            AssetDatabase.Refresh();
 
             return scene;
         }

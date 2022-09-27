@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -79,26 +81,32 @@ namespace Retinize.Editor.AnimotiveImporter
 
             _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
             EditorGUI.BeginDisabledGroup(!_disableImport);
-
+            Stopwatch sw = new Stopwatch();
             if (GUILayout.Button("Import Animotive Scene"))
             {
+                
+                sw.Start();
                 await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
                 await Task.Yield();
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
-                var scene = IT_SceneEditor.CreateScene(sceneData.currentSetName);
+                var scene = await IT_SceneEditor.CreateScene(sceneData.currentSetName);
+                
+                AssetDatabase.Refresh();
 
-                var groupDatas =
-                    IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
-                var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
+                var groupDatas = await  IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
+                await Task.Yield();
+                  
+                var fbxDatasAndHoldersTuples =  IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
 
                 //create animation clips
                 await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
                     fbxDatasAndHoldersTuples);
+                AssetDatabase.Refresh();
                 await Task.Yield();
 
 
@@ -116,8 +124,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 AssetDatabase.Refresh();
             }
-
-
+            
+            if (sw.IsRunning && !EditorApplication.isUpdating)
+            {
+                sw.Stop();
+                Debug.Log(string.Concat(sw.Elapsed.Minutes,"  ",sw.Elapsed.Seconds));
+            }
+            
             EditorGUI.EndDisabledGroup();
 
             #endregion
@@ -144,7 +157,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns></returns>
         private static Task MoveAudiosIntoUnity(string unityExportPath)
         {
-            return Task.Run(delegate
+            return Task.Run(async delegate
             {
                 var charactersPath = Path.Combine(unityExportPath, "Clips");
 
@@ -162,7 +175,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     if (File.Exists(targetFileName))
                     {
-                        targetFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
+                        targetFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
                             IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
                             IT_AnimotiveImporterEditorConstants.AudioExtension);
                     }

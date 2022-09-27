@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using UnityEditor;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -19,7 +21,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>True: Yes folder is importable. False: No folder is not importable</returns>
         public static bool IsFolderInCorrectFormatToImport(string path)
         {
-            var dirs = Directory.GetDirectories(path);
+            var dirs = new HashSet<string>(Directory.GetDirectories(path));
 
             var result = dirs.Any(a => a.EndsWith("Clips")) && dirs.Any(a => a.EndsWith("SetAssets")) &&
                          dirs.Any(a => a.EndsWith("EntityAssets")) && dirs.Any(a => a.EndsWith("SceneDatas"));
@@ -40,6 +42,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (files[i].Contains(clipName)) return files[i];
             }
+            
 
             return "";
         }
@@ -108,7 +111,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="sceneData">Binary scene data</param>
         /// <param name="clipsPath">Path to Clips folder</param>
         /// <returns>List of IT_GroupData</returns>
-        public static List<IT_GroupData> GetGroupDataListByType(IT_SceneInternalData sceneData,
+        public static async Task<List<IT_GroupData>> GetGroupDataListByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
             var groupDatas = new List<IT_GroupData>();
@@ -158,7 +161,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                         break;
                                     case IT_ClipType.AudioClip:
 
-                                        var fileName = FindLatestFileName(clip.clipName,
+                                        var fileName = await FindLatestFileName(clip.clipName,
                                             IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                                             IT_AnimotiveImporterEditorConstants.AudioExtension);
 
@@ -200,7 +203,7 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
-        public static string FindLatestFileName(string clipName, string directory, string extension)
+        public static async Task<string> FindLatestFileName(string clipName, string directory, string extension)
         {
             var files = Directory
                 .GetFiles(directory);
@@ -240,7 +243,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     directory.
         ///     This function will return File 0006 so you can save your file with a unique name
         /// </returns>
-        public static string GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
+        public static async Task<string> GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
             string fileName,
             string extension)
         {
@@ -282,7 +285,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="sceneData">Binary scene data</param>
         /// <returns></returns>
-        public static Dictionary<IT_EntityType, List<IT_BaseEntity>> GetPropertiesData(IT_SceneInternalData sceneData)
+        public static async  Task< Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
                 new Dictionary<IT_EntityType, List<IT_BaseEntity>>();

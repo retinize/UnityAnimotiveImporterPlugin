@@ -39,7 +39,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     and the animator of the character.
         /// </param>
         /// <param name="fileNameWithoutExtension"></param>
-        private static void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
+        private static async void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
             IT_FbxData itFbxData, string fileNameWithoutExtension)
         {
             var animationClip = new AnimationClip();
@@ -128,7 +128,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(assetDbPathToSave);
                 assetDbDir = Path.GetDirectoryName(assetDbDir);
 
-                var similarFileName = IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDbDir,
+                var similarFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDbDir,
                     fullOsPathToSave,
                     Path.GetFileName(fullOsPathToSave), IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
