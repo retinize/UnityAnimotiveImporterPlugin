@@ -88,14 +88,13 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="fullOsPath">Full path to fbx. Do not use assetDatabase path.</param>
         public static void ImportFbxIntoUnityAndProcessIt(string fullOsPath)
         {
-            var strippedFfileName = Path.GetFileName(fullOsPath);
-
+            var strippedFileName = Path.GetFileName(fullOsPath);
 
             if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory))
                 Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory);
 
             var fullPathToSaveFbx = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory,
-                strippedFfileName);
+                strippedFileName);
 
             if (File.Exists(fullPathToSaveFbx))
             {
@@ -110,7 +109,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AssetDatabase.Refresh();
             IT_AnimotiveImporterEditorWindow.EnableImportConfig = false;
-
 
             AssetDatabase.Refresh();
         }
@@ -133,14 +131,12 @@ namespace Retinize.Editor.AnimotiveImporter
                 return Task.FromResult(false);
             }
 
-
             for (var i = 0; i < characterFolders.Length; i++)
             {
                 var folder = characterFolders[i];
                 var fbxes = Directory.GetFiles(folder)
                     .Where(a => a.Substring(a.Length - 4, 4).ToLower()
                         .EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToList();
-
 
                 var existence = fbxes.Count != 0;
                 if (!existence)

@@ -43,9 +43,7 @@ namespace Retinize.Editor.AnimotiveImporter
             IT_FbxData itFbxData, string fileNameWithoutExtension)
         {
             var animationClip = new AnimationClip();
-
-            var blendshapeCurves =
-                new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
+            var blendshapeCurves = new Dictionary<string, AnimationCurve>(clip.characterGeos.Count);
 
             var auxiliary = new Dictionary<string, Tuple<string, string>>();
 
@@ -112,9 +110,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             itFbxData.FbxAnimator.avatar = null;
 
-
-            var fullOsPathToSave =
-                Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+            var fullOsPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
                     fileNameWithoutExtension);
             fullOsPathToSave = string.Concat(fullOsPathToSave, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
@@ -171,19 +167,16 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var contains = blendshapesDictionary.ContainsKey(jsonFullName);
 
-                        if (contains)
-                        {
-                            var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
-                            var wrappedData = blendshapesDictionary[jsonFullName];
+                        if (!contains) continue;
+                        
+                        var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
+                        var wrappedData = blendshapesDictionary[jsonFullName];
 
-                            CreateBlendShapeAnimationClip(wrappedData, fbxData,
-                                Path.GetFileNameWithoutExtension(fullFileName));
+                        CreateBlendShapeAnimationClip(wrappedData, fbxData, Path.GetFileNameWithoutExtension(fullFileName));
 
-                            var facialAnimationClipData =
-                                new IT_ClipData<FacialAnimationExportWrapper>(IT_ClipType.FacialAnimationClip,
-                                    wrappedData, jsonFullName);
-                            cluster.SetFacialAnimationData(facialAnimationClipData);
-                        }
+                        var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(IT_ClipType.FacialAnimationClip,
+                                wrappedData, jsonFullName);
+                        cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
                 }
             }

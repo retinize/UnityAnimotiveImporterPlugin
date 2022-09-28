@@ -9,7 +9,6 @@ namespace Retinize.Editor.AnimotiveImporter
     [Serializable]
     public class IT_TransformInfoList
     {
-        public List<IT_TransformsByString> transformsByStrings =
-            new List<IT_TransformsByString>();
+        public List<IT_TransformsByString> transformsByStrings = new List<IT_TransformsByString>();
     }
 }
