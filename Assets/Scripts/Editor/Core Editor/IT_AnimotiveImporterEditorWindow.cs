@@ -134,9 +134,7 @@ namespace Retinize.Editor.AnimotiveImporter
             EditorGUI.EndDisabledGroup();
 
             #endregion
-
-
-            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
+            //if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
         }
 
         /// <summary>
