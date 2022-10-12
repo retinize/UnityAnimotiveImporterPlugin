@@ -2125,6 +2125,10 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[3].value
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7659007812016554690, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
+      propertyPath: m_SceneBindings.Array.data[4].value
+      value: 
+      objectReference: {fileID: 1662332651}
     - target: {fileID: 7659007812016554716, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -2135,7 +2139,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7659007813523291065, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7659007813523291070, guid: a2ba5f94b432a0043a724db8bbf5709d, type: 3}
       propertyPath: m_RootOrder
@@ -6120,6 +6124,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 555455657}
     m_Modifications:
     - target: {fileID: 2104542640864484201, guid: 3c04d27c89de421418e1441989707370, type: 3}
+      propertyPath: m_SceneBindings.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2104542640864484201, guid: 3c04d27c89de421418e1441989707370, type: 3}
+      propertyPath: m_SceneBindings.Array.data[6].key
+      value: 
+      objectReference: {fileID: -6711131521681336009, guid: 99ccf8489be220244aea088992b03e74, type: 2}
+    - target: {fileID: 2104542640864484201, guid: 3c04d27c89de421418e1441989707370, type: 3}
       propertyPath: m_SceneBindings.Array.data[0].value
       value: 
       objectReference: {fileID: 1662332650}
@@ -6243,7 +6255,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1667646195789736520, guid: 8e115213144ab58489b1347f5468f58d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1667646195789736527, guid: 8e115213144ab58489b1347f5468f58d, type: 3}
       propertyPath: m_RootOrder
