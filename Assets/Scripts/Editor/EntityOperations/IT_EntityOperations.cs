@@ -6,6 +6,11 @@ using UnityEngine;
 
 public static class IT_EntityOperations
 {
+    /// <summary>
+    ///     Creates cameras and spotlights in the scene
+    /// </summary>
+    /// <param name="sceneData"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static async void HandleEntityOperations(IT_SceneInternalData sceneData)
     {
         var entityTypeList = await IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
@@ -36,16 +41,18 @@ public static class IT_EntityOperations
                     case IT_EntityType.Camera:
                     {
                         var cam = rootObject.AddComponent<Camera>();
-                        var cameraEntity = (IT_CameraEntity)pair.Value[i];
+                        var cameraEntity = (IT_CameraEntity) pair.Value[i];
                         var fov = IT_AnimotiveImporterEditorUtilities.GetFieldOfView(cam, cameraEntity.FocalLength);
 
                         cam.fieldOfView = fov;
                         break;
                     }
                     case IT_EntityType.Spotlight:
+                    {
                         var light = rootObject.AddComponent<Light>();
                         light.type = LightType.Spot;
                         break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

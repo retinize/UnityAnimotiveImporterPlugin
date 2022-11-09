@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
-using UnityEditor;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -42,7 +41,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (files[i].Contains(clipName)) return files[i];
             }
-            
+
 
             return "";
         }
@@ -285,7 +284,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="sceneData">Binary scene data</param>
         /// <returns></returns>
-        public static async  Task< Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(IT_SceneInternalData sceneData)
+        public static async Task<Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(
+            IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
                 new Dictionary<IT_EntityType, List<IT_BaseEntity>>();
@@ -331,7 +331,9 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 case IT_EntityType.Camera:
                                 {
-                                    var focalLength = (float) propertyDatasDict["DepthOfFieldFocalLength"];
+                                    var focalLength =
+                                        (float) propertyDatasDict[
+                                            IT_AnimotiveImporterEditorConstants.DepthOfFieldFocalLength];
                                     itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 
@@ -365,11 +367,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static bool IsCharactersFolderEmpty()
         {
-
             var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory)
                 .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
-            
-            return files.Length==0;
+
+            return files.Length == 0;
         }
     }
 }

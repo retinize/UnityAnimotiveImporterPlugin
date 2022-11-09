@@ -23,6 +23,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string HolderRotationString = "HolderRotation";
         public const string RootPositionString = "RootPosition";
         public const string RootRotationString = "RootRotation";
+        public const string DepthOfFieldFocalLength = "DepthOfFieldFocalLength";
 
         public static string UnityFilesBase = Path.Combine(Directory.GetCurrentDirectory(),
             "Assets",
@@ -57,19 +58,5 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 {IT_EntityType.Camera, "Camera"}, {IT_EntityType.Spotlight, "Spot Light"}
             };
-
-
-        #region Hardcoded PoC Paths
-
-        public const string FacialAnimationSourcePath =
-            @"Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
-
-        public const string FacialAnimationDirectory =
-            @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/";
-
-        public const string FacialAnimationCreatedPath =
-            FacialAnimationDirectory + "blenshapeAnim.anim";
-
-        #endregion
     }
 }
