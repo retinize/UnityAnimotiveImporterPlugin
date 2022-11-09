@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using UnityEditor;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -299,7 +300,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     foreach (var propertyDatasDict in entityData.propertiesDataByTakeIndex)
                     {
-                        var displayName = propertyDatasDict["displayName"].ToString();
+                        var displayName = propertyDatasDict[IT_AnimotiveImporterEditorConstants.DisplayName].ToString();
 
                         var list = IT_AnimotiveImporterEditorConstants.EntityTypesByKeyword.Where(pair =>
                             displayName.Contains(pair.Value)).ToList();
@@ -334,14 +335,14 @@ namespace Retinize.Editor.AnimotiveImporter
                                     var focalLength =
                                         (float) propertyDatasDict[
                                             IT_AnimotiveImporterEditorConstants.DepthOfFieldFocalLength];
-                                    itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
+                                    itEntity = new IT_CameraEntity(holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 
                                     break;
                                 }
                                 case IT_EntityType.Spotlight:
                                 {
-                                    itEntity = new IT_SpotLightEntity(IT_EntityType.Spotlight, holderPosition,
+                                    itEntity = new IT_SpotLightEntity(holderPosition,
                                         rootPosition, holderRotation, rootRotation, displayName);
                                     break;
                                 }
@@ -371,6 +372,64 @@ namespace Retinize.Editor.AnimotiveImporter
                 .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
 
             return files.Length == 0;
+        }
+
+        /// <summary>
+        ///     Moves audio files into Unity editor and sorts them.
+        /// </summary>
+        /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
+        /// <returns></returns>
+        internal static Task MoveAudiosIntoUnity(string unityExportPath)
+        {
+            return Task.Run(async delegate
+            {
+                var charactersPath = Path.Combine(unityExportPath, "Clips");
+
+                var files = Directory.GetFiles(charactersPath)
+                    .Where(a => !a.EndsWith(".meta") &&
+                                a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
+
+                if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
+                    Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
+                for (var i = 0; i < files.Count; i++)
+                {
+                    var fileName = Path.GetFileName(files[i]);
+                    var targetFileName =
+                        Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
+
+                    if (File.Exists(targetFileName))
+                    {
+                        targetFileName = await GetLatestSimilarFileName(
+                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
+                            IT_AnimotiveImporterEditorConstants.AudioExtension);
+                    }
+
+                    File.Copy(files[i], targetFileName, false);
+                }
+            });
+        }
+
+        /// <summary>
+        ///     Deletes all accumulated files such as; Scenes, audios, animations and playables. But doesn't delete characters
+        /// </summary>
+        internal static void ClearAccumulatedFiles()
+        {
+            string[] directories =
+            {
+                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
+            };
+
+            for (var i = 0; i < directories.Length; i++)
+            {
+                Directory.Delete(directories[i], true);
+            }
+
+
+            IT_AnimotiveImporterEditorWindow.ResetWindow();
+            AssetDatabase.Refresh();
         }
     }
 }

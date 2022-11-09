@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
         /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
         /// <param name="sceneInternalData">Binary scene data.</param>
-        public static async void HandleGroups(List<IT_GroupData> transformGroupDatas,
+        public static async Task HandleGroups(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
         {

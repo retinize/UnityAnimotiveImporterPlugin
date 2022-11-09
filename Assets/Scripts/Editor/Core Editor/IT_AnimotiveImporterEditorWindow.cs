@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -83,7 +82,7 @@ namespace Retinize.Editor.AnimotiveImporter
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 sw.Start();
-                await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+                await IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
                 await Task.Yield();
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
@@ -99,7 +98,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
-
                 //create animation clips
                 await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
@@ -112,11 +110,10 @@ namespace Retinize.Editor.AnimotiveImporter
                     fbxDatasAndHoldersTuples, clipsFolderPath);
                 await Task.Yield();
 
-                IT_EntityOperations.HandleEntityOperations(sceneData);
-
+                await IT_EntityOperations.HandleEntityOperations(sceneData);
 
                 //create timeline using animation clips
-                IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
+                await IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
 
                 EditorSceneManager.SaveScene(scene);
 
@@ -133,7 +130,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #endregion
 
-            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
+            if (GUILayout.Button("Clear Accumulation")) IT_AnimotiveImporterEditorUtilities.ClearAccumulatedFiles();
         }
 
         /// <summary>
@@ -148,68 +145,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
         /// <summary>
-        ///     Moves audio files into Unity editor and sorts them.
-        /// </summary>
-        /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
-        /// <returns></returns>
-        private static Task MoveAudiosIntoUnity(string unityExportPath)
-        {
-            return Task.Run(async delegate
-            {
-                var charactersPath = Path.Combine(unityExportPath, "Clips");
-
-                var files = Directory.GetFiles(charactersPath)
-                    .Where(a => !a.EndsWith(".meta") &&
-                                a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
-
-                if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
-                    Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
-                for (var i = 0; i < files.Count; i++)
-                {
-                    var fileName = Path.GetFileName(files[i]);
-                    var targetFileName =
-                        Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
-
-                    if (File.Exists(targetFileName))
-                    {
-                        targetFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
-                            IT_AnimotiveImporterEditorConstants.AudioExtension);
-                    }
-
-                    File.Copy(files[i], targetFileName, false);
-                }
-            });
-        }
-
-        /// <summary>
-        ///     Deletes all accumulated files such as; Scenes, audios, animations and playables. But doesn't delete characters
-        /// </summary>
-        private static void ClearAccumulatedFiles()
-        {
-            string[] directories =
-            {
-                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
-            };
-
-            for (var i = 0; i < directories.Length; i++)
-            {
-                Directory.Delete(directories[i], true);
-            }
-
-
-            ResetWindow();
-            AssetDatabase.Refresh();
-        }
-
-
-        /// <summary>
         ///     Resets plugin window to it's default state
         /// </summary>
-        private static void ResetWindow()
+        internal static void ResetWindow()
         {
             UserChosenDirectoryToImportUnityExports = "";
             _isAnimotiveFolderImported = false;
