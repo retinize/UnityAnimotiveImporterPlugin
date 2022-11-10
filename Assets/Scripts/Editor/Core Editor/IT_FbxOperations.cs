@@ -46,12 +46,14 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         var clipData = takeData.Clusters[k];
 
-                        if (fbxDatasAndHoldersTuples.ContainsKey(clipData.ModelName)) continue;
+                        if (fbxDatasAndHoldersTuples.ContainsKey(clipData.EntityName)) continue;
                         var files = Directory.GetDirectories(Path.Combine(
                             IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
                             "Characters"));
 
-                        files = files.Where(a => a.EndsWith(clipData.ModelName)).ToArray();
+                        files = files.Where(a => a.EndsWith(clipData.EntityName)).ToArray();
+                        if (files.Length != 0) continue;
+
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)
                             .Where(a => a.Substring(a.Length - 4, 4).ToLower()
@@ -73,7 +75,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject, pluginTPose);
 
-                        fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
+                        fbxDatasAndHoldersTuples.Add(clipData.EntityName, temp);
                     }
                 }
             }

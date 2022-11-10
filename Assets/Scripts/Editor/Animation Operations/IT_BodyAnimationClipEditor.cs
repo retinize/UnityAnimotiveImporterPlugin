@@ -94,9 +94,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     }
 
                     if (!globalQuaternionsByFrame.ContainsKey(humanBone))
-                    {
                         globalQuaternionsByFrame.Add(humanBone, new List<Quaternion>(lastFrame + 1));
-                    }
 
                     globalQuaternionsByFrame[humanBone].Add(globalRotationOfThisBone);
                 }
@@ -138,9 +136,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         clip.physicsKeyframesCurve2[indexInCurveOfKey]);
 
                     if (!localQuaternionsByFrame.ContainsKey(pair.Key))
-                    {
                         localQuaternionsByFrame.Add(pair.Key, new List<IT_TransformValues>(lastFrame + 1));
-                    }
 
                     localQuaternionsByFrame[pair.Key].Add(new IT_TransformValues(frameRotation, framePosition));
                     transformIndex++;
@@ -167,12 +163,13 @@ namespace Retinize.Editor.AnimotiveImporter
             string animationClipDataPath)
         {
             var clip = SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
-                    File.ReadAllBytes(animationClipDataPath), DataFormat.Binary);
+                File.ReadAllBytes(animationClipDataPath), DataFormat.Binary);
 
             var animator = loadedFbXofCharacter.FbxAnimator;
 
             var boneTransformDictionaries =
-                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject, clip.humanoidBonesEnumThatAreUsed);
+                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject,
+                    clip.humanoidBonesEnumThatAreUsed);
 
             // animator.avatar = null;
             AssetDatabase.Refresh();
@@ -260,7 +257,8 @@ namespace Retinize.Editor.AnimotiveImporter
                                 clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
                         }
 
-                        var invAnimotiveTPoseRotationThisBone = Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
+                        var invAnimotiveTPoseRotationThisBone =
+                            Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
 
                         var boneRotation = invAnimotiveTPoseRotationThisBone *
                                            boneGlobalRotationThisFrameFromAnimFile *
@@ -386,14 +384,15 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
-                        var clipCluster = takeData.Clusters[k];
+                        var clipCluster = (IT_CharacterCluster) takeData.Clusters[k];
 
-                        var fbxDataTuple = fbxDatasAndHoldersTuples[clipCluster.ModelName];
+                        var fbxDataTuple = fbxDatasAndHoldersTuples[clipCluster.EntityName];
                         var fbxData = fbxDataTuple.FbxData;
 
                         var holderObject = fbxDataTuple.HolderObject;
 
-                        var animationClipDataPath = clipCluster.BodyAnimationClipData.ClipDataPath;
+                        var animationClipDataPath =
+                            clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipDataPath;
 
                         var bodyAnimationPath =
                             IT_AnimotiveImporterEditorUtilities
@@ -410,20 +409,23 @@ namespace Retinize.Editor.AnimotiveImporter
                         if (doesAvatarHasAllRequiredBones)
                         {
                             var message =
-                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.BodyAnimationClipData.ClipPlayerData.clipName}' clip don't match !
+                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName}' clip don't match !
                                 Make sure that the avatar has all the required bones and you're using correct FBX for this clip";
 
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message, "OK");
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
+                                "OK");
 
                             clipCluster.SetInterruptionValue(true);
                             continue;
                         }
 
-                        clipCluster.NumberOfCaptureInWhichItWasCaptured = clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
+                        clipCluster.NumberOfCaptureInWhichItWasCaptured =
+                            clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
 
                         fbxData.FbxGameObject.transform.localScale =
-                            clipAndDictionariesTuple.Clip.lossyScaleRoot * Vector3.one; // since the character has no parent at this point
+                            clipAndDictionariesTuple.Clip.lossyScaleRoot *
+                            Vector3.one; // since the character has no parent at this point
                         // we can safely assign lossy scale data to character's root
 
                         holderObject.transform.position = clipAndDictionariesTuple.Clip.worldPositionHolder;
@@ -433,10 +435,11 @@ namespace Retinize.Editor.AnimotiveImporter
                                 clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length))
                         {
                             var message =
-                                $@"Bone count with the {clipCluster.ModelName} and {clipCluster.BodyAnimationClipData.ClipPlayerData.clipName} doesn't match !
+                                $@"Bone count with the {clipCluster.EntityName} and {clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName} doesn't match !
                                 Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message, "OK");
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
+                                "OK");
                             clipCluster.SetInterruptionValue(true);
 
                             continue;

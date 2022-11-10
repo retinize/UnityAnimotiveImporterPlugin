@@ -116,22 +116,41 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var groupDatas = new List<IT_GroupData>();
 
-            IT_ClipCluster currentCluster;
+            IIT_ICluster currentCluster;
 
             foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
                 var readerGroupData =
                     new IT_GroupData(groupData.serializedId, groupData.groupName);
+
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
+
+                    var displayNameDictionary = entityData.propertiesDataByTakeIndex.Single(a =>
+                        a.ContainsKey(IT_AnimotiveImporterEditorConstants.DisplayName));
+                    var displayName = (string) displayNameDictionary[IT_AnimotiveImporterEditorConstants.DisplayName];
+
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
+
+                        if (take.Count <= 1) continue;
+
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
 
-                        currentCluster = new IT_ClipCluster();
+                        if (displayName.ToLower().Contains("camera"))
+                            currentCluster = new IT_CameraCluster();
+                        else
+                        {
+                            currentCluster = new IT_CharacterCluster();
+                            if (take.Count < 3)
+                                continue; //if take doesn't have audio,properties and transform datas all at once then it's not useful for characters
+                        }
+
+                        currentCluster.TakeIndex = i;
+                        currentCluster.EntityName = displayName;
 
                         for (var j = 0; j < take.Count; j++)
                         {
@@ -149,52 +168,37 @@ namespace Retinize.Editor.AnimotiveImporter
 
                                 var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
 
-                                switch (type)
+                                if (type == IT_ClipType.AudioClip)
                                 {
-                                    case IT_ClipType.None:
-                                        throw new ArgumentOutOfRangeException();
-                                    case IT_ClipType.PropertiesClip:
-                                        currentCluster.SetPropertiesClipData(clipdata);
-                                        break;
-                                    case IT_ClipType.TransformAnimationClip:
-                                        currentCluster.SetTransformClipData(clipdata);
-                                        break;
-                                    case IT_ClipType.AudioClip:
+                                    var fileName = await FindLatestFileName(clip.clipName,
+                                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                        IT_AnimotiveImporterEditorConstants.AudioExtension);
 
-                                        var fileName = await FindLatestFileName(clip.clipName,
-                                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                            IT_AnimotiveImporterEditorConstants.AudioExtension);
-
-                                        if (!string.IsNullOrEmpty(fileName))
-                                        {
-                                            var currentClipDataPath = fileName;
-                                            currentClipDataPath = currentClipDataPath.Split(
-                                                new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
-                                                StringSplitOptions.None)[0];
-                                            clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
-                                                clipdata.ClipPlayerData,
-                                                currentClipDataPath);
-                                        }
-
-                                        currentCluster.SetAudioClipData(clipdata);
-
-                                        break;
-
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        var currentClipDataPath = fileName;
+                                        currentClipDataPath = currentClipDataPath.Split(
+                                            new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                            StringSplitOptions.None)[0];
+                                        clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
+                                            clipdata.ClipPlayerData,
+                                            currentClipDataPath);
+                                    }
                                 }
 
-                                currentCluster.TakeIndex = i;
-                                currentCluster.ModelName = entityData.entityInstantiationTokenData;
+
+                                currentCluster.ClipDatas.Add(type, clipdata);
                             }
 
-                            if (currentCluster.AudioClipData.ClipPlayerData != null)
+
+                            if (!string.IsNullOrEmpty(currentCluster.EntityName))
                                 readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
                         }
                     }
                 }
 
-                readerGroupData.TakeDatas = readerGroupData.TakeDatas.Where(a => a.Value.Clusters.Count != 0)
+                readerGroupData.TakeDatas = readerGroupData.TakeDatas
+                    .Where(a => a.Value.Clusters.Count != 0)
                     .ToDictionary(p => p.Key, p => p.Value);
 
                 groupDatas.Add(readerGroupData);

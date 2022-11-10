@@ -30,56 +30,64 @@ namespace Retinize.Editor.AnimotiveImporter
     public class IT_TakeData
     {
         public int TakeIndex { get; }
-        public List<IT_ClipCluster> Clusters;
+        public List<IIT_ICluster> Clusters;
 
         public IT_TakeData(int takeIndex)
         {
             TakeIndex = takeIndex;
-            Clusters = new List<IT_ClipCluster>();
+            Clusters = new List<IIT_ICluster>();
         }
+    }
+
+    public interface IIT_ICluster
+    {
+        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public string EntityName { get; set; }
+        public bool IsAnimationProcessInterrupted { get; }
+
+        public int TakeIndex { get; set; }
+    }
+
+
+    public class IT_CameraCluster : IIT_ICluster
+    {
+        public IT_CameraCluster()
+        {
+            IsAnimationProcessInterrupted = false;
+            ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
+        }
+
+        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public string EntityName { get; set; }
+        public bool IsAnimationProcessInterrupted { get; }
+        public int TakeIndex { get; set; }
     }
 
     /// <summary>
     ///     Class to hold animation, audio and property datas coupled.
     /// </summary>
-    public class IT_ClipCluster
+    public class IT_CharacterCluster : IIT_ICluster
     {
-        public IT_ClipData<IT_ClipPlayerData> AudioClipData { get; private set; }
-        public IT_ClipData<IT_ClipPlayerData> BodyAnimationClipData { get; private set; }
         public IT_ClipData<FacialAnimationExportWrapper> FacialAnimationClipData { get; private set; }
-        public IT_ClipData<IT_ClipPlayerData> PropertiesClipData { get; private set; }
+
+
+        public int NumberOfCaptureInWhichItWasCaptured = -1;
+
+        public IT_CharacterCluster()
+        {
+            FacialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>();
+            IsAnimationProcessInterrupted = false;
+            ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
+        }
+
+        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public string EntityName { get; set; }
+
+        public int TakeIndex { get; set; }
+
 
         public bool IsAnimationProcessInterrupted { get; private set; }
-        public bool IsInit { get; }
-        public string ModelName;
-        public int NumberOfCaptureInWhichItWasCaptured = -1;
-        public int TakeIndex;
 
-        public IT_ClipCluster()
-        {
-            AudioClipData = new IT_ClipData<IT_ClipPlayerData>();
-            BodyAnimationClipData = new IT_ClipData<IT_ClipPlayerData>();
-            PropertiesClipData = new IT_ClipData<IT_ClipPlayerData>();
-            FacialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>();
-            IsInit = true;
-            IsAnimationProcessInterrupted = false;
-        }
-
-
-        public void SetAudioClipData(IT_ClipData<IT_ClipPlayerData> clipData)
-        {
-            AudioClipData = clipData;
-        }
-
-        public void SetTransformClipData(IT_ClipData<IT_ClipPlayerData> clipData)
-        {
-            BodyAnimationClipData = clipData;
-        }
-
-        public void SetPropertiesClipData(IT_ClipData<IT_ClipPlayerData> clipData)
-        {
-            PropertiesClipData = clipData;
-        }
 
         public void SetFacialAnimationData(IT_ClipData<FacialAnimationExportWrapper> clipData)
         {

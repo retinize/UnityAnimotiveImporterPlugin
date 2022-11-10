@@ -102,9 +102,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
                     fbxDatasAndHoldersTuples);
+
                 AssetDatabase.Refresh();
                 await Task.Yield();
-
 
                 await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
                     fbxDatasAndHoldersTuples, clipsFolderPath);
@@ -113,7 +113,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 await IT_EntityOperations.HandleEntityOperations(sceneData);
 
                 //create timeline using animation clips
-                await IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
+                await IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
+                    sceneData);
 
                 EditorSceneManager.SaveScene(scene);
 

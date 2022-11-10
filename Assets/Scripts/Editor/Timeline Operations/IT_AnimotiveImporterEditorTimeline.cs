@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
         /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
         /// <param name="sceneInternalData">Binary scene data.</param>
-        public static async Task HandleGroups(List<IT_GroupData> transformGroupDatas,
+        public static async Task HandleTimeLineOperations(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
         {
@@ -89,22 +89,20 @@ namespace Retinize.Editor.AnimotiveImporter
             //create tracks
             for (var i = 0; i < timelineData.ClipClustersInTake.Count; i++)
             {
-                var clipCluster = timelineData.ClipClustersInTake[i];
+                var clipCluster = (IT_CharacterCluster) timelineData.ClipClustersInTake[i];
                 if (clipCluster.IsAnimationProcessInterrupted)
                 {
                     AssetDatabase.DeleteAsset(assetPath);
                     continue;
                 }
 
-                //TODO: Will be updated to add facial animations as well
-
                 var groupTrack = asset.CreateTrack<GroupTrack>();
                 groupTrack.name = timelineData.GroupName;
 
-                var objToBind = timelineData.FbxDataWithHolders[clipCluster.ModelName].FbxData.FbxGameObject;
+                var objToBind = timelineData.FbxDataWithHolders[clipCluster.EntityName].FbxData.FbxGameObject;
                 var bodyAnimationPath = IT_AnimotiveImporterEditorUtilities.ConvertFullFilePathIntoUnityFilesPath(
                     IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
-                    clipCluster.BodyAnimationClipData.ClipDataPath,
+                    clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipDataPath,
                     IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(bodyAnimationPath) == null) continue;
@@ -125,13 +123,14 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 // END OF FACIAL ANIMATION
 
-                var bodyAnimationClipData = clipCluster.BodyAnimationClipData;
+                var bodyAnimationClipData = clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip];
                 CreateAnimationTrack(bodyAnimationClipData.ClipPlayerData.clipName, asset, groupTrack,
                     bodyAnimationPath,
                     playableDirector,
                     objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
                 // CreateAnimationTrack(); //facial animation
-                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClipData.ClipDataPath, playableDirector,
+                CreateAudioTrack(asset, groupTrack, clipCluster.ClipDatas[IT_ClipType.AudioClip].ClipDataPath,
+                    playableDirector,
                     objToBind);
             }
 
