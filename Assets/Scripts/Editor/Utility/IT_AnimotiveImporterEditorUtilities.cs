@@ -118,7 +118,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             IT_ClipCluster currentCluster;
 
-            foreach (var groupData in sceneData.groupDataById.Values)
+            foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
                 var readerGroupData =
                     new IT_GroupData(groupData.serializedId, groupData.groupName);
@@ -292,7 +292,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 new Dictionary<IT_EntityType, List<IT_BaseEntity>>();
 
 
-            foreach (var groupData in sceneData.groupDataById.Values)
+            foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
                 foreach (var entityId in groupData.entitiesIds)
                 {

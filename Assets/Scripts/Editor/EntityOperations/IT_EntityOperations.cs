@@ -46,7 +46,6 @@ public static class IT_EntityOperations
         }
     }
 
-
     private static Tuple<GameObject, GameObject> CreateObjectsForEntity(IT_BaseEntity baseEntity, GameObject typeRoot)
     {
         var holderObject = new GameObject(baseEntity.DisplayName + "_HOLDER");

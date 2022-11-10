@@ -66,7 +66,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     var characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
 
-                    var skinnedMeshRendererName = characterGeoDescriptor.name;
+                    var skinnedMeshRendererName = characterGeoDescriptor.skinnedMeshRendererName;
 
                     Transform tr;
                     var skinnedMeshRenderers = itFbxData.FbxGameObject.GetComponentsInChildren<SkinnedMeshRenderer>()
@@ -111,7 +111,7 @@ namespace Retinize.Editor.AnimotiveImporter
             itFbxData.FbxAnimator.avatar = null;
 
             var fullOsPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
-                    fileNameWithoutExtension);
+                fileNameWithoutExtension);
             fullOsPathToSave = string.Concat(fullOsPathToSave, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
             var assetDbPathToSave =
@@ -168,14 +168,16 @@ namespace Retinize.Editor.AnimotiveImporter
                         var contains = blendshapesDictionary.ContainsKey(jsonFullName);
 
                         if (!contains) continue;
-                        
+
                         var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
                         var wrappedData = blendshapesDictionary[jsonFullName];
 
-                        CreateBlendShapeAnimationClip(wrappedData, fbxData, Path.GetFileNameWithoutExtension(fullFileName));
+                        CreateBlendShapeAnimationClip(wrappedData, fbxData,
+                            Path.GetFileNameWithoutExtension(fullFileName));
 
-                        var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(IT_ClipType.FacialAnimationClip,
-                                wrappedData, jsonFullName);
+                        var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
+                            IT_ClipType.FacialAnimationClip,
+                            wrappedData, jsonFullName);
                         cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
                 }
