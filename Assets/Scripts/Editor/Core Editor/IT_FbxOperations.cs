@@ -52,7 +52,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             "Characters"));
 
                         files = files.Where(a => a.EndsWith(clipData.EntityName)).ToArray();
-                        if (files.Length != 0) continue;
+                        if (files.Length == 0) continue;
 
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)
