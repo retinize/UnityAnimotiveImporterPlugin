@@ -44,6 +44,9 @@ namespace Retinize.Editor.AnimotiveImporter
                     var takeData = pair.Value;
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
+                        if (takeData.Clusters[k].ClipDatas.Count != 3)
+                            continue; //if it's not character cluster then move on to the next
+
                         var clipData = takeData.Clusters[k];
 
                         if (fbxDatasAndHoldersTuples.ContainsKey(clipData.EntityName)) continue;
@@ -52,7 +55,6 @@ namespace Retinize.Editor.AnimotiveImporter
                             "Characters"));
 
                         files = files.Where(a => a.EndsWith(clipData.EntityName)).ToArray();
-                        if (files.Length == 0) continue;
 
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)

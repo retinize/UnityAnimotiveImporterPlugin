@@ -135,7 +135,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
 
-                        if (take.Count <= 1) continue;
+                        if (take.Count == 0) continue;
 
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
@@ -155,43 +155,41 @@ namespace Retinize.Editor.AnimotiveImporter
                         for (var j = 0; j < take.Count; j++)
                         {
                             var track = take[j];
-                            for (var k = 0; k < track.Count; k++)
+
+
+                            var clip = track[0];
+
+                            var animationClipDataPath =
+                                ReturnClipDataPathFromPath(clipsPath,
+                                    clip.clipName);
+
+                            var type =
+                                GetClipTypeFromClipName(clip.clipName);
+
+                            var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
+
+                            if (type == IT_ClipType.AudioClip)
                             {
-                                var clip = track[k];
+                                var fileName = await FindLatestFileName(clip.clipName,
+                                    IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                    IT_AnimotiveImporterEditorConstants.AudioExtension);
 
-                                var animationClipDataPath =
-                                    ReturnClipDataPathFromPath(clipsPath,
-                                        clip.clipName);
-
-                                var type =
-                                    GetClipTypeFromClipName(clip.clipName);
-
-                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
-
-                                if (type == IT_ClipType.AudioClip)
+                                if (!string.IsNullOrEmpty(fileName))
                                 {
-                                    var fileName = await FindLatestFileName(clip.clipName,
-                                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                        IT_AnimotiveImporterEditorConstants.AudioExtension);
-
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        var currentClipDataPath = fileName;
-                                        currentClipDataPath = currentClipDataPath.Split(
-                                            new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
-                                            StringSplitOptions.None)[0];
-                                        clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
-                                            clipdata.ClipPlayerData,
-                                            currentClipDataPath);
-                                    }
+                                    var currentClipDataPath = fileName;
+                                    currentClipDataPath = currentClipDataPath.Split(
+                                        new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                        StringSplitOptions.None)[0];
+                                    clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
+                                        clipdata.ClipPlayerData,
+                                        currentClipDataPath);
                                 }
-
-
-                                currentCluster.ClipDatas.Add(type, clipdata);
                             }
 
 
-                            if (!string.IsNullOrEmpty(currentCluster.EntityName))
+                            currentCluster.ClipDatas.Add(type, clipdata);
+
+                            if (!readerGroupData.TakeDatas[i].Clusters.Contains(currentCluster))
                                 readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
                         }
                     }

@@ -89,6 +89,11 @@ namespace Retinize.Editor.AnimotiveImporter
             //create tracks
             for (var i = 0; i < timelineData.ClipClustersInTake.Count; i++)
             {
+                var cluster = timelineData.ClipClustersInTake[i];
+
+                if (cluster.ClipDatas.Count != 3)
+                    continue; //if it's not character cluster then move on to the next
+
                 var clipCluster = (IT_CharacterCluster) timelineData.ClipClustersInTake[i];
                 if (clipCluster.IsAnimationProcessInterrupted)
                 {

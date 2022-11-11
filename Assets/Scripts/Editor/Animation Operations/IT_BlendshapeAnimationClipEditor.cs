@@ -153,6 +153,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
+                        if (takeData.Clusters[k].ClipDatas.Count != 3)
+                            continue; //if it's not character cluster then move on to the next
+
                         var cluster = (IT_CharacterCluster) takeData.Clusters[k];
                         var groupName = groupData.OriginalGroupName;
                         var takeIndex = takeData.TakeIndex;
