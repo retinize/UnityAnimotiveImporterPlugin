@@ -110,7 +110,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     fbxDatasAndHoldersTuples, clipsFolderPath);
                 await Task.Yield();
 
-                await IT_EntityOperations.HandleEntityOperations(sceneData);
+                await IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
 
                 //create timeline using animation clips
                 await IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,

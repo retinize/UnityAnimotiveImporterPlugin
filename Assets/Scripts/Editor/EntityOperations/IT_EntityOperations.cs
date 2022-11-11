@@ -11,8 +11,8 @@ public static class IT_EntityOperations
     ///     Creates cameras and spotlights in the scene
     /// </summary>
     /// <param name="sceneData"></param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static async Task HandleEntityOperations(IT_SceneInternalData sceneData)
+    /// <param name="groupDatas"></param>
+    public static async Task HandleEntityOperations(IT_SceneInternalData sceneData, List<IT_GroupData> groupDatas)
     {
         var entityTypeList = await IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
 
@@ -20,6 +20,37 @@ public static class IT_EntityOperations
         var entitiesRoot = new GameObject("Entities");
 
         CreateArgsForEntitiesAndExecuteEntitySpecificOperations(entityTypeList, entitiesRoot);
+
+        CreateAnimationClip(groupDatas);
+    }
+
+
+    private static void CreateAnimationClip(List<IT_GroupData> groupDatas)
+    {
+        for (var i = 0; i < groupDatas.Count; i++)
+        {
+            var groupData = groupDatas[i];
+
+            for (var j = 0; j < groupData.TakeDatas.Count; j++)
+            {
+                var takeData = groupData.TakeDatas[j];
+
+                for (var k = 0; k < takeData.Clusters.Count; k++)
+                {
+                    var cluster = takeData.Clusters[k];
+
+                    if (cluster.ClusterType != IT_ClusterType.CameraCluster)
+                        continue; //if not camera cluster then continue
+
+                    var transformClip = cluster.ClipDatas[IT_ClipType.TransformAnimationClip];
+
+                    Debug.Log("----------");
+                    Debug.Log(cluster.EntityName);
+                    Debug.Log(transformClip.ClipDataPath); //full os path
+                    Debug.Log(transformClip.ClipPlayerData.clipName);
+                }
+            }
+        }
     }
 
     private static void CreateArgsForEntitiesAndExecuteEntitySpecificOperations(

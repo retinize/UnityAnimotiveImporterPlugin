@@ -362,17 +362,7 @@ namespace Retinize.Editor.AnimotiveImporter
             List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
-            string[] animationDirectories =
-            {
-                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory
-            };
-
-            for (var i = 0; i < animationDirectories.Length; i++)
-            {
-                if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
-            }
+            IT_AnimotiveImporterEditorUtilities.CreateAnimationFolders();
 
             for (var i = 0; i < groupDatas.Count; i++)
             {
@@ -384,7 +374,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
-                        if (takeData.Clusters[k].ClipDatas.Count != 3)
+                        if (takeData.Clusters[k].ClusterType != IT_ClusterType.CharacterCluster)
                             continue; //if it's not character cluster then move on to the next 
                         var clipCluster = (IT_CharacterCluster) takeData.Clusters[k];
 

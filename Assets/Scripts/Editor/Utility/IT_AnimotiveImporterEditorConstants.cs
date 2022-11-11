@@ -40,6 +40,9 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string UnityFilesFacialAnimationDirectory =
             Path.Combine(UnityFilesAnimationDirectory, "FacialAnimations");
 
+        public static string UnityFilesCameraAnimationDirectory =
+            Path.Combine(UnityFilesAnimationDirectory, "CameraAnimation");
+
         public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
         {
             {IT_ClipType.PropertiesClip, _PropertyClipName},

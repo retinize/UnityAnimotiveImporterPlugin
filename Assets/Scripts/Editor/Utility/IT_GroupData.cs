@@ -41,6 +41,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
     public interface IIT_ICluster
     {
+        public IT_ClusterType ClusterType { get; }
         public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
         public string EntityName { get; set; }
         public bool IsAnimationProcessInterrupted { get; }
@@ -57,6 +58,7 @@ namespace Retinize.Editor.AnimotiveImporter
             ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
         }
 
+        public IT_ClusterType ClusterType => IT_ClusterType.CameraCluster;
         public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
         public string EntityName { get; set; }
         public bool IsAnimationProcessInterrupted { get; }
@@ -79,6 +81,8 @@ namespace Retinize.Editor.AnimotiveImporter
             IsAnimationProcessInterrupted = false;
             ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
         }
+
+        public IT_ClusterType ClusterType => IT_ClusterType.CharacterCluster;
 
         public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
         public string EntityName { get; set; }

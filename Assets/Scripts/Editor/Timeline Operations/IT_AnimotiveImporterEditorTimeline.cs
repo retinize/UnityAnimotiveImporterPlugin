@@ -91,7 +91,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var cluster = timelineData.ClipClustersInTake[i];
 
-                if (cluster.ClipDatas.Count != 3)
+                if (cluster.ClusterType != IT_ClusterType.CharacterCluster)
                     continue; //if it's not character cluster then move on to the next
 
                 var clipCluster = (IT_CharacterCluster) timelineData.ClipClustersInTake[i];

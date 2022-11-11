@@ -337,6 +337,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                     var focalLength =
                                         (float) propertyDatasDict[
                                             IT_AnimotiveImporterEditorConstants.DepthOfFieldFocalLength];
+
                                     itEntity = new IT_CameraEntity(holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 
@@ -432,6 +433,22 @@ namespace Retinize.Editor.AnimotiveImporter
 
             IT_AnimotiveImporterEditorWindow.ResetWindow();
             AssetDatabase.Refresh();
+        }
+
+        public static void CreateAnimationFolders()
+        {
+            string[] animationDirectories =
+            {
+                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory
+            };
+
+            for (var i = 0; i < animationDirectories.Length; i++)
+            {
+                if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
+            }
         }
     }
 }
