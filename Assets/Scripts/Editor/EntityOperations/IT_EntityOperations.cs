@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using OdinSerializer;
 using Retinize.Editor.AnimotiveImporter;
 using UnityEngine;
 
@@ -27,6 +29,8 @@ public static class IT_EntityOperations
 
     private static void CreateAnimationClip(List<IT_GroupData> groupDatas)
     {
+        var animationClip = new AnimationClip();
+
         for (var i = 0; i < groupDatas.Count; i++)
         {
             var groupData = groupDatas[i];
@@ -42,7 +46,24 @@ public static class IT_EntityOperations
                     if (cluster.ClusterType != IT_ClusterType.CameraCluster)
                         continue; //if not camera cluster then continue
 
-                    var transformClip = cluster.ClipDatas[IT_ClipType.TransformAnimationClip];
+                    var transformClip = cluster.ClipDatas[IT_ClipType.PropertiesClip];
+                    var cameraCluster = (IT_CameraCluster) cluster;
+
+                    var deserializeValue = SerializationUtility.DeserializeValue<IT_FixedVideoCameraPropertyClip>(
+                        File.ReadAllBytes(transformClip.ClipDataPath), DataFormat.Binary);
+
+                    var keyframesList = new List<List<Keyframe>>();
+                    keyframesList = new List<List<Keyframe>>();
+
+                    keyframesList.Add(new List<Keyframe>()); //fov
+                    keyframesList.Add(new List<Keyframe>()); //camera local position x
+                    keyframesList.Add(new List<Keyframe>()); //camera local position y
+                    keyframesList.Add(new List<Keyframe>()); //camera local position z
+                    keyframesList.Add(new List<Keyframe>()); //camera local rotation x
+                    keyframesList.Add(new List<Keyframe>()); //camera local rotation y
+                    keyframesList.Add(new List<Keyframe>()); //camera local rotation z
+                    keyframesList.Add(new List<Keyframe>()); //camera local rotation w
+
 
                     Debug.Log("----------");
                     Debug.Log(cluster.EntityName);
