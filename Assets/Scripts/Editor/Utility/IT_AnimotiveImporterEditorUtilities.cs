@@ -135,7 +135,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
 
-                        if (take.Count == 0) continue;
 
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
@@ -155,7 +154,6 @@ namespace Retinize.Editor.AnimotiveImporter
                         for (var j = 0; j < take.Count; j++)
                         {
                             var track = take[j];
-
 
                             var clip = track[0];
 

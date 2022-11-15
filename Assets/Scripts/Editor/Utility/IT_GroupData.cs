@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AnimotiveImporterDLL;
+using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -52,6 +53,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
     public class IT_CameraCluster : IIT_ICluster
     {
+        public string PropertiesDataAnimationClipAssetDatabasePath;
+        public GameObject ReferenceInScene;
+
         public IT_CameraCluster()
         {
             IsAnimationProcessInterrupted = false;

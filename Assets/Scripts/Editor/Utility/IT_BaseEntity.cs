@@ -5,13 +5,11 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public sealed class IT_EntitySpecificOperationsArgs
     {
-        public GameObject holderObject;
-        public GameObject rootObject;
+        public GameObject entityGameObjectInTheScene;
 
-        public IT_EntitySpecificOperationsArgs(GameObject holderObject, GameObject rootObject)
+        public IT_EntitySpecificOperationsArgs(GameObject entityGameObjectInTheScene)
         {
-            this.holderObject = holderObject;
-            this.rootObject = rootObject;
+            this.entityGameObjectInTheScene = entityGameObjectInTheScene;
         }
     }
 
@@ -53,10 +51,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
-            var cam = args.rootObject.AddComponent<Camera>();
+            var cam = args.entityGameObjectInTheScene.AddComponent<Camera>();
             var fov = IT_AnimotiveImporterEditorUtilities.GetFieldOfView(cam, FocalLength);
 
             cam.fieldOfView = fov;
+
+            args.entityGameObjectInTheScene.transform.localPosition = new Vector3(-0.0079f, 0.2397f, 0.0255f);
         }
     }
 
@@ -82,7 +82,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
-            var light = args.rootObject.AddComponent<Light>();
+            var light = args.entityGameObjectInTheScene.AddComponent<Light>();
             light.type = LightType.Spot;
         }
     }
