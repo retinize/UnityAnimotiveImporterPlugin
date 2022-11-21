@@ -155,6 +155,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         {
                             var track = take[j];
 
+                            if (track.Count == 0) continue;
                             var clip = track[0];
 
                             var animationClipDataPath =
