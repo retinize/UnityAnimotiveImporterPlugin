@@ -54,6 +54,8 @@ namespace Retinize.Editor.AnimotiveImporter
             var cam = args.entityGameObjectInTheScene.AddComponent<Camera>();
             var fov = IT_AnimotiveImporterEditorUtilities.GetFieldOfView(cam, FocalLength);
 
+            cam.nearClipPlane = 0.001f;
+            cam.farClipPlane = 1000;
             cam.fieldOfView = fov;
 
             args.entityGameObjectInTheScene.transform.localPosition = new Vector3(-0.0079f, 0.2397f, 0.0255f);

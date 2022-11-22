@@ -46,33 +46,33 @@ public static class IT_EntityOperations
                     if (cluster.ClusterType != IT_ClusterType.CameraCluster)
                         continue; //if not camera cluster then continue
 
-                    var transformClip = cluster.ClipDatas[IT_ClipType.TransformAnimationClip];
+                    var propertyClip = cluster.ClipDatas[IT_ClipType.PropertiesClip];
                     var cameraCluster = (IT_CameraCluster) cluster;
 
                     cameraCluster.ReferenceInScene = GameObject.Find(cluster.EntityName);
 
 
-                    var deserializeValue = SerializationUtility.DeserializeValue<IT_FixedGrabbablePropTransformClip>(
-                        File.ReadAllBytes(transformClip.ClipDataPath), DataFormat.Binary);
+                    var deserializeValue = SerializationUtility.DeserializeValue<IT_FixedVideoCameraPropertyClip>(
+                        File.ReadAllBytes(propertyClip.ClipDataPath), DataFormat.Binary);
 
 
                     var keyframesList = new List<List<Keyframe>>();
                     keyframesList = new List<List<Keyframe>>();
 
 
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[0].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[1].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local position x
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[1].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[2].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local position y
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[2].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[3].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local position z
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[3].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[4].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local rotation x
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[4].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[5].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local rotation y
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[5].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[6].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local rotation z
-                    keyframesList.Add(GetFramesAsList(deserializeValue.transformCurves[6].KeyFrames,
+                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[7].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local rotation w
 
                     var animationClip = CreateAnimationClip(keyframesList);
@@ -80,7 +80,7 @@ public static class IT_EntityOperations
                     var animationClipAssetDatabasePath = IT_AnimotiveImporterEditorUtilities
                         .ConvertFullFilePathIntoUnityFilesPath(
                             IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
-                            transformClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                            propertyClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                     AssetDatabase.CreateAsset(animationClip, animationClipAssetDatabasePath);
 
