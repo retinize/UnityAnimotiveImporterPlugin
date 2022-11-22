@@ -175,6 +175,10 @@ namespace Retinize.Editor.AnimotiveImporter
                         var fbxData = fbxDatasAndHoldersTuples[cluster.EntityName].FbxData;
                         var wrappedData = blendshapesDictionary[jsonFullName];
 
+                        var isEmptyFile = wrappedData.facialAnimationFrames.All(x => x.blendShapesUsed.Count == 0);
+
+                        if (isEmptyFile) break;
+
                         CreateBlendShapeAnimationClip(wrappedData, fbxData,
                             Path.GetFileNameWithoutExtension(fullFileName));
 
