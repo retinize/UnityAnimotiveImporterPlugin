@@ -5,11 +5,11 @@ namespace Retinize.Editor.AnimotiveImporter
 {
     public sealed class IT_EntitySpecificOperationsArgs
     {
-        public GameObject entityGameObjectInTheScene;
+        public GameObject TypeHeadInTheScene;
 
-        public IT_EntitySpecificOperationsArgs(GameObject entityGameObjectInTheScene)
+        public IT_EntitySpecificOperationsArgs(GameObject typeHeadInTheScene)
         {
-            this.entityGameObjectInTheScene = entityGameObjectInTheScene;
+            TypeHeadInTheScene = typeHeadInTheScene;
         }
     }
 
@@ -51,14 +51,35 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
-            var cam = args.entityGameObjectInTheScene.AddComponent<Camera>();
+            var entityGameObjectInTheScene = new GameObject(DisplayName);
+            var cameraRoot = new GameObject(string.Concat(DisplayName, "_Root"));
+            var cameraHolder = new GameObject(string.Concat(DisplayName, "_Holder"));
+            var currentTypeHead = args.TypeHeadInTheScene;
+
+
+            cameraHolder.transform.SetParent(currentTypeHead.transform);
+            cameraRoot.transform.SetParent(cameraHolder.transform);
+            entityGameObjectInTheScene.transform.SetParent(cameraRoot.transform);
+
+
+            Debug.Log("root position " + RootPosition);
+            Debug.Log("holder position " + HolderPosition);
+            cameraRoot.transform.position = RootPosition;
+            cameraRoot.transform.rotation = RootRotation;
+
+
+            cameraHolder.transform.position = HolderPosition;
+            cameraHolder.transform.rotation = HolderRotation;
+
+
+            var cam = entityGameObjectInTheScene.AddComponent<Camera>();
             var fov = IT_AnimotiveImporterEditorUtilities.GetFieldOfView(cam, FocalLength);
 
             cam.nearClipPlane = 0.001f;
             cam.farClipPlane = 1000;
             cam.fieldOfView = fov;
 
-            args.entityGameObjectInTheScene.transform.localPosition = new Vector3(-0.0079f, 0.2397f, 0.0255f);
+            entityGameObjectInTheScene.transform.localPosition = new Vector3(-0.0079f, 0.2397f, 0.0255f);
         }
     }
 
@@ -84,7 +105,9 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
-            var light = args.entityGameObjectInTheScene.AddComponent<Light>();
+            var entityGameObjectInTheScene = new GameObject(DisplayName);
+
+            var light = entityGameObjectInTheScene.AddComponent<Light>();
             light.type = LightType.Spot;
         }
     }

@@ -142,28 +142,8 @@ public static class IT_EntityOperations
             for (var i = 0; i < pair.Value.Count; i++)
             {
                 var baseEntity = pair.Value[i];
-
-
-                var cameraRoot = new GameObject(string.Concat(baseEntity.DisplayName, "_Root"));
-                var cameraHolder = new GameObject(string.Concat(baseEntity.DisplayName, "_Holder"));
-                var entityGameObjectInTheScene = new GameObject(baseEntity.DisplayName);
-
-                cameraHolder.transform.SetParent(currentTypeHead.transform);
-                cameraRoot.transform.SetParent(cameraHolder.transform);
-                entityGameObjectInTheScene.transform.SetParent(cameraRoot.transform);
-
                 baseEntity.ExecuteEntitySpecificOperations(
-                    new IT_EntitySpecificOperationsArgs(entityGameObjectInTheScene));
-
-
-                Debug.Log("root position " + baseEntity.RootPosition);
-                Debug.Log("holder position " + baseEntity.HolderPosition);
-                cameraRoot.transform.position = baseEntity.RootPosition;
-                cameraRoot.transform.rotation = baseEntity.RootRotation;
-
-
-                cameraHolder.transform.position = baseEntity.HolderPosition;
-                cameraHolder.transform.rotation = baseEntity.HolderRotation;
+                    new IT_EntitySpecificOperationsArgs(currentTypeHead));
             }
         }
     }
