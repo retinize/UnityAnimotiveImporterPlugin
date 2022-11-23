@@ -54,7 +54,11 @@ namespace Retinize.Editor.AnimotiveImporter
                             IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
                             "Characters"));
 
-                        files = files.Where(a => a.EndsWith(clipData.EntityName)).ToArray();
+                        var stripedClipName = clipData.EntityName.Contains(' ')
+                            ? clipData.EntityName.Split(' ')[0]
+                            : clipData.EntityName;
+
+                        files = files.Where(a => a.EndsWith(stripedClipName)).ToArray();
 
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)

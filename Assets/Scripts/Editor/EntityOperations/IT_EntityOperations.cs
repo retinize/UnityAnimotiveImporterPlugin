@@ -130,15 +130,14 @@ public static class IT_EntityOperations
 
 
     private static void CreateArgsForEntitiesAndExecuteEntitySpecificOperations(
-        Dictionary<IT_EntityType, List<IT_BaseEntity>> entityTypeList,
+        Dictionary<IT_EntityType, List<IEntity>> entityTypeList,
         GameObject entitiesRoot)
     {
-        var currentTypeHead = new GameObject(string.Concat(IT_EntityType.Camera));
-        currentTypeHead.transform.SetParent(entitiesRoot.transform);
-
-
         foreach (var pair in entityTypeList)
         {
+            var currentTypeHead = new GameObject(string.Concat(pair.Key.ToString()));
+            currentTypeHead.transform.SetParent(entitiesRoot.transform);
+
             for (var i = 0; i < pair.Value.Count; i++)
             {
                 var baseEntity = pair.Value[i];

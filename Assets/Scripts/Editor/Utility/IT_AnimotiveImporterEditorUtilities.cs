@@ -286,11 +286,11 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="sceneData">Binary scene data</param>
         /// <returns></returns>
-        public static async Task<Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(
+        public static async Task<Dictionary<IT_EntityType, List<IEntity>>> GetPropertiesData(
             IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
-                new Dictionary<IT_EntityType, List<IT_BaseEntity>>();
+                new Dictionary<IT_EntityType, List<IEntity>>();
 
 
             foreach (var groupData in sceneData.groupDataBySerializedId.Values)
@@ -311,7 +311,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             var entityType = list[0].Key;
 
                             if (!entitiesWithType.ContainsKey(entityType))
-                                entitiesWithType.Add(entityType, new List<IT_BaseEntity>());
+                                entitiesWithType.Add(entityType, new List<IEntity>());
 
                             var holderPosition =
                                 (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
@@ -326,33 +326,18 @@ namespace Retinize.Editor.AnimotiveImporter
                             var rootRotation =
                                 (Quaternion) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
-
-                            IT_BaseEntity itEntity;
-
-                            switch (entityType)
+                            IEntity itEntity;
+                            if (entityType == IT_EntityType.Camera)
                             {
-                                case IT_EntityType.Camera:
-                                {
-                                    var focalLength =
-                                        (float) propertyDatasDict[
-                                            IT_AnimotiveImporterEditorConstants.DepthOfFieldFocalLength];
-
-                                    itEntity = new IT_CameraEntity(holderPosition, rootPosition,
-                                        holderRotation, rootRotation, displayName, focalLength);
-
-                                    break;
-                                }
-                                case IT_EntityType.Spotlight:
-                                {
-                                    itEntity = new IT_SpotLightEntity(holderPosition,
-                                        rootPosition, holderRotation, rootRotation, displayName);
-                                    break;
-                                }
-                                default:
-                                {
-                                    throw new ArgumentOutOfRangeException();
-                                }
+                                itEntity = new IT_CameraEntity(entityType, holderPosition, rootPosition,
+                                    holderRotation, rootRotation, displayName, propertyDatasDict);
                             }
+                            else
+                            {
+                                itEntity = new IT_SpotLightEntity(entityType, holderPosition, rootPosition,
+                                    holderRotation, rootRotation, displayName, propertyDatasDict);
+                            }
+
 
                             entitiesWithType[entityType].Add(itEntity);
                         }
