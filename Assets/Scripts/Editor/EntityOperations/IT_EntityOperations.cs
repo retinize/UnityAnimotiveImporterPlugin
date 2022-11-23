@@ -66,6 +66,7 @@ public static class IT_EntityOperations
                         deserializeValue.fixedDeltaTime)); //camera local position y
                     keyframesList.Add(GetFramesAsList(deserializeValue.curves[3].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local position z
+
                     keyframesList.Add(GetFramesAsList(deserializeValue.curves[4].KeyFrames,
                         deserializeValue.fixedDeltaTime)); //camera local rotation x
                     keyframesList.Add(GetFramesAsList(deserializeValue.curves[5].KeyFrames,
@@ -81,10 +82,10 @@ public static class IT_EntityOperations
                         .ConvertFullFilePathIntoUnityFilesPath(
                             IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
                             propertyClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                    cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = animationClipAssetDatabasePath;
 
                     AssetDatabase.CreateAsset(animationClip, animationClipAssetDatabasePath);
-
-                    cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = animationClipAssetDatabasePath;
+                    AssetDatabase.Refresh();
                 }
             }
         }
@@ -97,10 +98,12 @@ public static class IT_EntityOperations
         var cameraLocalPositionXCurve = new AnimationCurve(listOfKeyframeLists[0].ToArray());
         var cameraLocalPositionYCurve = new AnimationCurve(listOfKeyframeLists[1].ToArray());
         var cameraLocalPositionZCurve = new AnimationCurve(listOfKeyframeLists[2].ToArray());
+
         var cameraLocalRotationXCurve = new AnimationCurve(listOfKeyframeLists[3].ToArray());
         var cameraLocalRotationYCurve = new AnimationCurve(listOfKeyframeLists[4].ToArray());
         var cameraLocalRotationZCurve = new AnimationCurve(listOfKeyframeLists[5].ToArray());
         var cameraLocalRotationWCurve = new AnimationCurve(listOfKeyframeLists[6].ToArray());
+
 
         animationClip.SetCurve("", typeof(Transform), "localPosition.x", cameraLocalPositionXCurve);
         animationClip.SetCurve("", typeof(Transform), "localPosition.y", cameraLocalPositionYCurve);
@@ -110,6 +113,7 @@ public static class IT_EntityOperations
         animationClip.SetCurve("", typeof(Transform), "localRotation.y", cameraLocalRotationYCurve);
         animationClip.SetCurve("", typeof(Transform), "localRotation.z", cameraLocalRotationZCurve);
         animationClip.SetCurve("", typeof(Transform), "localRotation.w", cameraLocalRotationWCurve);
+        animationClip.EnsureQuaternionContinuity();
 
 
         return animationClip;

@@ -282,7 +282,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
-                    HumanBodyBones[] positionAllowedBones = {HumanBodyBones.Hips, HumanBodyBones.LastBone};
+                    HumanBodyBones[] positionAllowedBones = {HumanBodyBones.LastBone};
 
                     //add the position of selected bones to animationclip
                     if (positionAllowedBones.Any(a => a == pair.Key))
