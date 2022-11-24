@@ -252,50 +252,24 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Called when you already have a file saved in the asset database with the same name that you're trying to add.
         ///     This function checks all the names and add distinctive number to end of name so that you can accumulate files.
         /// </summary>
-        /// <param name="assetDatabaseDir">Asset database directory path to search similar files in</param>
-        /// <param name="fullSourceFilePath">Full OS path of file </param>
-        /// <param name="fileNameWithExtension">file name to search similarity</param>
-        /// <param name="extension">file extension</param>
+        /// <param name="pathToFile">file name to search similarity</param>
         /// <returns>
         ///     Returns the new name of your file. Example: Let's say your input was File, and there was File 0005 in the related
         ///     directory.
         ///     This function will return File 0006 so you can save your file with a unique name
         /// </returns>
-        public static async Task<string> GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
-            string fileNameWithExtension,
-            string extension)
+        public static string GetUniqueAssetDatabaseName(string pathToFile)
         {
-            var targetFileName = Path.Combine(assetDatabaseDir, fileNameWithExtension);
+            var extension = Path.GetExtension(pathToFile);
+            var fileName = Path.GetFileNameWithoutExtension(pathToFile);
+            var targetFileName = Path.GetFileName(pathToFile);
 
-            var alreadySavedSimilarFiles = Directory.GetFiles(assetDatabaseDir)
-                .Where(a => a.ToLower().Contains(Path.GetFileNameWithoutExtension(fullSourceFilePath).ToLower()) &
-                            !a.EndsWith(".meta")).OrderByDescending(a =>
-                    Path.GetFileNameWithoutExtension(a).Split(' ')[
-                        Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1])
-                .ToList();
-
-            if (alreadySavedSimilarFiles.Count > 1)
+            for (var i = 1;; ++i)
             {
-                var nameWithoutExtension = Path.GetFileNameWithoutExtension(alreadySavedSimilarFiles[1]);
-                var split = nameWithoutExtension.Split(' ');
-                var number = int.Parse(split[split.Length - 1]);
-                number += 1;
-                var numberAsString = 4 - number.ToString().Length;
-                var temp = string.Concat(Enumerable.Repeat("0", numberAsString));
-                temp = string.Concat(temp, number);
+                if (!DoesAssetExist(targetFileName)) return targetFileName;
 
-                targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
-                    Path.GetFileNameWithoutExtension(targetFileName), " ",
-                    temp, $"{extension}"));
+                targetFileName = string.Concat(fileName, " ", i, extension);
             }
-            else
-            {
-                targetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), string.Concat(
-                    Path.GetFileNameWithoutExtension(targetFileName), " ", "0001",
-                    $"{extension}"));
-            }
-
-            return targetFileName;
         }
 
         /// <summary>
@@ -383,34 +357,26 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
         /// <returns></returns>
-        internal static Task MoveAudiosIntoUnity(string unityExportPath)
+        internal static async Task MoveAudiosIntoUnity(string unityExportPath)
         {
-            return Task.Run(async delegate
+            var clipsPath = Path.Combine(unityExportPath, "Clips");
+
+            var files = Directory.GetFiles(clipsPath)
+                .Where(a => a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
+
+
+            for (var i = 0; i < files.Count; i++)
             {
-                var charactersPath = Path.Combine(unityExportPath, "Clips");
+                var fileName = Path.GetFileName(files[i]);
+                var uniqueFileName = GetUniqueAssetDatabaseName(fileName);
 
-                var files = Directory.GetFiles(charactersPath)
-                    .Where(a => !a.EndsWith(".meta") &&
-                                a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
 
-                if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
-                    Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
-                for (var i = 0; i < files.Count; i++)
-                {
-                    var fileName = Path.GetFileName(files[i]);
-                    var targetFileName =
-                        Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, fileName);
+                var targetFileName =
+                    Path.Combine(Directory.GetCurrentDirectory(),
+                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, uniqueFileName);
 
-                    if (File.Exists(targetFileName))
-                    {
-                        targetFileName = await GetLatestSimilarFileName(
-                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
-                            IT_AnimotiveImporterEditorConstants.AudioExtension);
-                    }
-
-                    File.Copy(files[i], targetFileName, false);
-                }
-            });
+                File.Copy(files[i], targetFileName, false);
+            }
         }
 
         /// <summary>
@@ -428,7 +394,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < directories.Length; i++)
             {
-                Directory.Delete(directories[i], true);
+                FileUtil.DeleteFileOrDirectory(directories[i]);
             }
 
 
@@ -450,6 +416,15 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
             }
+        }
+
+        public static bool DoesAssetExist(string assetNameWithExtension)
+        {
+            var extension = Path.GetExtension(assetNameWithExtension);
+            var assetPaths = AssetDatabase.GetAllAssetPaths()
+                .Where(x => x.StartsWith("Assets") && x.EndsWith(extension)).ToArray();
+
+            return assetPaths.Any(a => a.EndsWith(assetNameWithExtension));
         }
     }
 }

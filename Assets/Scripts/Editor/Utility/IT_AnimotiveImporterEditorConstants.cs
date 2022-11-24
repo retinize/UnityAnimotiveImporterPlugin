@@ -20,8 +20,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
 
-        public static string UnityFilesBase = Path.Combine(Directory.GetCurrentDirectory(),
-            "Assets",
+        public static string UnityFilesBase = Path.Combine("Assets",
             "UnityFiles");
 
         public static string UnityFilesAudioDirectory = Path.Combine(UnityFilesBase, "Audio");

@@ -39,7 +39,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     and the animator of the character.
         /// </param>
         /// <param name="fileNameWithoutExtension"></param>
-        private static async void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
+        private static void CreateBlendShapeAnimationClip(FacialAnimationExportWrapper clip,
             IT_FbxData itFbxData, string fileNameWithoutExtension)
         {
             var animationClip = new AnimationClip();
@@ -97,7 +97,6 @@ namespace Retinize.Editor.AnimotiveImporter
                 }
             }
 
-
             foreach (var pair in blendshapeCurves)
             {
                 var relativePath = auxiliary[pair.Key].Item1;
@@ -109,28 +108,13 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
             itFbxData.FbxAnimator.avatar = null;
+            // 
+            var fileName = string.Concat(fileNameWithoutExtension,
+                IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
-            var fullOsPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
-                fileNameWithoutExtension);
-            fullOsPathToSave = string.Concat(fullOsPathToSave, IT_AnimotiveImporterEditorConstants.AnimationExtension);
-
-            var assetDbPathToSave =
-                IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(fullOsPathToSave);
-
-
-            if (File.Exists(fullOsPathToSave))
-            {
-                var assetDbDir =
-                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(assetDbPathToSave);
-                assetDbDir = Path.GetDirectoryName(assetDbDir);
-
-                var similarFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetDbDir,
-                    fullOsPathToSave,
-                    Path.GetFileName(fullOsPathToSave), IT_AnimotiveImporterEditorConstants.AnimationExtension);
-
-                assetDbPathToSave =
-                    IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
-            }
+            var assetNameToSave = IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(fileName);
+            var assetDbPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
+                assetNameToSave);
 
             AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
             AssetDatabase.Refresh();

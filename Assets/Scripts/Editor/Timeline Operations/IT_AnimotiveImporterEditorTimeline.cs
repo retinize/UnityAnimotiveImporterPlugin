@@ -61,30 +61,16 @@ namespace Retinize.Editor.AnimotiveImporter
             IT_SceneInternalData sceneInternalData)
         {
             var playableDirector = timelineData.PlayableDirector;
-
-            var assetName = string.Concat(sceneInternalData.currentSetName, "_", timelineData.GroupName, "_Take",
-                timelineData.TakeData.TakeIndex);
-
-            var assetPath = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
-                string.Concat(assetName, IT_AnimotiveImporterEditorConstants.PlayableExtension)
-            );
-
-            assetPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(assetPath);
-
             var asset = ScriptableObject.CreateInstance<TimelineAsset>();
 
-            var fullOsPath = IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(assetPath);
-            var assetPathDir = Path.GetDirectoryName(fullOsPath);
+            var fileName = string.Concat(sceneInternalData.currentSetName, "_", timelineData.GroupName, "_Take",
+                timelineData.TakeData.TakeIndex, IT_AnimotiveImporterEditorConstants.PlayableExtension);
 
-            if (File.Exists(fullOsPath))
-            {
-                var similarName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(assetPathDir,
-                    fullOsPath, Path.GetFileName(fullOsPath), IT_AnimotiveImporterEditorConstants.PlayableExtension);
-                similarName = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarName);
-                assetPath = similarName;
-            }
+            var assetNameToSave = IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(fileName);
+            var assetDbPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                assetNameToSave);
 
-            AssetDatabase.CreateAsset(asset, assetPath);
+            AssetDatabase.CreateAsset(asset, assetDbPathToSave);
 
             var groupTrack = asset.CreateTrack<GroupTrack>();
             groupTrack.name = timelineData.GroupName;
@@ -101,7 +87,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     if (clipCluster.IsAnimationProcessInterrupted)
                     {
-                        AssetDatabase.DeleteAsset(assetPath);
+                        AssetDatabase.DeleteAsset(assetNameToSave);
                         continue;
                     }
 
@@ -175,8 +161,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AssetDatabase.Refresh();
 
-            var playableAsset =
-                AssetDatabase.LoadAssetAtPath(assetPath, typeof(PlayableAsset)) as PlayableAsset;
+            var playableAsset = AssetDatabase.LoadAssetAtPath(assetNameToSave, typeof(PlayableAsset)) as PlayableAsset;
 
 
             return playableAsset;

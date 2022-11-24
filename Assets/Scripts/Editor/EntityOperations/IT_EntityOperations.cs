@@ -77,34 +77,17 @@ public static class IT_EntityOperations
 
                         var animationClip = CreateAnimationClip(keyframesList);
 
-                        var fullFilePath = Path.Combine(
+                        var fileName = string.Concat(propertyClip.ClipDataPath,
+                            IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+                        var assetNameToSave =
+                            IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(fileName);
+
+                        var assetDbPathToSave = Path.Combine(
                             IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
-                            string.Concat(Path.GetFileNameWithoutExtension(propertyClip.ClipDataPath) +
-                                          IT_AnimotiveImporterEditorConstants.AnimationExtension));
+                            assetNameToSave);
 
-                        var animationClipAssetDatabasePath = IT_AnimotiveImporterEditorUtilities
-                            .ConvertFullFilePathIntoUnityFilesPath(
-                                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
-                                propertyClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
-
-                        cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = animationClipAssetDatabasePath;
-
-                        if (File.Exists(fullFilePath))
-                        {
-                            var fileNameWithExtension = Path.GetFileName(animationClipAssetDatabasePath);
-
-                            var result = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory, fullFilePath,
-                                fileNameWithExtension,
-                                IT_AnimotiveImporterEditorConstants.AnimationExtension);
-
-
-                            animationClipAssetDatabasePath =
-                                IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(result);
-                        }
-
-
-                        AssetDatabase.CreateAsset(animationClip, animationClipAssetDatabasePath);
+                        AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
                     }
 
 

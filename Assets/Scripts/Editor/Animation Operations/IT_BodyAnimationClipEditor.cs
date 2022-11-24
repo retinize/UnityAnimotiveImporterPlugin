@@ -330,23 +330,12 @@ namespace Retinize.Editor.AnimotiveImporter
                 animationClip.EnsureQuaternionContinuity();
             }
 
-            var fullOsPathToBodyAnim =
-                IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath);
 
-            if (File.Exists(fullOsPathToBodyAnim))
-            {
-                var assetDatabaseDir = Path.GetDirectoryName(
-                    IT_AnimotiveImporterEditorUtilities.ConvertAssetDatabasePathToSystemPath(bodyAnimationPath));
-                var similarFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                    assetDatabaseDir,
-                    fullOsPathToBodyAnim,
-                    Path.GetFileName(fullOsPathToBodyAnim), IT_AnimotiveImporterEditorConstants.AnimationExtension);
+            var assetNameToSave = IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(bodyAnimationPath);
+            var assetDbPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                assetNameToSave);
 
-                bodyAnimationPath =
-                    IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(similarFileName);
-            }
-
-            AssetDatabase.CreateAsset(animationClip, bodyAnimationPath);
+            AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
             AssetDatabase.Refresh();
         }
 
