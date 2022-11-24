@@ -107,11 +107,35 @@ namespace Retinize.Editor.AnimotiveImporter
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
             var currentTypeHead = args.TypeHeadInTheScene;
-
             var entityGameObjectInTheScene = new GameObject(DisplayName);
-            entityGameObjectInTheScene.transform.SetParent(currentTypeHead.transform);
+            var holderGameObject = new GameObject(string.Concat(DisplayName, "_HOLDER"));
+
+            holderGameObject.transform.SetParent(currentTypeHead.transform);
+            entityGameObjectInTheScene.transform.SetParent(holderGameObject.transform);
+
+            holderGameObject.transform.position = HolderPosition;
+            holderGameObject.transform.rotation = HolderRotation;
+
+            var angle = (float) PropertiesDataDictionary["Angle"];
+            var intensity = (float) PropertiesDataDictionary["Intensity"];
+            var shadowStrength = (float) PropertiesDataDictionary["ShadowStrength"];
+            var range = (float) PropertiesDataDictionary["Range"];
+
+
+            var colorBrightness = (float) PropertiesDataDictionary["Color_Brightness"];
+            var colorHue = (float) PropertiesDataDictionary["Color_Hue"];
+            var colorSaturation = (float) PropertiesDataDictionary["Color_Saturation"];
+
+
             var light = entityGameObjectInTheScene.AddComponent<Light>();
             light.type = LightType.Spot;
+            light.shadows = LightShadows.Hard;
+
+            light.spotAngle = angle;
+            light.intensity = intensity;
+            light.shadowStrength = shadowStrength;
+            light.range = range;
+            light.color = Color.HSVToRGB(colorHue, colorSaturation, colorBrightness);
         }
     }
 }

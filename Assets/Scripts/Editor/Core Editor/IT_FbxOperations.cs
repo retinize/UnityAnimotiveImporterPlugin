@@ -33,6 +33,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static Dictionary<string, IT_FbxDatasAndHoldersTuple> GetFbxDataAndHolders(
             List<IT_GroupData> transformGroupDatas)
         {
+            var charachtersHead = new GameObject("Characters");
             var fbxDatasAndHoldersTuples = new Dictionary<string, IT_FbxDatasAndHoldersTuple>();
 
             for (var i = 0; i < transformGroupDatas.Count; i++)
@@ -77,8 +78,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var fbxData = LoadFbx(pathToFbx);
                         var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
+                        holderObject.transform.SetParent(charachtersHead.transform);
                         var pluginTPose = IT_PoseTestManager.GetPoseFromAnimator(fbxData.FbxAnimator);
-
                         var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject, pluginTPose);
 
                         fbxDatasAndHoldersTuples.Add(clipData.EntityName, temp);

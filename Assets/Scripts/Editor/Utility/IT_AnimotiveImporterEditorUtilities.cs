@@ -114,6 +114,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static async Task<List<IT_GroupData>> GetGroupDataListByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
+            var groupsHead = new GameObject("Groups");
             var groupDatas = new List<IT_GroupData>();
 
             IIT_ICluster currentCluster;
@@ -121,7 +122,7 @@ namespace Retinize.Editor.AnimotiveImporter
             foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
                 var readerGroupData =
-                    new IT_GroupData(groupData.serializedId, groupData.groupName);
+                    new IT_GroupData(groupData.serializedId, groupData.groupName, groupsHead);
 
                 foreach (var entityId in groupData.entitiesIds)
                 {

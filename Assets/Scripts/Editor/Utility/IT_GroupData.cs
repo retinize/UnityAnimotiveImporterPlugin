@@ -9,6 +9,7 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public class IT_GroupData
     {
+        public GameObject GroupHeadInScene { get; }
         public int SerializedId { get; }
 
         public string TrimmedGroupName { get; }
@@ -16,11 +17,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public Dictionary<int, IT_TakeData> TakeDatas { get; set; }
 
-        public IT_GroupData(int serializedId, string groupName)
+        public IT_GroupData(int serializedId, string groupName, GameObject groupsHead)
         {
             SerializedId = serializedId;
             TrimmedGroupName = groupName.Trim().Replace(" ", "");
             OriginalGroupName = groupName;
+            GroupHeadInScene = new GameObject(TrimmedGroupName);
+            GroupHeadInScene.transform.SetParent(groupsHead.transform);
             TakeDatas = new Dictionary<int, IT_TakeData>();
         }
     }

@@ -29,7 +29,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var groupData = transformGroupDatas[i];
 
-                var groupObject = new GameObject(groupData.TrimmedGroupName);
+                var groupObject = groupData.GroupHeadInScene;
 
                 foreach (var pair in groupData.TakeDatas)
                 {
