@@ -27,7 +27,7 @@ public static class IT_EntityOperations
     }
 
 
-    private static void CreateAnimationClip(List<IT_GroupData> groupDatas)
+    private static async void CreateAnimationClip(List<IT_GroupData> groupDatas)
     {
         for (var i = 0; i < groupDatas.Count; i++)
         {
@@ -42,49 +42,72 @@ public static class IT_EntityOperations
                 {
                     var cluster = takeData.Clusters[k];
 
-
                     if (cluster.ClusterType != IT_ClusterType.CameraCluster)
                         continue; //if not camera cluster then continue
 
-                    var propertyClip = cluster.ClipDatas[IT_ClipType.PropertiesClip];
-                    var cameraCluster = (IT_CameraCluster) cluster;
+                    for (var l = 0; l < cluster.ClipDatas.Count; l++)
+                    {
+                        var propertyClip = cluster.ClipDatas[l][IT_ClipType.PropertiesClip];
 
-                    cameraCluster.ReferenceInScene = GameObject.Find(cluster.EntityName);
+                        var cameraCluster = (IT_CameraCluster) cluster;
 
+                        cameraCluster.ReferenceInScene = GameObject.Find(cluster.EntityName);
 
-                    var deserializeValue = SerializationUtility.DeserializeValue<IT_FixedVideoCameraPropertyClip>(
-                        File.ReadAllBytes(propertyClip.ClipDataPath), DataFormat.Binary);
+                        var deserializeValue = SerializationUtility.DeserializeValue<IT_FixedVideoCameraPropertyClip>(
+                            File.ReadAllBytes(propertyClip.ClipDataPath), DataFormat.Binary);
 
+                        var keyframesList = new List<List<Keyframe>>();
+                        keyframesList = new List<List<Keyframe>>();
 
-                    var keyframesList = new List<List<Keyframe>>();
-                    keyframesList = new List<List<Keyframe>>();
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[1].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local position x
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[2].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local position y
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[3].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local position z
 
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[4].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local rotation x
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[5].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local rotation y
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[6].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local rotation z
+                        keyframesList.Add(GetFramesAsList(deserializeValue.curves[7].KeyFrames,
+                            deserializeValue.fixedDeltaTime)); //camera local rotation w
 
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[1].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local position x
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[2].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local position y
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[3].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local position z
+                        var animationClip = CreateAnimationClip(keyframesList);
 
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[4].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local rotation x
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[5].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local rotation y
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[6].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local rotation z
-                    keyframesList.Add(GetFramesAsList(deserializeValue.curves[7].KeyFrames,
-                        deserializeValue.fixedDeltaTime)); //camera local rotation w
-
-                    var animationClip = CreateAnimationClip(keyframesList);
-
-                    var animationClipAssetDatabasePath = IT_AnimotiveImporterEditorUtilities
-                        .ConvertFullFilePathIntoUnityFilesPath(
+                        var fullFilePath = Path.Combine(
                             IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
-                            propertyClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
-                    cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = animationClipAssetDatabasePath;
+                            string.Concat(Path.GetFileNameWithoutExtension(propertyClip.ClipDataPath) +
+                                          IT_AnimotiveImporterEditorConstants.AnimationExtension));
 
-                    AssetDatabase.CreateAsset(animationClip, animationClipAssetDatabasePath);
+                        var animationClipAssetDatabasePath = IT_AnimotiveImporterEditorUtilities
+                            .ConvertFullFilePathIntoUnityFilesPath(
+                                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory,
+                                propertyClip.ClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+                        cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = animationClipAssetDatabasePath;
+
+                        if (File.Exists(fullFilePath))
+                        {
+                            var fileNameWithExtension = Path.GetFileName(animationClipAssetDatabasePath);
+
+                            var result = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
+                                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory, fullFilePath,
+                                fileNameWithExtension,
+                                IT_AnimotiveImporterEditorConstants.AnimationExtension);
+
+
+                            animationClipAssetDatabasePath =
+                                IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(result);
+                        }
+
+
+                        AssetDatabase.CreateAsset(animationClip, animationClipAssetDatabasePath);
+                    }
+
+
                     AssetDatabase.Refresh();
                 }
             }

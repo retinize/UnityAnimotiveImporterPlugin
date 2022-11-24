@@ -152,46 +152,62 @@ namespace Retinize.Editor.AnimotiveImporter
                         currentCluster.TakeIndex = i;
                         currentCluster.EntityName = displayName;
 
+                        var tempItemList = new List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>>();
+
+                        if (take.Count == 0) continue;
+
+                        for (var j = 0; j < take[0].Count; j++)
+                        {
+                            tempItemList.Add(new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>());
+                        }
+
+
                         for (var j = 0; j < take.Count; j++)
                         {
                             var track = take[j];
 
                             if (track.Count == 0) continue;
-                            var clip = track[0];
 
-                            var animationClipDataPath =
-                                ReturnClipDataPathFromPath(clipsPath,
-                                    clip.clipName);
 
-                            var type =
-                                GetClipTypeFromClipName(clip.clipName);
-
-                            var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
-
-                            if (type == IT_ClipType.AudioClip)
+                            for (var k = 0; k < track.Count; k++)
                             {
-                                var fileName = await FindLatestFileName(clip.clipName,
-                                    IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                    IT_AnimotiveImporterEditorConstants.AudioExtension);
+                                var clip = track[k];
 
-                                if (!string.IsNullOrEmpty(fileName))
+                                var animationClipDataPath =
+                                    ReturnClipDataPathFromPath(clipsPath,
+                                        clip.clipName);
+
+                                var type =
+                                    GetClipTypeFromClipName(clip.clipName);
+
+                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
+
+                                if (type == IT_ClipType.AudioClip)
                                 {
-                                    var currentClipDataPath = fileName;
-                                    currentClipDataPath = currentClipDataPath.Split(
-                                        new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
-                                        StringSplitOptions.None)[0];
-                                    clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
-                                        clipdata.ClipPlayerData,
-                                        currentClipDataPath);
+                                    var fileName = await FindLatestFileName(clip.clipName,
+                                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                        IT_AnimotiveImporterEditorConstants.AudioExtension);
+
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        var currentClipDataPath = fileName;
+                                        currentClipDataPath = currentClipDataPath.Split(
+                                            new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                            StringSplitOptions.None)[0];
+                                        clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
+                                            clipdata.ClipPlayerData,
+                                            currentClipDataPath);
+                                    }
                                 }
+
+                                tempItemList[k].Add(type, clipdata);
                             }
-
-
-                            currentCluster.ClipDatas.Add(type, clipdata);
-
-                            if (!readerGroupData.TakeDatas[i].Clusters.Contains(currentCluster))
-                                readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
                         }
+
+                        currentCluster.ClipDatas = tempItemList;
+
+                        if (!readerGroupData.TakeDatas[i].Clusters.Contains(currentCluster))
+                            readerGroupData.TakeDatas[i].Clusters.Add(currentCluster);
                     }
                 }
 
@@ -238,7 +254,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="assetDatabaseDir">Asset database directory path to search similar files in</param>
         /// <param name="fullSourceFilePath">Full OS path of file </param>
-        /// <param name="fileName">file name to search similarity</param>
+        /// <param name="fileNameWithExtension">file name to search similarity</param>
         /// <param name="extension">file extension</param>
         /// <returns>
         ///     Returns the new name of your file. Example: Let's say your input was File, and there was File 0005 in the related
@@ -246,10 +262,10 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     This function will return File 0006 so you can save your file with a unique name
         /// </returns>
         public static async Task<string> GetLatestSimilarFileName(string assetDatabaseDir, string fullSourceFilePath,
-            string fileName,
+            string fileNameWithExtension,
             string extension)
         {
-            var targetFileName = Path.Combine(assetDatabaseDir, fileName);
+            var targetFileName = Path.Combine(assetDatabaseDir, fileNameWithExtension);
 
             var alreadySavedSimilarFiles = Directory.GetFiles(assetDatabaseDir)
                 .Where(a => a.ToLower().Contains(Path.GetFileNameWithoutExtension(fullSourceFilePath).ToLower()) &

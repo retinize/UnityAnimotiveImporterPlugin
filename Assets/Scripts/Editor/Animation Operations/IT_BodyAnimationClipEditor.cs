@@ -384,7 +384,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var holderObject = fbxDataTuple.HolderObject;
 
                         var animationClipDataPath =
-                            clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipDataPath;
+                            clipCluster.ClipDatas[0][IT_ClipType.TransformAnimationClip].ClipDataPath;
 
                         var bodyAnimationPath =
                             IT_AnimotiveImporterEditorUtilities
@@ -401,7 +401,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         if (doesAvatarHasAllRequiredBones)
                         {
                             var message =
-                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName}' clip don't match !
+                                $@" Bone count in the '{fbxData.FbxAnimator.avatar.name}' avatar and the used bones count in '{clipCluster.ClipDatas[0][IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName}' clip don't match !
                                 Make sure that the avatar has all the required bones and you're using correct FBX for this clip";
 
                             EditorUtility.DisplayDialog(
@@ -427,7 +427,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length))
                         {
                             var message =
-                                $@"Bone count with the {clipCluster.EntityName} and {clipCluster.ClipDatas[IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName} doesn't match !
+                                $@"Bone count with the {clipCluster.EntityName} and {clipCluster.ClipDatas[0][IT_ClipType.TransformAnimationClip].ClipPlayerData.clipName} doesn't match !
                                 Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
                                 IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,

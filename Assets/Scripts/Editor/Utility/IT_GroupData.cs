@@ -46,7 +46,7 @@ namespace Retinize.Editor.AnimotiveImporter
     public interface IIT_ICluster
     {
         public IT_ClusterType ClusterType { get; }
-        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>> ClipDatas { get; set; }
         public string EntityName { get; set; }
         public bool IsAnimationProcessInterrupted { get; }
 
@@ -62,11 +62,11 @@ namespace Retinize.Editor.AnimotiveImporter
         public IT_CameraCluster()
         {
             IsAnimationProcessInterrupted = false;
-            ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
+            ClipDatas = new List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>>();
         }
 
         public IT_ClusterType ClusterType => IT_ClusterType.CameraCluster;
-        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>> ClipDatas { get; set; }
         public string EntityName { get; set; }
         public bool IsAnimationProcessInterrupted { get; }
         public int TakeIndex { get; set; }
@@ -86,12 +86,12 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             FacialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>();
             IsAnimationProcessInterrupted = false;
-            ClipDatas = new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>();
+            ClipDatas = new List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>>();
         }
 
         public IT_ClusterType ClusterType => IT_ClusterType.CharacterCluster;
 
-        public Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>> ClipDatas { get; }
+        public List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>> ClipDatas { get; set; }
         public string EntityName { get; set; }
 
         public int TakeIndex { get; set; }
