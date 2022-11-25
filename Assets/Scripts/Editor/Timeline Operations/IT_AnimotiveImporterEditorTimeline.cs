@@ -71,6 +71,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 assetNameToSave);
 
             AssetDatabase.CreateAsset(asset, assetDbPathToSave);
+            AssetDatabase.Refresh();
 
             var groupTrack = asset.CreateTrack<GroupTrack>();
             groupTrack.name = timelineData.GroupName;
@@ -161,7 +162,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             AssetDatabase.Refresh();
 
-            var playableAsset = AssetDatabase.LoadAssetAtPath(assetNameToSave, typeof(PlayableAsset)) as PlayableAsset;
+            var playableAsset = AssetDatabase.LoadAssetAtPath(assetDbPathToSave, typeof(PlayableAsset)) as PlayableAsset;
 
 
             return playableAsset;

@@ -128,14 +128,17 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
 
-                    var displayNameDictionary = entityData.propertiesDataByTakeIndex.Single(a =>
-                        a.ContainsKey(IT_AnimotiveImporterEditorConstants.DisplayName));
-                    var displayName = (string) displayNameDictionary[IT_AnimotiveImporterEditorConstants.DisplayName];
 
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
+                        if (take.Count == 0) continue;
 
+                        //i == takeindex
+
+                        var displayName =
+                            (string) entityData.propertiesDataByTakeIndex[i][
+                                IT_AnimotiveImporterEditorConstants.DisplayName];
 
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
@@ -152,11 +155,10 @@ namespace Retinize.Editor.AnimotiveImporter
                         currentCluster.TakeIndex = i;
                         currentCluster.EntityName = displayName;
 
+
                         var tempItemList = new List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>>();
 
-                        if (take.Count == 0) continue;
-
-                        for (var j = 0; j < take[0].Count; j++)
+                        for (var k = 0; k < take[i].Count; k++)
                         {
                             tempItemList.Add(new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>());
                         }
