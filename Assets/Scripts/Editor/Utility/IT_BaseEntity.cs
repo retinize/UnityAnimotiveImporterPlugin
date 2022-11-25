@@ -66,11 +66,20 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
+
+            bool alreadyAGameObjectInTheScene = GameObject.Find(DisplayName) != null;
+
+            if (alreadyAGameObjectInTheScene)
+            {
+                return;
+            }
+            
             var entityGameObjectInTheScene = new GameObject(DisplayName);
             var cameraRoot = new GameObject(string.Concat(DisplayName, "_Root"));
             var cameraHolder = new GameObject(string.Concat(DisplayName, "_Holder"));
             var currentTypeHead = args.TypeHeadInTheScene;
 
+            // cameraRoot.AddComponent<Animator>();
 
             cameraHolder.transform.SetParent(currentTypeHead.transform);
             cameraRoot.transform.SetParent(cameraHolder.transform);
@@ -106,6 +115,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public override void ExecuteEntitySpecificOperations(IT_EntitySpecificOperationsArgs args)
         {
+            bool alreadyAGameObjectInTheScene = GameObject.Find(DisplayName) != null;
+
+            if (alreadyAGameObjectInTheScene)
+            {
+                return;
+            }
+            
             var currentTypeHead = args.TypeHeadInTheScene;
             var entityGameObjectInTheScene = new GameObject(DisplayName);
             var holderGameObject = new GameObject(string.Concat(DisplayName, "_HOLDER"));
