@@ -121,6 +121,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 EditorSceneManager.SaveScene(scene);
 
                 AssetDatabase.Refresh();
+                Debug.Log("Creation Process was successful !");
             }
 
             if (sw.IsRunning && !EditorApplication.isUpdating)

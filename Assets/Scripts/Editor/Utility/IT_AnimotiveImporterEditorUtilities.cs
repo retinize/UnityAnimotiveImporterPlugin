@@ -157,10 +157,19 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                         var tempItemList = new List<Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>>();
-
-                        for (var k = 0; k < take[i].Count; k++)
+                        for (int j = 0; j < take.Count; j++)
                         {
-                            tempItemList.Add(new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>());
+                            var track = take[j];
+
+                            if (track.Count == 0)
+                            {
+                                continue;
+                            }
+
+                            for (int k = 0; k < track.Count; k++)
+                            {
+                                tempItemList.Add(new Dictionary<IT_ClipType, IT_ClipData<IT_ClipPlayerData>>());
+                            }
                         }
 
 
@@ -170,11 +179,16 @@ namespace Retinize.Editor.AnimotiveImporter
 
                             if (track.Count == 0) continue;
 
-
                             for (var k = 0; k < track.Count; k++)
                             {
                                 var clip = track[k];
 
+                                if (clip==null)
+                                {
+                                    continue;
+                                }
+                                
+                                
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
                                         clip.clipName);
@@ -206,6 +220,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             }
                         }
 
+                        tempItemList = tempItemList.Where(x => x.Count != 0).ToList();
                         currentCluster.ClipDatas = tempItemList;
 
                         if (!readerGroupData.TakeDatas[i].Clusters.Contains(currentCluster))
@@ -233,8 +248,8 @@ namespace Retinize.Editor.AnimotiveImporter
             var files = Directory
                 .GetFiles(directory)
                 .Where(a => !a.EndsWith(".meta") &&
-                                                a.EndsWith(extension) &&
-                                                a.ToLower().Contains(lowerCaseNameWithoutExtension))
+                            a.EndsWith(extension) &&
+                            a.ToLower().Contains(lowerCaseNameWithoutExtension))
                 .ToArray();
 
 
