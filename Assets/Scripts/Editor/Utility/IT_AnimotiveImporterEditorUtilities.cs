@@ -134,7 +134,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var take = entityData.clipsByTrackByTakeIndex[i];
                         if (take.Count == 0) continue;
 
-                        //i == takeindex
+                        //i => take index
 
                         var displayName =
                             (string) entityData.propertiesDataByTakeIndex[i][
@@ -182,11 +182,11 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var type =
                                     GetClipTypeFromClipName(clip.clipName);
 
-                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
+                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath,i);
 
                                 if (type == IT_ClipType.AudioClip)
                                 {
-                                    var fileName = await FindLatestFileName(clip.clipName,
+                                    var fileName = await GetLastFileName(clip.clipName,
                                         IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                                         IT_AnimotiveImporterEditorConstants.AudioExtension);
 
@@ -198,7 +198,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                             StringSplitOptions.None)[0];
                                         clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                             clipdata.ClipPlayerData,
-                                            currentClipDataPath);
+                                            currentClipDataPath,i);
                                     }
                                 }
 
@@ -217,13 +217,14 @@ namespace Retinize.Editor.AnimotiveImporter
                     .Where(a => a.Value.Clusters.Count != 0)
                     .ToDictionary(p => p.Key, p => p.Value);
 
+                
                 groupDatas.Add(readerGroupData);
             }
 
             return groupDatas;
         }
 
-        public static async Task<string> FindLatestFileName(string clipName, string directory, string extension)
+        public static async Task<string> GetLastFileName(string clipName, string directory, string extension)
         {
             var files = Directory
                 .GetFiles(directory);

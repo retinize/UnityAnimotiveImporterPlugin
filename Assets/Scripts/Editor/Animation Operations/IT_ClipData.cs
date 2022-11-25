@@ -10,12 +10,14 @@
 
         public string ClipDataPath { get; }
 
+        public int TakeIndex { get;  }
 
-        public IT_ClipData(IT_ClipType type, T clipPlayerData, string clipDataPath)
+        public IT_ClipData(IT_ClipType type, T clipPlayerData, string clipDataPath,int takeIndex)
         {
             Type = type;
             ClipPlayerData = clipPlayerData;
             ClipDataPath = clipDataPath;
+            TakeIndex = takeIndex;
         }
     }
 }

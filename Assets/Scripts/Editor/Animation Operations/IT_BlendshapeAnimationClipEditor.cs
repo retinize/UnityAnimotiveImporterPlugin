@@ -134,6 +134,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 for (var j = 0; j < groupData.TakeDatas.Count; j++)
                 {
                     var takeData = groupData.TakeDatas[j];
+                    //j => take index
 
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
@@ -168,7 +169,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
                             IT_ClipType.FacialAnimationClip,
-                            wrappedData, jsonFullName);
+                            wrappedData, jsonFullName,j);
                         cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
                 }

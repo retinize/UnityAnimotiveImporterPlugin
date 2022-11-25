@@ -142,20 +142,12 @@ namespace Retinize.Editor.AnimotiveImporter
                     var objToBind = cameraCluster.ReferenceInScene.transform.parent.gameObject;
                     objToBind.AddOrGetComponent<Animator>();
 
-                    var playerDatas = new List<IT_ClipPlayerData>();
+              
 
-                    for (var j = 0; j < cameraCluster.ClipDatas.Count; j++)
-                    {
-                        var cameraAnimationClipData = cameraCluster.ClipDatas[j][IT_ClipType.PropertiesClip];
-
-                        playerDatas.Add(cameraAnimationClipData.ClipPlayerData);
-                    }
-
-                    CreateAnimationTrackForCameraAnimation(playerDatas, asset,
+                    CreateAnimationTrackForCameraAnimation(cameraCluster, asset,
                         groupTrack,
-                        cameraCluster.PropertiesDataAnimationClipAssetDatabasePath,
                         playableDirector,
-                        objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
+                        objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory);
                 }
             }
 
@@ -171,54 +163,66 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Creates animation track in the given group track.
         /// </summary>
-        /// <param name="clipData"></param>
+        /// <param name="clipDatas"></param>
         /// <param name="asset">Timeline asset to create track in</param>
         /// <param name="groupTrack">group to assign created animation track</param>
-        /// <param name="animationPath">Path to animation clip</param>
         /// <param name="playableDirector">Playable director to bind this track to. </param>
         /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
         /// <param name="directory"></param>
-        private static async void CreateAnimationTrackForCameraAnimation(List<IT_ClipPlayerData> clipDatas,
+        private static async void CreateAnimationTrackForCameraAnimation(IT_CameraCluster cameraCluster,
             TimelineAsset asset,
-            GroupTrack groupTrack, string animationPath,
+            GroupTrack groupTrack,
             PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
             var animationTrack = asset.CreateTrack<AnimationTrack>();
             animationTrack.SetGroup(groupTrack);
 
-            for (var i = 0; i < clipDatas.Count; i++)
+            for (int i = 0; i < cameraCluster.ClipDatas.Count; i++)
             {
-                var clipData = clipDatas[i];
+                var cameraAnimationClipData = cameraCluster.ClipDatas[i][IT_ClipType.PropertiesClip];
 
-                var fileName = await IT_AnimotiveImporterEditorUtilities.FindLatestFileName(clipData.clipName,
+                string clipName = string.Concat(cameraAnimationClipData.ClipPlayerData.clipName, "_Take_",
+                    cameraAnimationClipData.TakeIndex,"_Order_",i);
+
+                
+                var fileName = await IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
                     directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                
+                
+                if (string.IsNullOrEmpty(fileName))
+                    fileName = string.Concat(
+                        Path.Combine(directory, clipName),
+                        IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
-                if (!string.IsNullOrEmpty(fileName))
-                    animationPath = IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(fileName);
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    Debug.LogError("Animation Path is null !"); 
+                    return;
+                }
 
-                if (string.IsNullOrEmpty(animationPath)) return;
 
+                var animationClip =
+                    AssetDatabase.LoadAssetAtPath<AnimationClip>(fileName);
 
-                var bodyAnimationClip =
-                    AssetDatabase.LoadAssetAtPath<AnimationClip>(animationPath);
-
-                var timelineClip = animationTrack.CreateClip(bodyAnimationClip);
+                var timelineClip = animationTrack.CreateClip(animationClip);
                 timelineClip.displayName =
-                    Path.GetFileNameWithoutExtension(Path.Combine(Directory.GetCurrentDirectory(), animationPath));
+                    Path.GetFileNameWithoutExtension( fileName);
 
-                var startSecond = clipData.startFrameInTimeline * IT_PhysicsManager.FixedDeltaTime;
+                var startSecond = cameraAnimationClipData.ClipPlayerData.startFrameInTimeline * IT_PhysicsManager.FixedDeltaTime;
 
                 timelineClip.start = startSecond;
+                
             }
 
             playableDirector.SetGenericBinding(animationTrack, objToBind);
+
         }
 
         private static async void CreateAnimationTrack(string clipName, TimelineAsset asset,
             GroupTrack groupTrack, string animationPath,
             PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
-            var fileName = await IT_AnimotiveImporterEditorUtilities.FindLatestFileName(clipName,
+            var fileName = await IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
                 directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
             if (!string.IsNullOrEmpty(fileName))

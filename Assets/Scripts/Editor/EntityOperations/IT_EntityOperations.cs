@@ -78,7 +78,7 @@ public static class IT_EntityOperations
                         var animationClip = CreateAnimationClip(keyframesList);
 
                         var fileName = string.Concat(propertyClip.ClipDataPath,
-                            IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                            "_Take_",propertyClip.TakeIndex,"_Order_",l,IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                         var assetNameToSave =
                             IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(fileName);
@@ -88,6 +88,7 @@ public static class IT_EntityOperations
                             assetNameToSave);
 
                         AssetDatabase.CreateAsset(animationClip, assetDbPathToSave);
+                        cameraCluster.PropertiesDataAnimationClipAssetDatabasePath = assetDbPathToSave;
                     }
 
 
