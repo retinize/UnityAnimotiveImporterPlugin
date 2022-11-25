@@ -90,7 +90,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>asset database path</returns>
         public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
-            var result = fullOsPath.Split(new[] {"Assets"}, StringSplitOptions.None)[1];
+            var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
             result = string.Concat("Assets", result);
             return result;
         }
@@ -137,7 +137,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         //i => take index
 
                         var displayName =
-                            (string) entityData.propertiesDataByTakeIndex[i][
+                            (string)entityData.propertiesDataByTakeIndex[i][
                                 IT_AnimotiveImporterEditorConstants.DisplayName];
 
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
@@ -182,7 +182,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 var type =
                                     GetClipTypeFromClipName(clip.clipName);
 
-                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath,i);
+                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath, i);
 
                                 if (type == IT_ClipType.AudioClip)
                                 {
@@ -194,11 +194,11 @@ namespace Retinize.Editor.AnimotiveImporter
                                     {
                                         var currentClipDataPath = fileName;
                                         currentClipDataPath = currentClipDataPath.Split(
-                                            new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                            new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
                                             StringSplitOptions.None)[0];
                                         clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                             clipdata.ClipPlayerData,
-                                            currentClipDataPath,i);
+                                            currentClipDataPath, i);
                                     }
                                 }
 
@@ -217,7 +217,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     .Where(a => a.Value.Clusters.Count != 0)
                     .ToDictionary(p => p.Key, p => p.Value);
 
-                
+
                 groupDatas.Add(readerGroupData);
             }
 
@@ -226,27 +226,23 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static async Task<string> GetLastFileName(string clipName, string directory, string extension)
         {
-            var files = Directory
-                .GetFiles(directory);
-
-            var nameWithoutExtension = Path
+            var lowerCaseNameWithoutExtension = Path
                 .GetFileNameWithoutExtension(clipName)
                 .ToLower();
 
-            var clipFiles =
-                files.Where(a => !a.EndsWith(".meta") &&
-                                 a.EndsWith(extension))
-                    .ToArray();
-
-            clipFiles = clipFiles.Where(a =>
-                    a.ToLower().Contains(nameWithoutExtension.ToLower()))
+            var files = Directory
+                .GetFiles(directory)
+                .Where(a => !a.EndsWith(".meta") &&
+                                                a.EndsWith(extension) &&
+                                                a.ToLower().Contains(lowerCaseNameWithoutExtension))
                 .ToArray();
 
-            clipFiles = clipFiles.OrderByDescending(a =>
+
+            files = files.OrderByDescending(a =>
                 Path.GetFileNameWithoutExtension(a).Split(' ')[
                     Path.GetFileNameWithoutExtension(a).Split(' ').Length - 1]).ToArray();
 
-            if (clipFiles.Length > 1) return clipFiles[1];
+            if (files.Length > 1) return files[1];
             return string.Empty;
         }
 
@@ -308,17 +304,17 @@ namespace Retinize.Editor.AnimotiveImporter
                                 entitiesWithType.Add(entityType, new List<IEntity>());
 
                             var holderPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
 
                             var holderRotation =
-                                (Quaternion) propertyDatasDict[
+                                (Quaternion)propertyDatasDict[
                                     IT_AnimotiveImporterEditorConstants.HolderRotationString];
 
                             var rootPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
 
                             var rootRotation =
-                                (Quaternion) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
                             IEntity itEntity;
                             if (entityType == IT_EntityType.Camera)
