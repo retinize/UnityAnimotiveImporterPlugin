@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static bool EnableImportConfig;
         public static bool ReimportAssets { get; private set; }
 
-        public void OnGUI()
+        public async void OnGUI()
         {
             #region Choose Animotive folder
 
@@ -84,12 +84,14 @@ namespace Retinize.Editor.AnimotiveImporter
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 sw.Start();
-                 IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
-         
+                await IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+
+                AssetDatabase.Refresh();
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
-                var sceneData =  IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
+                var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
+
                 var scene = IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
                 AssetDatabase.Refresh();
@@ -111,10 +113,12 @@ namespace Retinize.Editor.AnimotiveImporter
                 AssetDatabase.Refresh();
 
                 IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
+                AssetDatabase.Refresh();
 
                 //create timeline using animation clips
                 IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
                     sceneData);
+                AssetDatabase.Refresh();
 
                 EditorSceneManager.SaveScene(scene);
 

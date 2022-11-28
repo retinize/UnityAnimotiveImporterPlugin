@@ -20,7 +20,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             characterRoot = Object.Instantiate(characterRoot);
             characterRoot.AddComponent<AudioSource>();
-            var animator = characterRoot.GetComponent<Animator>();
+            var animator = characterRoot.AddOrGetComponent<Animator>();
 
             return new IT_FbxData(characterRoot, animator);
         }

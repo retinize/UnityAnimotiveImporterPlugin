@@ -183,12 +183,12 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 var clip = track[k];
 
-                                if (clip==null)
+                                if (clip == null)
                                 {
                                     continue;
                                 }
-                                
-                                
+
+
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
                                         clip.clipName);
@@ -198,23 +198,23 @@ namespace Retinize.Editor.AnimotiveImporter
 
                                 var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath, i);
 
-                                if (type == IT_ClipType.AudioClip)
-                                {
-                                    var fileName = GetLastFileName(clip.clipName,
-                                        IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                        IT_AnimotiveImporterEditorConstants.AudioExtension);
-
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        var currentClipDataPath = fileName;
-                                        currentClipDataPath = currentClipDataPath.Split(
-                                            new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
-                                            StringSplitOptions.None)[0];
-                                        clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
-                                            clipdata.ClipPlayerData,
-                                            currentClipDataPath, i);
-                                    }
-                                }
+                                // if (type == IT_ClipType.AudioClip)
+                                // {
+                                //     var fileName = GetLastFileName(clip.clipName,
+                                //         IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                //         IT_AnimotiveImporterEditorConstants.AudioExtension);
+                                //
+                                //     if (!string.IsNullOrEmpty(fileName))
+                                //     {
+                                //         var currentClipDataPath = fileName;
+                                //         currentClipDataPath = currentClipDataPath.Split(
+                                //             new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
+                                //             StringSplitOptions.None)[0];
+                                //         clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
+                                //             clipdata.ClipPlayerData,
+                                //             currentClipDataPath, i);
+                                //     }
+                                // }
 
                                 tempItemList[k].Add(type, clipdata);
                             }
@@ -239,14 +239,15 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
-        public static string GetLastFileName(string clipName, string directory, string extension)
+        public static string GetLastFileName(string clipName, string assetDatabaseDirectory, string extension)
         {
             var lowerCaseNameWithoutExtension = Path
                 .GetFileNameWithoutExtension(clipName)
                 .ToLower();
+            string osDirectory = Path.Combine(Directory.GetCurrentDirectory(), assetDatabaseDirectory);
 
             var files = Directory
-                .GetFiles(directory)
+                .GetFiles(assetDatabaseDirectory)
                 .Where(a => !a.EndsWith(".meta") &&
                             a.EndsWith(extension) &&
                             a.ToLower().Contains(lowerCaseNameWithoutExtension))
@@ -371,7 +372,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
         /// <returns></returns>
-        internal static void MoveAudiosIntoUnity(string unityExportPath)
+        internal static async Task MoveAudiosIntoUnity(string unityExportPath)
         {
             var clipsPath = Path.Combine(unityExportPath, "Clips");
 
@@ -401,10 +402,10 @@ namespace Retinize.Editor.AnimotiveImporter
             string baseDir = Directory.GetCurrentDirectory();
             string[] directories =
             {
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory),
             };
 
             for (var i = 0; i < directories.Length; i++)
@@ -412,7 +413,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var dir = directories[i];
                 if (Directory.Exists(dir))
                 {
-                    Directory.Delete(dir,true);
+                    Directory.Delete(dir, true);
                 }
             }
 
@@ -427,10 +428,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
             string[] animationDirectories =
             {
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory),
-                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory),
+                Path.Combine(baseDir, IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory),
             };
 
             for (var i = 0; i < animationDirectories.Length; i++)

@@ -33,7 +33,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -282,7 +282,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
-                    HumanBodyBones[] positionAllowedBones = {HumanBodyBones.LastBone};
+                    HumanBodyBones[] positionAllowedBones = { HumanBodyBones.LastBone };
 
                     //add the position of selected bones to animationclip
                     if (positionAllowedBones.Any(a => a == pair.Key))
@@ -351,8 +351,6 @@ namespace Retinize.Editor.AnimotiveImporter
             List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
-            IT_AnimotiveImporterEditorUtilities.CreateAnimationFolders();
-
             for (var i = 0; i < groupDatas.Count; i++)
             {
                 var groupData = groupDatas[i];
@@ -365,7 +363,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         if (takeData.Clusters[k].ClusterType != IT_ClusterType.CharacterCluster)
                             continue; //if it's not character cluster then move on to the next 
-                        var clipCluster = (IT_CharacterCluster) takeData.Clusters[k];
+                        var clipCluster = (IT_CharacterCluster)takeData.Clusters[k];
 
                         var fbxDataTuple = fbxDatasAndHoldersTuples[clipCluster.EntityName];
                         var fbxData = fbxDataTuple.FbxData;
@@ -381,7 +379,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                     IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
                                     animationClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
-                        var clipAndDictionariesTuple =  PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+                        var clipAndDictionariesTuple = PrepareAndGetAnimationData(fbxData, animationClipDataPath);
 
                         var doesAvatarHasAllRequiredBones =
                             clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform.Count !=
