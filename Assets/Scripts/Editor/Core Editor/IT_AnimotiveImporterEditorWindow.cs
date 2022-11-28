@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         public static bool EnableImportConfig;
         public static bool ReimportAssets { get; private set; }
 
-        public async void OnGUI()
+        public void OnGUI()
         {
             #region Choose Animotive folder
 
@@ -38,7 +38,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     {
                         UserChosenDirectoryToImportUnityExports = choosenFolder;
 
-                        var fbxes = await IT_FbxOperations.CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
+                        var fbxes = IT_FbxOperations.CheckCharacterFbxs(UserChosenDirectoryToImportUnityExports);
 
                         if (fbxes) Debug.Log("Imported the Animotive files successfully !");
 
@@ -84,38 +84,36 @@ namespace Retinize.Editor.AnimotiveImporter
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 sw.Start();
-                await IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
-                await Task.Yield();
+                 IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+         
 
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
-                var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
-                var scene = await IT_SceneEditor.CreateScene(sceneData.currentSetName);
+                var sceneData =  IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
+                var scene = IT_SceneEditor.CreateScene(sceneData.currentSetName);
 
                 AssetDatabase.Refresh();
 
-                var groupDatas =
-                    await IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
-                await Task.Yield();
+                var groupDatas = IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
 
                 var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
                 //create animation clips
-                await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
+                IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
                     fbxDatasAndHoldersTuples);
 
                 AssetDatabase.Refresh();
-                await Task.Yield();
 
-                await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
                     fbxDatasAndHoldersTuples, clipsFolderPath);
-                await Task.Yield();
 
-                await IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
+                AssetDatabase.Refresh();
+
+                IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
 
                 //create timeline using animation clips
-                await IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
+                IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
                     sceneData);
 
                 EditorSceneManager.SaveScene(scene);

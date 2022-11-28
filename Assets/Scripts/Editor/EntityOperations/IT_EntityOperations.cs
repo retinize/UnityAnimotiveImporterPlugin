@@ -14,9 +14,9 @@ public static class IT_EntityOperations
     /// </summary>
     /// <param name="sceneData"></param>
     /// <param name="groupDatas"></param>
-    public static async Task HandleEntityOperations(IT_SceneInternalData sceneData, List<IT_GroupData> groupDatas)
+    public static void HandleEntityOperations(IT_SceneInternalData sceneData, List<IT_GroupData> groupDatas)
     {
-        var entityTypeList = await IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
+        var entityTypeList = IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
 
 
         var entitiesRoot = new GameObject("Entities");

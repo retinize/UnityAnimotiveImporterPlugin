@@ -111,7 +111,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="sceneData">Binary scene data</param>
         /// <param name="clipsPath">Path to Clips folder</param>
         /// <returns>List of IT_GroupData</returns>
-        public static async Task<List<IT_GroupData>> GetGroupDataListByType(IT_SceneInternalData sceneData,
+        public static List<IT_GroupData> GetGroupDataListByType(IT_SceneInternalData sceneData,
             string clipsPath)
         {
             var groupsHead = new GameObject("Groups");
@@ -200,7 +200,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                                 if (type == IT_ClipType.AudioClip)
                                 {
-                                    var fileName = await GetLastFileName(clip.clipName,
+                                    var fileName = GetLastFileName(clip.clipName,
                                         IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                                         IT_AnimotiveImporterEditorConstants.AudioExtension);
 
@@ -239,7 +239,7 @@ namespace Retinize.Editor.AnimotiveImporter
             return groupDatas;
         }
 
-        public static async Task<string> GetLastFileName(string clipName, string directory, string extension)
+        public static string GetLastFileName(string clipName, string directory, string extension)
         {
             var lowerCaseNameWithoutExtension = Path
                 .GetFileNameWithoutExtension(clipName)
@@ -291,7 +291,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="sceneData">Binary scene data</param>
         /// <returns></returns>
-        public static async Task<Dictionary<IT_EntityType, List<IEntity>>> GetPropertiesData(
+        public static Dictionary<IT_EntityType, List<IEntity>> GetPropertiesData(
             IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
@@ -371,7 +371,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
         /// <returns></returns>
-        internal static async Task MoveAudiosIntoUnity(string unityExportPath)
+        internal static void MoveAudiosIntoUnity(string unityExportPath)
         {
             var clipsPath = Path.Combine(unityExportPath, "Clips");
 
@@ -398,17 +398,22 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         internal static void ClearAccumulatedFiles()
         {
+            string baseDir = Directory.GetCurrentDirectory();
             string[] directories =
             {
-                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory),
             };
 
             for (var i = 0; i < directories.Length; i++)
             {
-                FileUtil.DeleteFileOrDirectory(directories[i]);
+                var dir = directories[i];
+                if (Directory.Exists(dir))
+                {
+                    Directory.Delete(dir,true);
+                }
             }
 
 
@@ -418,12 +423,14 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static void CreateAnimationFolders()
         {
+            string baseDir = Directory.GetCurrentDirectory();
+
             string[] animationDirectories =
             {
-                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
-                IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory),
+                Path.Combine(baseDir,IT_AnimotiveImporterEditorConstants.UnityFilesCameraAnimationDirectory),
             };
 
             for (var i = 0; i < animationDirectories.Length; i++)

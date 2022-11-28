@@ -17,15 +17,12 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     that
         /// </summary>
         /// <returns>Blendshape value read from the json in type of 'FacialAnimationExportWrapper' </returns>
-        private static async Task<FacialAnimationExportWrapper> GetBlendShapeAnimationDataFromFile(
+        private static FacialAnimationExportWrapper GetBlendShapeAnimationDataFromFile(
             string jsonFileSystemFullPath)
         {
             FacialAnimationExportWrapper clip = null;
-            await Task.Run(delegate
-            {
-                var json = File.ReadAllText(jsonFileSystemFullPath);
-                clip = JsonConvert.DeserializeObject<FacialAnimationExportWrapper>(json);
-            });
+            var json = File.ReadAllText(jsonFileSystemFullPath);
+            clip = JsonConvert.DeserializeObject<FacialAnimationExportWrapper>(json);
 
             return clip;
         }
@@ -123,10 +120,10 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Triggers all the necessary methods for the related animation clip creation PoC
         /// </summary>
-        public static async Task HandleFacialAnimationOperations(List<IT_GroupData> groupDatas,
+        public static void HandleFacialAnimationOperations(List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples, string clipsFolderPath)
         {
-            var blendshapesDictionary = await GetAllFacialAnimations(clipsFolderPath);
+            var blendshapesDictionary = GetAllFacialAnimations(clipsFolderPath);
 
             for (var i = 0; i < groupDatas.Count; i++)
             {
@@ -178,7 +175,7 @@ namespace Retinize.Editor.AnimotiveImporter
             AssetDatabase.Refresh();
         }
 
-        private static async Task<Dictionary<string, FacialAnimationExportWrapper>> GetAllFacialAnimations(
+        private static Dictionary<string, FacialAnimationExportWrapper> GetAllFacialAnimations(
             string clipsFolder)
         {
             var jsonFiles = Directory.GetFiles(clipsFolder).Where(a =>
@@ -191,7 +188,7 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < jsonFiles.Count; i++)
             {
                 var jsonFileOsPath = jsonFiles[i];
-                var wrapper = await GetBlendShapeAnimationDataFromFile(jsonFileOsPath);
+                var wrapper =  GetBlendShapeAnimationDataFromFile(jsonFileOsPath);
                 blendShapesFullPathAndWrappers.Add(jsonFileOsPath, wrapper);
             }
 

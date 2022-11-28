@@ -159,7 +159,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="loadedFbXofCharacter">Tuple of loaded character.</param>
         /// <param name="animationClipDataPath">Path to binary animation clip data</param>
         /// <returns>Tuple with the read and casted animation data from binary file and the dictionary of the humanoid bones.</returns>
-        private static async Task<IT_ClipByDictionaryTuple> PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter,
+        private static IT_ClipByDictionaryTuple PrepareAndGetAnimationData(IT_FbxData loadedFbXofCharacter,
             string animationClipDataPath)
         {
             var clip = SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
@@ -347,7 +347,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="groupDatas"></param>
         /// <param name="fbxDatasAndHoldersTuples"></param>
         /// <returns>Tuple of list of group data and dictionary with fbx datas tuple</returns>
-        public static async Task HandleBodyAnimationClipOperations(
+        public static void HandleBodyAnimationClipOperations(
             List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
@@ -381,7 +381,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                     IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
                                     animationClipDataPath, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
-                        var clipAndDictionariesTuple = await PrepareAndGetAnimationData(fbxData, animationClipDataPath);
+                        var clipAndDictionariesTuple =  PrepareAndGetAnimationData(fbxData, animationClipDataPath);
 
                         var doesAvatarHasAllRequiredBones =
                             clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform.Count !=

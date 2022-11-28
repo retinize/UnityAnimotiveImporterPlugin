@@ -127,7 +127,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="unityExportPath">Path to user browsed and selected folder usually called "UnityExported" </param>
         /// <returns></returns>
-        public static Task<bool> CheckCharacterFbxs(string unityExportPath)
+        public static bool CheckCharacterFbxs(string unityExportPath)
         {
             var charactersPath = Path.Combine(unityExportPath, "EntityAssets", "Characters");
             var characterFolders = Directory.GetDirectories(charactersPath);
@@ -137,7 +137,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                     @"Couldn't find any Character folder to import FBX", "OK");
 
-                return Task.FromResult(false);
+                return false;
             }
 
             for (var i = 0; i < characterFolders.Length; i++)
@@ -152,7 +152,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                         $@"Couldn't find any FBX file at the directory: {folder}", "OK");
-                    return Task.FromResult(false);
+                    return false;
                 }
 
                 existence = fbxes.Count == 1;
@@ -160,14 +160,14 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     EditorUtility.DisplayDialog(IT_AnimotiveImporterEditorConstants.WarningTitle,
                         $@"More than one FBX is detected at : {folder}", "OK");
-                    return Task.FromResult(false);
+                    return false;
                 }
 
                 var fullPathToExpectedFbx = fbxes[0];
                 ImportFbxIntoUnityAndProcessIt(fullPathToExpectedFbx);
             }
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }
