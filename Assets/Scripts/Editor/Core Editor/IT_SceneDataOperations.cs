@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using OdinSerializer;
 
@@ -11,7 +12,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="unityFilesDirectory">Unity files directory path</param>
         /// <returns></returns>
-        public static IT_SceneInternalData LoadSceneData(string unityFilesDirectory)
+        public static IT_SceneInternalData  LoadSceneData(string unityFilesDirectory)
         {
             var sceneDataFilePath = Path.Combine(unityFilesDirectory, "SceneDatas", "SceneData_UnityExport");
             var bytes = File.ReadAllBytes(sceneDataFilePath);

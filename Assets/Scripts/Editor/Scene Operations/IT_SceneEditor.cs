@@ -11,7 +11,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates scene asset at the designated location
         /// </summary>
         /// <param name="sceneName">Name of the scene to be created.</param>
-        public static async Task<Scene> CreateScene(string sceneName)
+        public static Scene CreateScene(string sceneName)
         {
             if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory))
                 Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory);

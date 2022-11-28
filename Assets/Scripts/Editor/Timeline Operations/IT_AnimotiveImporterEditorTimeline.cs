@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
         /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
         /// <param name="sceneInternalData">Binary scene data.</param>
-        public static async Task HandleTimeLineOperations(List<IT_GroupData> transformGroupDatas,
+        public static void HandleTimeLineOperations(List<IT_GroupData> transformGroupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
             IT_SceneInternalData sceneInternalData)
         {
@@ -46,7 +46,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         playableDirector,
                         fbxDatasAndHoldersTuples, takeData);
 
-                    playableDirector.playableAsset = await CreatePlayableAssets(timelineData, sceneInternalData);
+                    playableDirector.playableAsset = CreatePlayableAssets(timelineData, sceneInternalData);
                 }
             }
         }
@@ -57,7 +57,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="timelineData"></param>
         /// <param name="sceneInternalData"></param>
         /// <returns></returns>
-        public static async Task<PlayableAsset> CreatePlayableAssets(IT_TimelineData timelineData,
+        public static PlayableAsset CreatePlayableAssets(IT_TimelineData timelineData,
             IT_SceneInternalData sceneInternalData)
         {
             var playableDirector = timelineData.PlayableDirector;
@@ -185,7 +185,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     cameraAnimationClipData.TakeIndex,"_Order_",i);
 
                 
-                var fileName = await IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
+                var fileName = IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
                     directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
                 
                 
@@ -218,11 +218,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
         }
 
-        private static async void CreateAnimationTrack(string clipName, TimelineAsset asset,
+        private static void CreateAnimationTrack(string clipName, TimelineAsset asset,
             GroupTrack groupTrack, string animationPath,
             PlayableDirector playableDirector, GameObject objToBind, string directory)
         {
-            var fileName = await IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
+            var fileName =  IT_AnimotiveImporterEditorUtilities.GetLastFileName(clipName,
                 directory, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
             if (!string.IsNullOrEmpty(fileName))
