@@ -279,7 +279,12 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (!DoesAssetExist(targetFileName)) return targetFileName;
 
-                targetFileName = string.Concat(fileName, " ", i, extension);
+                var indexString = i.ToString();
+                int zeroCount = 4 - indexString.Length;
+
+                string zeros = new string('0', zeroCount);
+
+                targetFileName = string.Concat(fileName, " ", zeros, i, extension);
             }
         }
 
