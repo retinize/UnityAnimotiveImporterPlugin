@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
 using OdinSerializer;
@@ -16,7 +17,7 @@ public static class IT_EntityOperations
     /// <param name="groupDatas"></param>
     public static void HandleEntityOperations(IT_SceneInternalData sceneData, List<IT_GroupData> groupDatas)
     {
-        var entityTypeList = IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
+        var entityTypeList = GetPropertiesData(sceneData);
 
 
         var entitiesRoot = new GameObject("Entities");
@@ -49,7 +50,7 @@ public static class IT_EntityOperations
                     {
                         var propertyClip = cluster.ClipDatas[l][IT_ClipType.PropertiesClip];
 
-                        var cameraCluster = (IT_CameraCluster) cluster;
+                        var cameraCluster = (IT_CameraCluster)cluster;
 
                         cameraCluster.ReferenceInScene = GameObject.Find(cluster.EntityName);
 
@@ -78,7 +79,8 @@ public static class IT_EntityOperations
                         var animationClip = CreateAnimationClip(keyframesList);
 
                         var fileName = string.Concat(propertyClip.ClipDataPath,
-                            "_Take_",propertyClip.TakeIndex,"_Order_",l,IT_AnimotiveImporterEditorConstants.AnimationExtension);
+                            "_Take_", propertyClip.TakeIndex, "_Order_", l,
+                            IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
                         var assetNameToSave =
                             IT_AnimotiveImporterEditorUtilities.GetUniqueAssetDatabaseName(fileName);
@@ -156,5 +158,73 @@ public static class IT_EntityOperations
                     new IT_EntitySpecificOperationsArgs(currentTypeHead));
             }
         }
+    }
+
+
+    /// <summary>
+    ///     Gets and returns some properties of entities  from the scene data to apply later on
+    /// </summary>
+    /// <param name="sceneData">Binary scene data</param>
+    /// <returns></returns>
+    public static Dictionary<IT_EntityType, List<IEntity>> GetPropertiesData(
+        IT_SceneInternalData sceneData)
+    {
+        var entitiesWithType =
+            new Dictionary<IT_EntityType, List<IEntity>>();
+
+
+        foreach (var groupData in sceneData.groupDataBySerializedId.Values)
+        {
+            foreach (var entityId in groupData.entitiesIds)
+            {
+                var entityData = sceneData.entitiesDataBySerializedId[entityId];
+
+                foreach (var propertyDatasDict in entityData.propertiesDataByTakeIndex)
+                {
+                    var displayName = propertyDatasDict[IT_AnimotiveImporterEditorConstants.DisplayName].ToString();
+
+                    var list = IT_AnimotiveImporterEditorConstants.EntityTypesByKeyword.Where(pair =>
+                        displayName.Contains(pair.Value)).ToList();
+
+                    if (list.Count > 0)
+                    {
+                        var entityType = list[0].Key;
+
+                        if (!entitiesWithType.ContainsKey(entityType))
+                            entitiesWithType.Add(entityType, new List<IEntity>());
+
+                        var holderPosition =
+                            (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+
+                        var holderRotation =
+                            (Quaternion)propertyDatasDict[
+                                IT_AnimotiveImporterEditorConstants.HolderRotationString];
+
+                        var rootPosition =
+                            (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+
+                        var rootRotation =
+                            (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+
+                        IEntity itEntity;
+                        if (entityType == IT_EntityType.Camera)
+                        {
+                            itEntity = new IT_CameraEntity(entityType, holderPosition, rootPosition,
+                                holderRotation, rootRotation, displayName, propertyDatasDict);
+                        }
+                        else
+                        {
+                            itEntity = new IT_SpotLightEntity(entityType, holderPosition, rootPosition,
+                                holderRotation, rootRotation, displayName, propertyDatasDict);
+                        }
+
+
+                        entitiesWithType[entityType].Add(itEntity);
+                    }
+                }
+            }
+        }
+
+        return entitiesWithType;
     }
 }
