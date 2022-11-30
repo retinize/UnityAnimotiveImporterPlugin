@@ -422,7 +422,7 @@ namespace Retinize.Editor.AnimotiveImporter
             AssetDatabase.Refresh();
         }
 
-        public static void CreateAnimationFolders()
+        public static void CreateAssetsFolders()
         {
             string baseDir = Directory.GetCurrentDirectory();
 

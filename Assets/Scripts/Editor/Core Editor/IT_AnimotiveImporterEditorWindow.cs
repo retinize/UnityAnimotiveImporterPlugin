@@ -84,6 +84,8 @@ namespace Retinize.Editor.AnimotiveImporter
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 sw.Start();
+                
+                IT_AnimotiveImporterEditorUtilities.CreateAssetsFolders();
                 await IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
 
                 AssetDatabase.Refresh();
