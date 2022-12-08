@@ -23,8 +23,10 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var dirs = new HashSet<string>(Directory.GetDirectories(path));
 
-            var result = dirs.Any(a => a.EndsWith("Clips")) && dirs.Any(a => a.EndsWith("SetAssets")) &&
-                         dirs.Any(a => a.EndsWith("EntityAssets")) && dirs.Any(a => a.EndsWith("SceneDatas"));
+            var result = dirs.Any(a => a.EndsWith("Clips")) &&
+                         dirs.Any(a => a.EndsWith("SetAssets")) &&
+                         dirs.Any(a => a.EndsWith("EntityAssets")) &&
+                         dirs.Any(a => a.EndsWith("SceneDatas"));
             return result;
         }
 
@@ -44,7 +46,7 @@ namespace Retinize.Editor.AnimotiveImporter
             }
 
 
-            return "";
+            return string.Empty;
         }
 
         /// <summary>
@@ -102,7 +104,12 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>Full OS path of unity asset</returns>
         public static string ConvertAssetDatabasePathToSystemPath(string assetDbPath)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), assetDbPath);
+            if (!string.IsNullOrEmpty(assetDbPath))
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), assetDbPath);
+            }
+
+            throw new Exception("Can not be null !");
         }
 
         /// <summary>
@@ -294,9 +301,9 @@ namespace Retinize.Editor.AnimotiveImporter
             return 2 * Mathf.Atan(camera.sensorSize.x / (2 * newFocalLength)) * (180 / Mathf.PI);
         }
 
-        public static bool IsCharactersFolderEmpty()
+        public static bool IsCharactersFolderEmpty(string targetFolder)
         {
-            var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory)
+            var files = Directory.GetFiles(targetFolder)
                 .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
 
             return files.Length == 0;
@@ -349,9 +356,13 @@ namespace Retinize.Editor.AnimotiveImporter
                 if (Directory.Exists(dir))
                 {
                     Directory.Delete(dir, true);
+                    string metaFile = string.Concat(dir, ".meta");
+                    if (File.Exists(metaFile))
+                    {
+                        File.Delete(metaFile);
+                    }
                 }
             }
-
 
             IT_AnimotiveImporterEditorWindow.ResetWindow();
             AssetDatabase.Refresh();
@@ -374,7 +385,10 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (!Directory.Exists(animationDirectories[i])) Directory.CreateDirectory(animationDirectories[i]);
             }
+
+            AssetDatabase.Refresh();
         }
+
 
         public static bool DoesAssetExist(string assetNameWithExtension)
         {

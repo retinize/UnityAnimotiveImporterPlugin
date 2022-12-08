@@ -71,7 +71,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
-            var isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
+            string path = Path.Combine(Directory.GetCurrentDirectory(),
+                IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory);
+
+            var isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty(path);
 
             if (isCharactersFolderEmpty && _isAnimotiveFolderImported)
                 Debug.LogError("No character found under Characters folder. Can't start the process...");
@@ -84,7 +87,7 @@ namespace Retinize.Editor.AnimotiveImporter
             if (GUILayout.Button("Import Animotive Scene"))
             {
                 sw.Start();
-                
+
                 IT_AnimotiveImporterEditorUtilities.CreateAssetsFolders();
                 await IT_AnimotiveImporterEditorUtilities.MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
 
