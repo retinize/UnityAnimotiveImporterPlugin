@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var dirs = new HashSet<string>(Directory.GetDirectories(path));
 
-            var result = dirs.Any(a => a.EndsWith("Clips")) &&
+            var result = dirs.Any(a => a.EndsWith("Clips")) && //should be single but leaving it for now
                          dirs.Any(a => a.EndsWith("SetAssets")) &&
                          dirs.Any(a => a.EndsWith("EntityAssets")) &&
                          dirs.Any(a => a.EndsWith("SceneDatas"));
@@ -54,8 +55,13 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="clipName">Clip name to determine type of</param>
         /// <returns>Type as IT_ClipType</returns>
-        public static IT_ClipType GetClipTypeFromClipName(string clipName)
+        public static IT_ClipType GetClipTypeFromClipName([NotNull] string clipName)
         {
+            if (string.IsNullOrEmpty(clipName))
+            {
+                return IT_ClipType.None;
+            }
+
             foreach (var pair in IT_AnimotiveImporterEditorConstants.ClipNamesByType)
             {
                 if (clipName.Contains(pair.Value)) return pair.Key;
@@ -205,23 +211,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
                                 var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath, i);
 
-                                // if (type == IT_ClipType.AudioClip)
-                                // {
-                                //     var fileName = GetLastFileName(clip.clipName,
-                                //         IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                //         IT_AnimotiveImporterEditorConstants.AudioExtension);
-                                //
-                                //     if (!string.IsNullOrEmpty(fileName))
-                                //     {
-                                //         var currentClipDataPath = fileName;
-                                //         currentClipDataPath = currentClipDataPath.Split(
-                                //             new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
-                                //             StringSplitOptions.None)[0];
-                                //         clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
-                                //             clipdata.ClipPlayerData,
-                                //             currentClipDataPath, i);
-                                //     }
-                                // }
 
                                 tempItemList[k].Add(type, clipdata);
                             }

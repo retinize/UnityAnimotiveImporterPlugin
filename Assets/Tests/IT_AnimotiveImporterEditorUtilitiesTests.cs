@@ -103,5 +103,22 @@ namespace DefaultNamespace
             Assert.That(directory4, Is.True);
             Assert.That(directory5, Is.True);
         }
+
+
+        [Test]
+        [TestCase("Charles Character Root_TransformClip_Capture1", IT_ClipType.TransformAnimationClip)]
+        [TestCase("Charles Holder_PropertiesClip_Capture1", IT_ClipType.PropertiesClip)]
+        [TestCase("Charles Holder_AudioClip_Capture1_InitTime_00_00_00", IT_ClipType.AudioClip)]
+        [TestCase("Charles_FacialParametersAnimation_Clip_1_Group 1_Take_0.json", IT_ClipType.FacialAnimationClip)]
+        [TestCase("ajskhdjkash bdjkabyuqdbjay hsgudyqwgduyqgwud", IT_ClipType.None)]
+        [TestCase("", IT_ClipType.None)]
+        [TestCase(null, IT_ClipType.None)]
+        public void GetClipTypeFromClipName_WhenGivenInput_ReturnsCorrectClipType(string clipName,
+            IT_ClipType expectedClipType)
+        {
+            var result = IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(clipName);
+
+            Assert.That(result, Is.EqualTo(expectedClipType));
+        }
     }
 }
