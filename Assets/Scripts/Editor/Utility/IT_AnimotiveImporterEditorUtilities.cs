@@ -196,12 +196,6 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 var clip = track[k];
 
-                                if (clip == null)
-                                {
-                                    continue;
-                                }
-
-
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
                                         clip.clipName);

@@ -113,7 +113,7 @@ namespace DefaultNamespace
         [TestCase("ajskhdjkash bdjkabyuqdbjay hsgudyqwgduyqgwud", IT_ClipType.None)]
         [TestCase("", IT_ClipType.None)]
         [TestCase(null, IT_ClipType.None)]
-        public void GetClipTypeFromClipName_WhenGivenInput_ReturnsCorrectClipType(string clipName,
+        public void GetClipTypeFromClipName_WhenGivenValidAndInvalidInputs_ReturnsCorrectClipType(string clipName,
             IT_ClipType expectedClipType)
         {
             var result = IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(clipName);
