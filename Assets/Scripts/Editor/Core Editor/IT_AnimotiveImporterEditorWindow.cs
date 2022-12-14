@@ -106,29 +106,38 @@ namespace Retinize.Editor.AnimotiveImporter
                 var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
                 //create animation clips
-                IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
+                var isOperationSuccessfullyFinished = IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
                     groupDatas,
                     fbxDatasAndHoldersTuples);
 
-                AssetDatabase.Refresh();
 
-                IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
-                    fbxDatasAndHoldersTuples, clipsFolderPath);
+                if (isOperationSuccessfullyFinished)
+                {
+                    AssetDatabase.Refresh();
 
-                AssetDatabase.Refresh();
+                    IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                        fbxDatasAndHoldersTuples, clipsFolderPath);
 
-                IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
-                AssetDatabase.Refresh();
+                    AssetDatabase.Refresh();
 
-                //create timeline using animation clips
-                IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
-                    sceneData);
-                AssetDatabase.Refresh();
+                    IT_EntityOperations.HandleEntityOperations(sceneData, groupDatas);
+                    AssetDatabase.Refresh();
 
-                EditorSceneManager.SaveScene(scene);
+                    //create timeline using animation clips
+                    IT_AnimotiveImporterEditorTimeline.HandleTimeLineOperations(groupDatas, fbxDatasAndHoldersTuples,
+                        sceneData);
+                    AssetDatabase.Refresh();
 
-                AssetDatabase.Refresh();
-                Debug.Log("Creation Process was successful !");
+                    EditorSceneManager.SaveScene(scene);
+
+                    AssetDatabase.Refresh();
+                    
+                    Debug.Log("Creation Process was successful !");
+                }
+                else
+                {
+                    Debug.LogError("Import failed...");
+                }
             }
 
             if (sw.IsRunning && !EditorApplication.isUpdating)

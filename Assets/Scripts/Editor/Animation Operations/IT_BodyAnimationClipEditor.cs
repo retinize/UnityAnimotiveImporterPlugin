@@ -264,22 +264,25 @@ namespace Retinize.Editor.AnimotiveImporter
                                            boneGlobalRotationThisFrameFromAnimFile *
                                            editorTPoseGlobalRotationForThisBone;
 
-                        pair.Value.rotation = boneRotation;
+                        if (pair.Value.rotation != boneRotation)
+                        {
+                            pair.Value.rotation = boneRotation;
+                            var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
+                                ? Quaternion.identity
+                                : pair.Value.parent.rotation);
 
-                        var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
-                            ? Quaternion.identity
-                            : pair.Value.parent.rotation);
+                            var finalLocalRotation = inversedParentBoneRotation * boneRotation;
+                            var localRotationX = new Keyframe(time, finalLocalRotation.x);
+                            var localRotationY = new Keyframe(time, finalLocalRotation.y);
+                            var localRotationZ = new Keyframe(time, finalLocalRotation.z);
+                            var localRotationW = new Keyframe(time, finalLocalRotation.w);
 
-                        var finalLocalRotation = inversedParentBoneRotation * boneRotation;
-                        var localRotationX = new Keyframe(time, finalLocalRotation.x);
-                        var localRotationY = new Keyframe(time, finalLocalRotation.y);
-                        var localRotationZ = new Keyframe(time, finalLocalRotation.z);
-                        var localRotationW = new Keyframe(time, finalLocalRotation.w);
 
-                        pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
-                        pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
-                        pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
-                        pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
+                            pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
+                            pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
+                            pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
+                            pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
+                        }
                     }
 
                     HumanBodyBones[] positionAllowedBones = { HumanBodyBones.LastBone };
@@ -347,7 +350,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="groupDatas"></param>
         /// <param name="fbxDatasAndHoldersTuples"></param>
         /// <returns>Tuple of list of group data and dictionary with fbx datas tuple</returns>
-        public static void HandleBodyAnimationClipOperations(
+        public static bool HandleBodyAnimationClipOperations(
             List<IT_GroupData> groupDatas,
             Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
@@ -396,7 +399,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 "OK");
 
                             clipCluster.SetInterruptionValue(true);
-                            continue;
+                            return false;
                         }
 
                         clipCluster.NumberOfCaptureInWhichItWasCaptured =
@@ -420,8 +423,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                 IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
                                 "OK");
                             clipCluster.SetInterruptionValue(true);
-
-                            continue;
+                            return false;
                         }
 
                         CreateTransformMovementsAnimationClip(clipAndDictionariesTuple,
@@ -435,6 +437,8 @@ namespace Retinize.Editor.AnimotiveImporter
                 pair.Value.FbxData.FbxGameObject.transform.SetParent(pair.Value.HolderObject.transform);
                 pair.Value.FbxData.FbxAnimator.avatar = null;
             }
+
+            return true;
         }
 
         /// <summary>
