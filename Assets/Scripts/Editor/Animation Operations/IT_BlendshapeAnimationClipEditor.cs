@@ -57,9 +57,9 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
                 var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
-                for (var j = 0; j < clip.facialAnimationFrames[i].bU.Count; j++)
+                for (var j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
                 {
-                    var blendShapeData = clip.facialAnimationFrames[i].bU[j];
+                    var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
                     var characterGeoDescriptor = clip.characterGeos[blendShapeData.g];
 
@@ -78,7 +78,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     tr = skinnedMeshRenderers[0].transform;
 
                     var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
-                    var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bI);
+                    var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.i);
                     var blendshapeValue = blendShapeData.v;
                     var keyframe = new Keyframe(time, blendshapeValue);
 
@@ -157,7 +157,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var fbxData = fbxDatasAndHoldersTuples[cluster.EntityName].FbxData;
                         var wrappedData = blendshapesDictionary[jsonFullName];
 
-                        var isEmptyFile = wrappedData.facialAnimationFrames.All(x => x.bU.Count == 0);
+                        var isEmptyFile = wrappedData.facialAnimationFrames.All(x => x.blendShapesUsed.Count == 0);
 
                         if (isEmptyFile) break;
 

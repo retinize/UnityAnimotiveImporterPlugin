@@ -264,25 +264,22 @@ namespace Retinize.Editor.AnimotiveImporter
                                            boneGlobalRotationThisFrameFromAnimFile *
                                            editorTPoseGlobalRotationForThisBone;
 
-                        if (pair.Value.rotation != boneRotation)
-                        {
-                            pair.Value.rotation = boneRotation;
-                            var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
-                                ? Quaternion.identity
-                                : pair.Value.parent.rotation);
+                        pair.Value.rotation = boneRotation;
+                        var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
+                            ? Quaternion.identity
+                            : pair.Value.parent.rotation);
 
-                            var finalLocalRotation = inversedParentBoneRotation * boneRotation;
-                            var localRotationX = new Keyframe(time, finalLocalRotation.x);
-                            var localRotationY = new Keyframe(time, finalLocalRotation.y);
-                            var localRotationZ = new Keyframe(time, finalLocalRotation.z);
-                            var localRotationW = new Keyframe(time, finalLocalRotation.w);
+                        var finalLocalRotation = inversedParentBoneRotation * boneRotation;
+                        var localRotationX = new Keyframe(time, finalLocalRotation.x);
+                        var localRotationY = new Keyframe(time, finalLocalRotation.y);
+                        var localRotationZ = new Keyframe(time, finalLocalRotation.z);
+                        var localRotationW = new Keyframe(time, finalLocalRotation.w);
 
 
-                            pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
-                            pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
-                            pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
-                            pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
-                        }
+                        pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
+                        pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
+                        pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
+                        pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
                     HumanBodyBones[] positionAllowedBones = { HumanBodyBones.LastBone };
