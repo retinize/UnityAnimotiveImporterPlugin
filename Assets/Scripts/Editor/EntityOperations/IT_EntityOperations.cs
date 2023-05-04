@@ -7,6 +7,7 @@ using OdinSerializer;
 using Retinize.Editor.AnimotiveImporter;
 using UnityEditor;
 using UnityEngine;
+using SerializationUtility = OdinSerializer.SerializationUtility;
 
 public static class IT_EntityOperations
 {

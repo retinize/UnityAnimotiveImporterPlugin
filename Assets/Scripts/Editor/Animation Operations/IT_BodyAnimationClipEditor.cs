@@ -7,6 +7,7 @@ using AnimotiveImporterDLL;
 using OdinSerializer;
 using UnityEditor;
 using UnityEngine;
+using SerializationUtility = OdinSerializer.SerializationUtility;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
