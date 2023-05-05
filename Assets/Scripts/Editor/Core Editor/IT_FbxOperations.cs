@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -56,7 +58,8 @@ namespace Retinize.Editor.AnimotiveImporter
                             "Characters"));
 
 
-                        files = files.Where(a => a.EndsWith(clipData.EntityName)).ToArray();
+                        files = files.Where(a =>
+                            a.EndsWith(clipData.EntityName, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)
