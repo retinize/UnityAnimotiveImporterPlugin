@@ -3,7 +3,12 @@ guid: 066ec11cbb3341542887e64e3c5e80a5
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: boy_mat1
+    second: {fileID: 2100000, guid: 49672d87ae70e2645b46fc40201fb5db, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
@@ -66,7 +71,7 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 0
+    normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
