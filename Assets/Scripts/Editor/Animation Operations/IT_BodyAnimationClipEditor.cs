@@ -7,6 +7,7 @@ using AnimotiveImporterDLL;
 using OdinSerializer;
 using UnityEditor;
 using UnityEngine;
+using SerializationUtility = OdinSerializer.SerializationUtility;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -33,7 +34,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones) usedHumanoidBones[i];
+                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -167,12 +168,13 @@ namespace Retinize.Editor.AnimotiveImporter
             string animationClipDataPath)
         {
             var clip = SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
-                    File.ReadAllBytes(animationClipDataPath), DataFormat.Binary);
+                File.ReadAllBytes(animationClipDataPath), DataFormat.Binary);
 
             var animator = loadedFbXofCharacter.FbxAnimator;
 
             var boneTransformDictionaries =
-                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject, clip.humanoidBonesEnumThatAreUsed);
+                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject,
+                    clip.humanoidBonesEnumThatAreUsed);
 
             // animator.avatar = null;
             AssetDatabase.Refresh();
@@ -260,7 +262,8 @@ namespace Retinize.Editor.AnimotiveImporter
                                 clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
                         }
 
-                        var invAnimotiveTPoseRotationThisBone = Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
+                        var invAnimotiveTPoseRotationThisBone =
+                            Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
 
                         var boneRotation = invAnimotiveTPoseRotationThisBone *
                                            boneGlobalRotationThisFrameFromAnimFile *
@@ -284,7 +287,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
                     }
 
-                    HumanBodyBones[] positionAllowedBones = {HumanBodyBones.Hips, HumanBodyBones.LastBone};
+                    HumanBodyBones[] positionAllowedBones = { HumanBodyBones.Hips, HumanBodyBones.LastBone };
 
                     //add the position of selected bones to animationclip
                     if (positionAllowedBones.Any(a => a == pair.Key))
@@ -414,16 +417,19 @@ namespace Retinize.Editor.AnimotiveImporter
                                 Make sure that the avatar has all the required bones and you're using correct FBX for this clip";
 
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message, "OK");
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
+                                "OK");
 
                             clipCluster.SetInterruptionValue(true);
                             continue;
                         }
 
-                        clipCluster.NumberOfCaptureInWhichItWasCaptured = clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
+                        clipCluster.NumberOfCaptureInWhichItWasCaptured =
+                            clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
 
                         fbxData.FbxGameObject.transform.localScale =
-                            clipAndDictionariesTuple.Clip.lossyScaleRoot * Vector3.one; // since the character has no parent at this point
+                            clipAndDictionariesTuple.Clip.lossyScaleRoot *
+                            Vector3.one; // since the character has no parent at this point
                         // we can safely assign lossy scale data to character's root
 
                         holderObject.transform.position = clipAndDictionariesTuple.Clip.worldPositionHolder;
@@ -436,7 +442,8 @@ namespace Retinize.Editor.AnimotiveImporter
                                 $@"Bone count with the {clipCluster.ModelName} and {clipCluster.BodyAnimationClipData.ClipPlayerData.clipName} doesn't match !
                                 Make sure that you're using the correct character and clip data";
                             EditorUtility.DisplayDialog(
-                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message, "OK");
+                                IT_AnimotiveImporterEditorConstants.WarningTitle + " Can't create animation", message,
+                                "OK");
                             clipCluster.SetInterruptionValue(true);
 
                             continue;

@@ -62,7 +62,7 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var playableDirector = timelineData.PlayableDirector;
 
-            var assetName = string.Concat(sceneInternalData.currentSetName, "_", timelineData.GroupName, "_Take",
+            var assetName = string.Concat(sceneInternalData.currentSetGuid, "_", timelineData.GroupName, "_Take",
                 timelineData.TakeData.TakeIndex);
 
             var assetPath = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,

@@ -42,7 +42,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 if (files[i].Contains(clipName)) return files[i];
             }
-            
+
 
             return "";
         }
@@ -54,9 +54,27 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>Type as IT_ClipType</returns>
         public static IT_ClipType GetClipTypeFromClipName(string clipName)
         {
-            foreach (var pair in IT_AnimotiveImporterEditorConstants.ClipNamesByType)
+            string clipNameWithoutSuffix =
+                clipName.EndsWith("_Local") ? clipName.Split("_Local")[0] : clipName.Split("_Remote")[0];
+
+            if (clipName.EndsWith("1"))
             {
-                if (clipName.Contains(pair.Value)) return pair.Key;
+                return IT_ClipType.PropertiesClip;
+            }
+
+            if (clipName.EndsWith("2"))
+            {
+                return IT_ClipType.AudioClip;
+            }
+
+            if (clipName.EndsWith("0"))
+            {
+                return IT_ClipType.TransformAnimationClip;
+            }
+
+            if (clipName.Contains("faceanim", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return IT_ClipType.FacialAnimationClip;
             }
 
             return IT_ClipType.None;
@@ -90,7 +108,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns>asset database path</returns>
         public static string ConvertSystemPathToAssetDatabasePath(string fullOsPath)
         {
-            var result = fullOsPath.Split(new[] {"Assets"}, StringSplitOptions.None)[1];
+            var result = fullOsPath.Split(new[] { "Assets" }, StringSplitOptions.None)[1];
             result = string.Concat("Assets", result);
             return result;
         }
@@ -118,10 +136,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
             IT_ClipCluster currentCluster;
 
-            foreach (var groupData in sceneData.groupDataById.Values)
+            foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
-                var readerGroupData =
-                    new IT_GroupData(groupData.serializedId, groupData.groupName);
+                var readerGroupData = new IT_GroupData(groupData.serializedId, groupData.groupName);
+
                 foreach (var entityId in groupData.entitiesIds)
                 {
                     var entityData = sceneData.entitiesDataBySerializedId[entityId];
@@ -169,7 +187,7 @@ namespace Retinize.Editor.AnimotiveImporter
                                         {
                                             var currentClipDataPath = fileName;
                                             currentClipDataPath = currentClipDataPath.Split(
-                                                new[] {IT_AnimotiveImporterEditorConstants.AudioExtension},
+                                                new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
                                                 StringSplitOptions.None)[0];
                                             clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                                 clipdata.ClipPlayerData,
@@ -185,7 +203,8 @@ namespace Retinize.Editor.AnimotiveImporter
                                 }
 
                                 currentCluster.TakeIndex = i;
-                                currentCluster.ModelName = entityData.entityInstantiationTokenData;
+                                currentCluster.ModelName =
+                                    entityData.propertiesDataByTakeIndex[0]["displayName"] as string;
                             }
 
                             if (currentCluster.AudioClipData.ClipPlayerData != null)
@@ -285,13 +304,14 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="sceneData">Binary scene data</param>
         /// <returns></returns>
-        public static async  Task< Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(IT_SceneInternalData sceneData)
+        public static async Task<Dictionary<IT_EntityType, List<IT_BaseEntity>>> GetPropertiesData(
+            IT_SceneInternalData sceneData)
         {
             var entitiesWithType =
                 new Dictionary<IT_EntityType, List<IT_BaseEntity>>();
 
 
-            foreach (var groupData in sceneData.groupDataById.Values)
+            foreach (var groupData in sceneData.groupDataBySerializedId.Values)
             {
                 foreach (var entityId in groupData.entitiesIds)
                 {
@@ -312,17 +332,17 @@ namespace Retinize.Editor.AnimotiveImporter
                                 entitiesWithType.Add(entityType, new List<IT_BaseEntity>());
 
                             var holderPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.HolderPositionString];
 
                             var holderRotation =
-                                (Quaternion) propertyDatasDict[
+                                (Quaternion)propertyDatasDict[
                                     IT_AnimotiveImporterEditorConstants.HolderRotationString];
 
                             var rootPosition =
-                                (Vector3) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
+                                (Vector3)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootPositionString];
 
                             var rootRotation =
-                                (Quaternion) propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
+                                (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
 
                             IT_BaseEntity itEntity;
@@ -331,7 +351,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 case IT_EntityType.Camera:
                                 {
-                                    var focalLength = (float) propertyDatasDict["DepthOfFieldFocalLength"];
+                                    var focalLength = (float)propertyDatasDict["DepthOfFieldFocalLength"];
                                     itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 
@@ -365,11 +385,10 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public static bool IsCharactersFolderEmpty()
         {
-
             var files = Directory.GetFiles(IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory)
                 .Where(a => a.EndsWith(IT_AnimotiveImporterEditorConstants.ModelExtension)).ToArray();
-            
-            return files.Length==0;
+
+            return files.Length == 0;
         }
     }
 }

@@ -12,9 +12,6 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string ModelExtension = ".fbx";
         public const string FacialAnimationFileExtension = ".json";
 
-        private const string _TransformClipName = "TransformClip";
-        private const string _PropertyClipName = "PropertiesClip";
-        private const string _AudioClipName = "AudioClip";
         public const string FacialAnimationClipContentString = "FacialParametersAnimation";
 
         public const string WarningTitle = " Animotive Reader Plugin : WARNING";
@@ -44,18 +41,11 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string UnityFilesFacialAnimationDirectory =
             Path.Combine(UnityFilesAnimationDirectory, "FacialAnimations");
 
-        public static readonly Dictionary<IT_ClipType, string> ClipNamesByType = new Dictionary<IT_ClipType, string>
-        {
-            {IT_ClipType.PropertiesClip, _PropertyClipName},
-            {IT_ClipType.TransformAnimationClip, _TransformClipName},
-            {IT_ClipType.AudioClip, _AudioClipName},
-            {IT_ClipType.FacialAnimationClip, FacialAnimationClipContentString}
-        };
 
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
             new Dictionary<IT_EntityType, string>
             {
-                {IT_EntityType.Camera, "Camera"}, {IT_EntityType.Spotlight, "Spot Light"}
+                { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
             };
 
 

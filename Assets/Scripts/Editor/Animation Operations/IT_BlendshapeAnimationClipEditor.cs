@@ -64,9 +64,9 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
-                    var characterGeoDescriptor = clip.characterGeos[blendShapeData.geo];
+                    var characterGeoDescriptor = clip.characterGeos[blendShapeData.g];
 
-                    var skinnedMeshRendererName = characterGeoDescriptor.name;
+                    var skinnedMeshRendererName = characterGeoDescriptor.skinnedMeshRendererName;
 
                     Transform tr;
                     var skinnedMeshRenderers = itFbxData.FbxGameObject.GetComponentsInChildren<SkinnedMeshRenderer>()
@@ -81,8 +81,8 @@ namespace Retinize.Editor.AnimotiveImporter
                     tr = skinnedMeshRenderers[0].transform;
 
                     var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
-                    var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.bsIndex);
-                    var blendshapeValue = blendShapeData.value;
+                    var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.i);
+                    var blendshapeValue = blendShapeData.v;
                     var keyframe = new Keyframe(time, blendshapeValue);
 
                     var relativePath = AnimationUtility.CalculateTransformPath(tr, itFbxData.FbxGameObject.transform);
@@ -111,7 +111,7 @@ namespace Retinize.Editor.AnimotiveImporter
             itFbxData.FbxAnimator.avatar = null;
 
             var fullOsPathToSave = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory,
-                    fileNameWithoutExtension);
+                fileNameWithoutExtension);
             fullOsPathToSave = string.Concat(fullOsPathToSave, IT_AnimotiveImporterEditorConstants.AnimationExtension);
 
             var assetDbPathToSave =
@@ -168,14 +168,16 @@ namespace Retinize.Editor.AnimotiveImporter
                         var contains = blendshapesDictionary.ContainsKey(jsonFullName);
 
                         if (!contains) continue;
-                        
+
                         var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
                         var wrappedData = blendshapesDictionary[jsonFullName];
 
-                        CreateBlendShapeAnimationClip(wrappedData, fbxData, Path.GetFileNameWithoutExtension(fullFileName));
+                        CreateBlendShapeAnimationClip(wrappedData, fbxData,
+                            Path.GetFileNameWithoutExtension(fullFileName));
 
-                        var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(IT_ClipType.FacialAnimationClip,
-                                wrappedData, jsonFullName);
+                        var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
+                            IT_ClipType.FacialAnimationClip,
+                            wrappedData, jsonFullName);
                         cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
                 }

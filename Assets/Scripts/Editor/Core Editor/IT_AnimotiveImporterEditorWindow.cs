@@ -84,7 +84,6 @@ namespace Retinize.Editor.AnimotiveImporter
             Stopwatch sw = new Stopwatch();
             if (GUILayout.Button("Import Animotive Scene"))
             {
-                
                 sw.Start();
                 await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
                 await Task.Yield();
@@ -92,14 +91,15 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
-                var scene = await IT_SceneEditor.CreateScene(sceneData.currentSetName);
-                
+                var scene = await IT_SceneEditor.CreateScene(sceneData.currentSetGuid);
+
                 AssetDatabase.Refresh();
 
-                var groupDatas = await  IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
+                var groupDatas =
+                    await IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
                 await Task.Yield();
-                  
-                var fbxDatasAndHoldersTuples =  IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
+
+                var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
 
 
                 //create animation clips
@@ -124,17 +124,18 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 AssetDatabase.Refresh();
             }
-            
+
             if (sw.IsRunning && !EditorApplication.isUpdating)
             {
                 sw.Stop();
-                Debug.Log(string.Concat(sw.Elapsed.Minutes,"  ",sw.Elapsed.Seconds));
+                Debug.Log(string.Concat(sw.Elapsed.Minutes, "  ", sw.Elapsed.Seconds));
             }
-            
+
             EditorGUI.EndDisabledGroup();
 
             #endregion
-            //if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
+
+            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
         }
 
         /// <summary>

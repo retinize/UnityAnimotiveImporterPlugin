@@ -14,6 +14,11 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="sceneName">Name of the scene to be created.</param>
         public static async Task<Scene> CreateScene(string sceneName)
         {
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                sceneName = "Untitled_Scene";
+            }
+
             if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory))
                 Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory);
 
@@ -30,7 +35,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
             var fullSourcePath = Path.Combine(fullOsPath, unitySceneName);
-            var similarName =await  IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath, fullSourcePath,
+            var similarName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(fullOsPath,
+                fullSourcePath,
                 unitySceneName,
                 IT_AnimotiveImporterEditorConstants.UnitySceneExtension);
 

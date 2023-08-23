@@ -13,9 +13,11 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <returns></returns>
         public static IT_SceneInternalData LoadSceneData(string unityFilesDirectory)
         {
-            var sceneDataFilePath = Path.Combine(unityFilesDirectory, "SceneDatas", "SceneData_UnityExport");
-            var bytes = File.ReadAllBytes(sceneDataFilePath);
+            var sceneDataFilePath = Path.Combine(unityFilesDirectory, "SceneDatas");
+            var files = Directory.GetFiles(sceneDataFilePath);
+            var bytes = File.ReadAllBytes(files[0]);
             var loadSceneData = SerializationUtility.DeserializeValue<IT_SceneInternalData>(bytes, DataFormat.Binary);
+
             return loadSceneData;
         }
     }
