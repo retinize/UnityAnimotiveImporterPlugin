@@ -16,6 +16,66 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public static class IT_BodyAnimationClipEditor
     {
+        private static readonly Dictionary<int, HumanBodyBones> _bonesSorted = new()
+        {
+            { 0, HumanBodyBones.LastBone },
+            { 2, HumanBodyBones.Hips },
+            { 1, HumanBodyBones.Spine },
+            { 3, HumanBodyBones.Chest },
+            { 4, HumanBodyBones.UpperChest },
+            { 5, HumanBodyBones.Neck },
+            { 6, HumanBodyBones.Head },
+            { 7, HumanBodyBones.Jaw },
+            { 8, HumanBodyBones.LeftEye },
+            { 9, HumanBodyBones.RightEye },
+            { 10, HumanBodyBones.LeftShoulder },
+            { 11, HumanBodyBones.LeftUpperArm },
+            { 12, HumanBodyBones.LeftLowerArm },
+            { 13, HumanBodyBones.LeftHand },
+            { 14, HumanBodyBones.LeftThumbProximal },
+            { 15, HumanBodyBones.LeftThumbIntermediate },
+            { 16, HumanBodyBones.LeftThumbDistal },
+            { 17, HumanBodyBones.LeftIndexProximal },
+            { 18, HumanBodyBones.LeftIndexIntermediate },
+            { 19, HumanBodyBones.LeftIndexDistal },
+            { 20, HumanBodyBones.LeftMiddleProximal },
+            { 21, HumanBodyBones.LeftMiddleIntermediate },
+            { 22, HumanBodyBones.LeftMiddleDistal },
+            { 23, HumanBodyBones.LeftRingProximal },
+            { 24, HumanBodyBones.LeftRingIntermediate },
+            { 25, HumanBodyBones.LeftRingDistal },
+            { 26, HumanBodyBones.LeftLittleProximal },
+            { 27, HumanBodyBones.LeftLittleIntermediate },
+            { 28, HumanBodyBones.LeftLittleDistal },
+            { 29, HumanBodyBones.RightShoulder },
+            { 30, HumanBodyBones.RightUpperArm },
+            { 31, HumanBodyBones.RightLowerArm },
+            { 32, HumanBodyBones.RightHand },
+            { 33, HumanBodyBones.RightThumbProximal },
+            { 34, HumanBodyBones.RightThumbIntermediate },
+            { 35, HumanBodyBones.RightThumbDistal },
+            { 36, HumanBodyBones.RightIndexProximal },
+            { 37, HumanBodyBones.RightIndexIntermediate },
+            { 38, HumanBodyBones.RightIndexDistal },
+            { 39, HumanBodyBones.RightMiddleProximal },
+            { 40, HumanBodyBones.RightMiddleIntermediate },
+            { 41, HumanBodyBones.RightMiddleDistal },
+            { 42, HumanBodyBones.RightRingProximal },
+            { 43, HumanBodyBones.RightRingIntermediate },
+            { 44, HumanBodyBones.RightRingDistal },
+            { 45, HumanBodyBones.RightLittleProximal },
+            { 46, HumanBodyBones.RightLittleIntermediate },
+            { 47, HumanBodyBones.RightLittleDistal },
+            { 48, HumanBodyBones.LeftUpperLeg },
+            { 49, HumanBodyBones.LeftLowerLeg },
+            { 50, HumanBodyBones.LeftFoot },
+            { 51, HumanBodyBones.LeftToes },
+            { 52, HumanBodyBones.RightUpperLeg },
+            { 53, HumanBodyBones.RightLowerLeg },
+            { 54, HumanBodyBones.RightFoot },
+            { 55, HumanBodyBones.RightToes },
+        };
+
         #region Dictionary Operations for Animation
 
         /// <summary>
@@ -28,13 +88,17 @@ namespace Retinize.Editor.AnimotiveImporter
         private static IT_DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot,
             int[] usedHumanoidBones)
         {
-            var humanBodyBonesByTransforms = new Dictionary<HumanBodyBones, Transform>(55);
+            var humanBodyBonesByTransforms = new Dictionary<HumanBodyBones, Transform>(56);
 
-            var transformsByHumanBodyBones = new Dictionary<Transform, HumanBodyBones>(55);
+            var transformsByHumanBodyBones = new Dictionary<Transform, HumanBodyBones>(56);
+
+            humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
+            transformsByHumanBodyBones.Add(characterRoot.transform, HumanBodyBones.LastBone);
 
             for (var i = 0; i < usedHumanoidBones.Length; i++)
             {
-                var humanBodyBone = (HumanBodyBones)usedHumanoidBones[i];
+                var boneIndex = usedHumanoidBones[i];
+                var humanBodyBone = _bonesSorted[boneIndex];
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
                 var tr = animator.GetBoneTransform(humanBodyBone);
@@ -43,8 +107,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 transformsByHumanBodyBones.Add(tr, humanBodyBone);
             }
 
-            humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
-            transformsByHumanBodyBones.Add(characterRoot.transform, HumanBodyBones.LastBone);
+
             return new IT_DictionaryTuple(humanBodyBonesByTransforms, transformsByHumanBodyBones);
         }
 
@@ -174,7 +237,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var boneTransformDictionaries =
                 GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject,
-                    clip.humanoidBonesEnumThatAreUsed);
+                    clip.usedHumanoidBonesIndexArrayForUnityImporterPlugin);
 
             // animator.avatar = null;
             AssetDatabase.Refresh();
@@ -256,26 +319,27 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var animotiveTPoseGlobalRotationForThisBone = Quaternion.identity;
 
-                        if (clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone.ContainsKey(pair.Key))
-                        {
-                            animotiveTPoseGlobalRotationForThisBone =
-                                clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
-                        }
+                        // if (clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone.ContainsKey(pair.Key))
+                        // {
+                        //     animotiveTPoseGlobalRotationForThisBone =
+                        //         clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
+                        // }
 
                         var invAnimotiveTPoseRotationThisBone =
                             Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
 
-                        var boneRotation = invAnimotiveTPoseRotationThisBone *
-                                           boneGlobalRotationThisFrameFromAnimFile *
-                                           editorTPoseGlobalRotationForThisBone;
+                        var boneRotation = /*invAnimotiveTPoseRotationThisBone * */
+                            boneGlobalRotationThisFrameFromAnimFile *
+                            editorTPoseGlobalRotationForThisBone;
 
-                        pair.Value.rotation = boneRotation;
+                        var localRotation = localTransformValuesFromAnimFile[pair.Key][frame].Rotation;
+                        pair.Value.localRotation = localRotation;
 
                         var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
                             ? Quaternion.identity
                             : pair.Value.parent.rotation);
 
-                        var finalLocalRotation = inversedParentBoneRotation * boneRotation;
+                        var finalLocalRotation = localRotation;
                         var localRotationX = new Keyframe(time, finalLocalRotation.x);
                         var localRotationY = new Keyframe(time, finalLocalRotation.y);
                         var localRotationZ = new Keyframe(time, finalLocalRotation.z);
@@ -408,7 +472,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var doesAvatarHasAllRequiredBones =
                             clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform.Count !=
-                            clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length;
+                            clipAndDictionariesTuple.Clip.usedHumanoidBonesIndexArrayForUnityImporterPlugin.Length;
 
                         if (doesAvatarHasAllRequiredBones)
                         {
@@ -436,7 +500,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         holderObject.transform.rotation = clipAndDictionariesTuple.Clip.worldRotationHolder;
 
                         if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple,
-                                clipAndDictionariesTuple.Clip.humanoidBonesEnumThatAreUsed.Length))
+                                clipAndDictionariesTuple.Clip.numberOfHumanoidBonesUsed))
                         {
                             var message =
                                 $@"Bone count with the {clipCluster.ModelName} and {clipCluster.BodyAnimationClipData.ClipPlayerData.clipName} doesn't match !
