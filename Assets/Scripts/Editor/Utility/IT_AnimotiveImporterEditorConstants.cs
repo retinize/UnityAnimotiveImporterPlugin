@@ -6,7 +6,7 @@ namespace Retinize.Editor.AnimotiveImporter
     public static class IT_AnimotiveImporterEditorConstants
     {
         public const string UnitySceneExtension = ".unity";
-        public const string AudioExtension = ".wav";
+        public static readonly string[] AudioExtensions = { ".wav", ".mp3" };
         public const string AnimationExtension = ".anim";
         public const string PlayableExtension = ".playable";
         public const string ModelExtension = ".fbx";

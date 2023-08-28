@@ -162,7 +162,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 var files = Directory.GetFiles(charactersPath)
                     .Where(a => !a.EndsWith(".meta") &&
-                                a.ToLower().EndsWith(IT_AnimotiveImporterEditorConstants.AudioExtension)).ToList();
+                                IT_AnimotiveImporterEditorConstants.AudioExtensions.Any(x => a.ToLower().EndsWith(x)))
+                    .ToList();
 
                 if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory))
                     Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory);
@@ -174,9 +175,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     if (File.Exists(targetFileName))
                     {
+                        var extension = Path.GetExtension(files[i]);
                         targetFileName = await IT_AnimotiveImporterEditorUtilities.GetLatestSimilarFileName(
-                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory, files[i], fileName,
-                            IT_AnimotiveImporterEditorConstants.AudioExtension);
+                            IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                            files[i],
+                            fileName,
+                            extension);
                     }
 
                     File.Copy(files[i], targetFileName, false);

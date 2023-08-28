@@ -177,7 +177,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
                             IT_ClipType.FacialAnimationClip,
-                            wrappedData, jsonFullName);
+                            wrappedData, jsonFullName,
+                            IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension);
                         cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
                 }

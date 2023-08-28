@@ -131,7 +131,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     playableDirector,
                     objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
                 // CreateAnimationTrack(); //facial animation
-                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClipData.ClipDataPath, playableDirector,
+                CreateAudioTrack(asset, groupTrack, clipCluster.AudioClipData, playableDirector,
                     objToBind);
             }
 
@@ -189,10 +189,11 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <param name="clipDataPath">Path to audio clip data(binary)</param>
         /// <param name="playableDirector">Playable director to bind this track to. </param>
         /// <param name="objToBind">Game object in the scene to bind animation clip to</param>
-        private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack, string clipDataPath,
+        private static void CreateAudioTrack(TimelineAsset asset, GroupTrack groupTrack,
+            IT_ClipData<IT_ClipPlayerData> audioClipData,
             PlayableDirector playableDirector, GameObject objToBind)
         {
-            var clipFullName = string.Concat(clipDataPath, IT_AnimotiveImporterEditorConstants.AudioExtension);
+            var clipFullName = string.Concat(audioClipData.ClipDataPath, audioClipData.FileExtension);
 
             var path = Path.Combine(IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
                 Path.GetFileName(clipFullName));

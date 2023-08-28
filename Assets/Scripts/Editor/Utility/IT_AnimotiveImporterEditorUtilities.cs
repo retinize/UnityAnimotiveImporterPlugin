@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
+using OdinSerializer;
 using UnityEditor;
 using UnityEngine;
+using SerializationUtility = OdinSerializer.SerializationUtility;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -146,6 +148,7 @@ namespace Retinize.Editor.AnimotiveImporter
                     for (var i = 0; i < entityData.clipsByTrackByTakeIndex.Count; i++)
                     {
                         var take = entityData.clipsByTrackByTakeIndex[i];
+
                         if (!readerGroupData.TakeDatas.ContainsKey(i))
                             readerGroupData.TakeDatas.Add(i, new IT_TakeData(i));
 
@@ -156,16 +159,25 @@ namespace Retinize.Editor.AnimotiveImporter
                             var track = take[j];
                             for (var k = 0; k < track.Count; k++)
                             {
-                                var clip = track[k];
+                                var clipPlayerData = track[k];
+
 
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
-                                        clip.clipName);
+                                        clipPlayerData.clipName);
+
+                                if (string.IsNullOrEmpty(animationClipDataPath))
+                                {
+                                    continue;
+                                }
+
 
                                 var type =
-                                    GetClipTypeFromClipName(clip.clipName);
+                                    GetClipTypeFromClipName(clipPlayerData.clipName);
 
-                                var clipdata = new IT_ClipData<IT_ClipPlayerData>(type, clip, animationClipDataPath);
+                                var clipdata =
+                                    new IT_ClipData<IT_ClipPlayerData>(type, clipPlayerData, animationClipDataPath,
+                                        null);
 
                                 switch (type)
                                 {
@@ -179,19 +191,30 @@ namespace Retinize.Editor.AnimotiveImporter
                                         break;
                                     case IT_ClipType.AudioClip:
 
-                                        var fileName = await FindLatestFileName(clip.clipName,
+
+                                        var fileName = await FindLatestFileName(clipPlayerData.clipName,
                                             IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
-                                            IT_AnimotiveImporterEditorConstants.AudioExtension);
+                                            IT_AnimotiveImporterEditorConstants.AudioExtensions[0]);
+
+                                        if (string.IsNullOrEmpty(fileName))
+                                        {
+                                            fileName = await FindLatestFileName(clipPlayerData.clipName,
+                                                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                                                IT_AnimotiveImporterEditorConstants.AudioExtensions[1]);
+                                        }
+
 
                                         if (!string.IsNullOrEmpty(fileName))
                                         {
+                                            string fileExtension = Path.GetExtension(fileName);
+
                                             var currentClipDataPath = fileName;
                                             currentClipDataPath = currentClipDataPath.Split(
-                                                new[] { IT_AnimotiveImporterEditorConstants.AudioExtension },
+                                                new[] { fileExtension },
                                                 StringSplitOptions.None)[0];
                                             clipdata = new IT_ClipData<IT_ClipPlayerData>(type,
                                                 clipdata.ClipPlayerData,
-                                                currentClipDataPath);
+                                                currentClipDataPath, fileExtension);
                                         }
 
                                         currentCluster.SetAudioClipData(clipdata);

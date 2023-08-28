@@ -10,12 +10,14 @@
 
         public string ClipDataPath { get; }
 
+        public string FileExtension { get; }
 
-        public IT_ClipData(IT_ClipType type, T clipPlayerData, string clipDataPath)
+        public IT_ClipData(IT_ClipType type, T clipPlayerData, string clipDataPath, string fileExtension)
         {
             Type = type;
             ClipPlayerData = clipPlayerData;
             ClipDataPath = clipDataPath;
+            FileExtension = fileExtension;
         }
     }
 }
