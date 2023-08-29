@@ -59,22 +59,22 @@ namespace Retinize.Editor.AnimotiveImporter
             string clipNameWithoutSuffix =
                 clipName.EndsWith("_Local") ? clipName.Split("_Local")[0] : clipName.Split("_Remote")[0];
 
-            if (clipName.EndsWith("1"))
-            {
-                return IT_ClipType.PropertiesClip;
-            }
-
-            if (clipName.EndsWith("2"))
-            {
-                return IT_ClipType.AudioClip;
-            }
-
-            if (clipName.EndsWith("0"))
+            if (clipNameWithoutSuffix.EndsWith("0"))
             {
                 return IT_ClipType.TransformAnimationClip;
             }
 
-            if (clipName.Contains("faceanim", StringComparison.InvariantCultureIgnoreCase))
+            if (clipNameWithoutSuffix.EndsWith("1"))
+            {
+                return IT_ClipType.PropertiesClip;
+            }
+
+            if (clipNameWithoutSuffix.EndsWith("2"))
+            {
+                return IT_ClipType.AudioClip;
+            }
+
+            if (clipNameWithoutSuffix.EndsWith("3"))
             {
                 return IT_ClipType.FacialAnimationClip;
             }
@@ -161,10 +161,25 @@ namespace Retinize.Editor.AnimotiveImporter
                             {
                                 var clipPlayerData = track[k];
 
+                                string facialAnimationFileName = clipPlayerData.clipName;
+                                facialAnimationFileName =
+                                    facialAnimationFileName.Remove(facialAnimationFileName.Length - 1, 1) + 3;
 
                                 var animationClipDataPath =
                                     ReturnClipDataPathFromPath(clipsPath,
                                         clipPlayerData.clipName);
+
+                                var facialAnimationFilePath =
+                                    ReturnClipDataPathFromPath(clipsPath, facialAnimationFileName);
+
+                                if (File.Exists(facialAnimationFilePath))
+                                {
+                                    var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
+                                        IT_ClipType.FacialAnimationClip, null, facialAnimationFilePath,
+                                        ".json");
+                                    currentCluster.SetFacialAnimationData(facialAnimationClipData);
+                                }
+
 
                                 if (string.IsNullOrEmpty(animationClipDataPath))
                                 {
@@ -225,7 +240,6 @@ namespace Retinize.Editor.AnimotiveImporter
                                         throw new ArgumentOutOfRangeException();
                                 }
 
-                                currentCluster.TakeIndex = i;
                                 currentCluster.ModelName =
                                     entityData.propertiesDataByTakeIndex[0]["displayName"] as string;
                             }

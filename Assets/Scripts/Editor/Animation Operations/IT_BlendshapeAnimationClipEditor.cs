@@ -154,30 +154,22 @@ namespace Retinize.Editor.AnimotiveImporter
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
                         var cluster = takeData.Clusters[k];
-                        var groupName = groupData.OriginalGroupName;
-                        var takeIndex = takeData.TakeIndex;
-                        var clipNumber = cluster.NumberOfCaptureInWhichItWasCaptured;
+                        var jsonFullPath = cluster.FacialAnimationClipData.ClipDataPath;
+                        var fullFileName = Path.GetFileName(jsonFullPath);
 
-                        var fullFileName = string.Concat(cluster.ModelName, "_",
-                            IT_AnimotiveImporterEditorConstants.FacialAnimationClipContentString, "_Clip_", clipNumber,
-                            "_", groupName, "_Take_", takeIndex,
-                            IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension);
-
-                        var jsonFullName = Path.Combine(clipsFolderPath, fullFileName);
-
-                        var contains = blendshapesDictionary.ContainsKey(jsonFullName);
+                        var contains = blendshapesDictionary.ContainsKey(jsonFullPath);
 
                         if (!contains) continue;
 
                         var fbxData = fbxDatasAndHoldersTuples[cluster.ModelName].FbxData;
-                        var wrappedData = blendshapesDictionary[jsonFullName];
+                        var wrappedData = blendshapesDictionary[jsonFullPath];
 
                         CreateBlendShapeAnimationClip(wrappedData, fbxData,
                             Path.GetFileNameWithoutExtension(fullFileName));
 
                         var facialAnimationClipData = new IT_ClipData<FacialAnimationExportWrapper>(
                             IT_ClipType.FacialAnimationClip,
-                            wrappedData, jsonFullName,
+                            wrappedData, jsonFullPath,
                             IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension);
                         cluster.SetFacialAnimationData(facialAnimationClipData);
                     }
@@ -192,7 +184,9 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var jsonFiles = Directory.GetFiles(clipsFolder).Where(a =>
                 a.EndsWith(IT_AnimotiveImporterEditorConstants.FacialAnimationFileExtension) &&
-                IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(a) ==
+                IT_AnimotiveImporterEditorUtilities.GetClipTypeFromClipName(
+                    Path.GetFileNameWithoutExtension(a)
+                ) ==
                 IT_ClipType.FacialAnimationClip).ToList();
 
             var blendShapesFullPathAndWrappers = new Dictionary<string, FacialAnimationExportWrapper>();

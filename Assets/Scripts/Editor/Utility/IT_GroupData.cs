@@ -52,8 +52,8 @@ namespace Retinize.Editor.AnimotiveImporter
         public bool IsAnimationProcessInterrupted { get; private set; }
         public bool IsInit { get; }
         public string ModelName;
+
         public int NumberOfCaptureInWhichItWasCaptured = -1;
-        public int TakeIndex;
 
         public IT_ClipCluster()
         {
