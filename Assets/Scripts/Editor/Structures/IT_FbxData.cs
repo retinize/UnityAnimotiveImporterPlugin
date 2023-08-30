@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
@@ -8,10 +9,14 @@ namespace Retinize.Editor.AnimotiveImporter
         public GameObject FbxGameObject { get; }
         public Animator FbxAnimator { get; }
 
-        public IT_FbxData(GameObject fbxGameObject, Animator fbxAnimator)
+        public Dictionary<int, string> humanBodyBoneEnumAsIntByHumanoidBoneName { get; }
+
+        public IT_FbxData(GameObject fbxGameObject, Animator fbxAnimator,
+            Dictionary<int, string> humanBodyBoneEnumAsIntByHumanoidBoneName)
         {
             FbxGameObject = fbxGameObject;
             FbxAnimator = fbxAnimator;
+            this.humanBodyBoneEnumAsIntByHumanoidBoneName = humanBodyBoneEnumAsIntByHumanoidBoneName;
         }
     }
 }

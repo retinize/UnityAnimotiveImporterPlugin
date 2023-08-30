@@ -81,13 +81,15 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Creates and returns two dictionary where 'HumanBodyBones' and 'Transform' types are key/value and vice versa.
         /// </summary>
-        /// <param name="animator">Animator of the character</param>
-        /// <param name="characterRoot">Root GameObject of the character</param>
-        /// <param name="usedHumanoidBones">Array that has the bone indexes used in the clip</param>
+        /// <param name="usedHumanoidBonesSorted">Array that has the bone indexes used in the clip</param>
         /// <returns></returns>
-        private static IT_DictionaryTuple GetBoneTransformDictionaries(Animator animator, GameObject characterRoot,
-            int[] usedHumanoidBones)
+        private static IT_DictionaryTuple GetBoneTransformDictionaries(IT_FbxData fbxData,
+            int[] usedHumanoidBonesSorted)
         {
+            var characterRoot = fbxData.FbxGameObject;
+
+            var humanBodyBoneEnumAsIntByHumanoidBoneName = fbxData.humanBodyBoneEnumAsIntByHumanoidBoneName;
+
             var humanBodyBonesByTransforms = new Dictionary<HumanBodyBones, Transform>(56);
 
             var transformsByHumanBodyBones = new Dictionary<Transform, HumanBodyBones>(56);
@@ -95,18 +97,19 @@ namespace Retinize.Editor.AnimotiveImporter
             humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
             transformsByHumanBodyBones.Add(characterRoot.transform, HumanBodyBones.LastBone);
 
-            for (var i = 0; i < usedHumanoidBones.Length; i++)
+            for (int i = 0; i < usedHumanoidBonesSorted.Length; i++)
             {
-                var boneIndex = usedHumanoidBones[i];
-                var humanBodyBone = _bonesSorted[boneIndex];
+                var humanBodyBoneIndex = usedHumanoidBonesSorted[i];
+                var humanBodyBone = (HumanBodyBones)humanBodyBoneIndex;
                 if (humanBodyBone == HumanBodyBones.LastBone) continue;
 
-                var tr = animator.GetBoneTransform(humanBodyBone);
-                if (tr == null) continue;
-                humanBodyBonesByTransforms.Add(humanBodyBone, tr);
-                transformsByHumanBodyBones.Add(tr, humanBodyBone);
-            }
+                var humanBodyBoneByTransformName = humanBodyBoneEnumAsIntByHumanoidBoneName[humanBodyBoneIndex];
+                var boneTransform = characterRoot.transform.FindChildRecursively(humanBodyBoneByTransformName);
+                if (boneTransform == null) continue;
 
+                humanBodyBonesByTransforms.Add(humanBodyBone, boneTransform);
+                transformsByHumanBodyBones.Add(boneTransform, humanBodyBone);
+            }
 
             return new IT_DictionaryTuple(humanBodyBonesByTransforms, transformsByHumanBodyBones);
         }
@@ -233,10 +236,8 @@ namespace Retinize.Editor.AnimotiveImporter
             var clip = SerializationUtility.DeserializeValue<IT_CharacterTransformAnimationClip>(
                 File.ReadAllBytes(animationClipDataPath), DataFormat.Binary);
 
-            var animator = loadedFbXofCharacter.FbxAnimator;
-
             var boneTransformDictionaries =
-                GetBoneTransformDictionaries(animator, loadedFbXofCharacter.FbxGameObject,
+                GetBoneTransformDictionaries(loadedFbXofCharacter,
                     clip.usedHumanoidBonesIndexArrayForUnityImporterPlugin);
 
             // animator.avatar = null;

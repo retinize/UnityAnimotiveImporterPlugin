@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using OdinSerializer;
 using UnityEditor;
 using UnityEngine;
+using SerializationUtility = OdinSerializer.SerializationUtility;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
@@ -13,7 +15,7 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Loads FBX from it's designated path and instantiates it to the current scene in the editor
         /// </summary>
         /// <returns>Tuple that contains instantiated character's root gameObject and it's Animator</returns>
-        public static IT_FbxData LoadFbx(string fbxAssetDatabasePath)
+        public static IT_FbxData LoadFbx(string fbxAssetDatabasePath, string humanoidMappingFullName)
         {
             var characterRoot = AssetDatabase.LoadAssetAtPath(fbxAssetDatabasePath,
                 typeof(GameObject)) as GameObject;
@@ -22,7 +24,11 @@ namespace Retinize.Editor.AnimotiveImporter
             characterRoot.AddComponent<AudioSource>();
             var animator = characterRoot.GetComponent<Animator>();
 
-            return new IT_FbxData(characterRoot, animator);
+            Dictionary<int, string> dict = SerializationUtility.DeserializeValue<Dictionary<int, string>>(
+                File.ReadAllBytes(humanoidMappingFullName),
+                DataFormat.JSON);
+
+            return new IT_FbxData(characterRoot, animator, dict);
         }
 
         /// <summary>
@@ -51,6 +57,7 @@ namespace Retinize.Editor.AnimotiveImporter
                             IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "EntityAssets",
                             "Characters"));
 
+
                         files = files.Where(a => a.EndsWith(clipData.ModelName)).ToArray();
                         var modelDirectory = files[0];
                         var fbxes = Directory.GetFiles(modelDirectory)
@@ -67,7 +74,14 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathToFbx =
                             IT_AnimotiveImporterEditorUtilities.ConvertSystemPathToAssetDatabasePath(pathToFbx);
 
-                        var fbxData = LoadFbx(pathToFbx);
+
+                        var humanoidMappingFileName = clipData.ModelName + "_HumanoidMapping.json";
+
+                        var fullPathToHumanoidMappingJson = Path.Combine(
+                            IT_AnimotiveImporterEditorWindow.UserChosenDirectoryToImportUnityExports, "Clips",
+                            humanoidMappingFileName);
+
+                        var fbxData = LoadFbx(pathToFbx, fullPathToHumanoidMappingJson);
                         var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
                         var pluginTPose = IT_PoseTestManager.GetPoseFromAnimator(fbxData.FbxAnimator);
 
