@@ -147,9 +147,10 @@ namespace Retinize.Editor.AnimotiveImporter
             for (var i = 0; i < groupDatas.Count; i++)
             {
                 var groupData = groupDatas[i];
-                for (var j = 0; j < groupData.TakeDatas.Count; j++)
+
+                foreach (var takeDataPair in groupData.TakeDatas)
                 {
-                    var takeData = groupData.TakeDatas[j];
+                    var takeData = takeDataPair.Value;
 
                     for (var k = 0; k < takeData.Clusters.Count; k++)
                     {
