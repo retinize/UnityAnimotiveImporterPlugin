@@ -356,6 +356,12 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     foreach (var propertyDatasDict in entityData.propertiesDataByTakeIndex)
                     {
+                        //it's not null always. Sometimes the data comes null. Keep this condition here.
+                        if (propertyDatasDict == null)
+                        {
+                            continue;
+                        }
+
                         var displayName = propertyDatasDict["displayName"].ToString();
 
                         var list = IT_AnimotiveImporterEditorConstants.EntityTypesByKeyword.Where(pair =>
