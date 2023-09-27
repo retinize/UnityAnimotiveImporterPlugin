@@ -91,7 +91,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
 
                 var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
-                var scene = await IT_SceneEditor.CreateScene(sceneData.currentSetGuid);
+                var scene = await IT_SceneEditor.CreateScene(sceneData.latestSceneName);
 
                 AssetDatabase.Refresh();
 
