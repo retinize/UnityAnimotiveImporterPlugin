@@ -1,16 +1,19 @@
+using System.Collections.Generic;
 using AnimotiveImporterDLL;
+using UnityEngine;
 
 namespace Retinize.Editor.AnimotiveImporter
 {
     public struct IT_ClipByDictionaryTuple
     {
         public IT_CharacterTransformAnimationClip Clip { get; }
-        public IT_DictionaryTuple DictTuple { get; }
+        public Dictionary<HumanBodyBones, Transform> TransformsByHumanBodyBones { get; }
 
-        public IT_ClipByDictionaryTuple(IT_CharacterTransformAnimationClip clip, IT_DictionaryTuple dictTuple)
+        public IT_ClipByDictionaryTuple(IT_CharacterTransformAnimationClip clip,
+            Dictionary<HumanBodyBones, Transform> transformsByHumanBodyBones)
         {
             Clip = clip;
-            DictTuple = dictTuple;
+            TransformsByHumanBodyBones = transformsByHumanBodyBones;
         }
     }
 }

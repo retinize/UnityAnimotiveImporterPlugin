@@ -83,19 +83,14 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="usedHumanoidBonesSorted">Array that has the bone indexes used in the clip</param>
         /// <returns></returns>
-        private static IT_DictionaryTuple GetBoneTransformDictionaries(IT_FbxData fbxData,
+        private static Dictionary<HumanBodyBones, Transform> GetBoneTransformDictionaries(IT_FbxData fbxData,
             int[] usedHumanoidBonesSorted)
         {
             var characterRoot = fbxData.FbxGameObject;
-
             var humanBodyBoneEnumAsIntByHumanoidBoneName = fbxData.humanBodyBoneEnumAsIntByHumanoidBoneName;
-
             var humanBodyBonesByTransforms = new Dictionary<HumanBodyBones, Transform>(56);
 
-            var transformsByHumanBodyBones = new Dictionary<Transform, HumanBodyBones>(56);
-
             humanBodyBonesByTransforms.Add(HumanBodyBones.LastBone, characterRoot.transform);
-            transformsByHumanBodyBones.Add(characterRoot.transform, HumanBodyBones.LastBone);
 
             for (int i = 0; i < usedHumanoidBonesSorted.Length; i++)
             {
@@ -108,69 +103,11 @@ namespace Retinize.Editor.AnimotiveImporter
                 if (boneTransform == null) continue;
 
                 humanBodyBonesByTransforms.Add(humanBodyBone, boneTransform);
-                transformsByHumanBodyBones.Add(boneTransform, humanBodyBone);
             }
 
-            return new IT_DictionaryTuple(humanBodyBonesByTransforms, transformsByHumanBodyBones);
+            return humanBodyBonesByTransforms;
         }
 
-        /// <summary>
-        ///     Calculates the global rotations of the animation data read from binary file.
-        /// </summary>
-        /// <param name="transformByHumanoidBone">Dictionary that contains 'Transform' by 'HumanBodyBones'</param>
-        /// <param name="humanoidBoneByTransform">Dictionary that contains 'HumanBodyBones' by 'Transform'</param>
-        /// <param name="localQuaternionsByFrame">
-        ///     Dictionary that contains all the localRotation values read from binary file for
-        ///     every frame by 'HumanBodyBones'
-        /// </param>
-        /// <param name="clip">Animation data that read from binary file and casted into 'IT_CharacterTransformAnimationClip' type.</param>
-        /// <returns></returns>
-        private static Dictionary<HumanBodyBones, List<Quaternion>> GetGlobalRotationsFromAnimFile(
-            Dictionary<HumanBodyBones, Transform> transformByHumanoidBone,
-            Dictionary<Transform, HumanBodyBones> humanoidBoneByTransform,
-            Dictionary<HumanBodyBones, List<IT_TransformValues>>
-                localQuaternionsByFrame,
-            IT_CharacterTransformAnimationClip clip)
-        {
-            var globalQuaternionsByFrame =
-                new Dictionary<HumanBodyBones, List<Quaternion>>(55);
-
-            var startFrame = 0;
-            var lastFrame = clip.lastFrameInTimelineWhenItWasCaptured - clip.startFrameInTimelineWhenItWasCaptured;
-
-            for (var frame = startFrame; frame <= lastFrame; frame++)
-            {
-                foreach (HumanBodyBones humanBone in Enum.GetValues(typeof(HumanBodyBones)))
-                {
-                    if (!transformByHumanoidBone.ContainsKey(humanBone)) continue;
-
-                    var boneTransform = transformByHumanoidBone[humanBone];
-                    var globalRotationOfThisBone = Quaternion.identity;
-
-                    while (boneTransform != null)
-                    {
-                        if (humanoidBoneByTransform.ContainsKey(boneTransform))
-                        {
-                            var bone = humanoidBoneByTransform[boneTransform];
-
-                            var localRotationInAnimFile = localQuaternionsByFrame[bone][frame].Rotation;
-                            globalRotationOfThisBone = localRotationInAnimFile * globalRotationOfThisBone;
-                        }
-
-                        boneTransform = boneTransform.parent;
-                    }
-
-                    if (!globalQuaternionsByFrame.ContainsKey(humanBone))
-                    {
-                        globalQuaternionsByFrame.Add(humanBone, new List<Quaternion>(lastFrame + 1));
-                    }
-
-                    globalQuaternionsByFrame[humanBone].Add(globalRotationOfThisBone);
-                }
-            }
-
-            return globalQuaternionsByFrame;
-        }
 
         /// <summary>
         ///     Stores all the localRotation data from the binary animation data into a dictionary.
@@ -259,10 +196,8 @@ namespace Retinize.Editor.AnimotiveImporter
         {
             var clip = clipAndDictionariesTuple.Clip;
             var transformsByHumanBodyBones =
-                clipAndDictionariesTuple.DictTuple.TransformsByHumanBodyBones;
+                clipAndDictionariesTuple.TransformsByHumanBodyBones;
 
-            var humanBodyBonesBytransforms =
-                clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform;
 
             var animationClip = new AnimationClip();
 
@@ -271,12 +206,6 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var localTransformValuesFromAnimFile =
                 GetLocalTransformValuesFromAnimFile(clip, transformsByHumanBodyBones);
-
-            var globalQuaternionsByFrame =
-                GetGlobalRotationsFromAnimFile(transformsByHumanBodyBones, humanBodyBonesBytransforms,
-                    localTransformValuesFromAnimFile, clip);
-
-            var editorTPoseTransformInfoList = editorTPose;
 
             var startFrame = 0;
             var lastFrame = clip.lastFrameInTimelineWhenItWasCaptured - clip.startFrameInTimelineWhenItWasCaptured;
@@ -294,7 +223,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
                     if (!pathAndKeyframesDictionary.ContainsKey(relativePath))
                     {
-                        //initialize a new list of keyframes for the
+                        //initialize a new list of keyframes for positions and rotations
                         pathAndKeyframesDictionary.Add(relativePath, new List<List<Keyframe>>());
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(lastFrame)); //0
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(lastFrame)); //1
@@ -305,23 +234,19 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath].Add(new List<Keyframe>(lastFrame)); //6
                     }
 
-                    // do not add the rotations of the root transform to animation clip
-                    if (pair.Key != HumanBodyBones.LastBone)
-                    {
-                        var localRotation = localTransformValuesFromAnimFile[pair.Key][frame].Rotation;
-                        pair.Value.localRotation = localRotation;
+                    var localRotation = localTransformValuesFromAnimFile[pair.Key][frame].Rotation;
+                    pair.Value.localRotation = localRotation;
 
-                        var finalLocalRotation = localRotation;
-                        var localRotationX = new Keyframe(time, finalLocalRotation.x);
-                        var localRotationY = new Keyframe(time, finalLocalRotation.y);
-                        var localRotationZ = new Keyframe(time, finalLocalRotation.z);
-                        var localRotationW = new Keyframe(time, finalLocalRotation.w);
+                    var finalLocalRotation = localRotation;
+                    var localRotationX = new Keyframe(time, finalLocalRotation.x);
+                    var localRotationY = new Keyframe(time, finalLocalRotation.y);
+                    var localRotationZ = new Keyframe(time, finalLocalRotation.z);
+                    var localRotationW = new Keyframe(time, finalLocalRotation.w);
 
-                        pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
-                        pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
-                        pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
-                        pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
-                    }
+                    pathAndKeyframesDictionary[relativePath][3].Add(localRotationX);
+                    pathAndKeyframesDictionary[relativePath][4].Add(localRotationY);
+                    pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
+                    pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
 
                     HumanBodyBones[] positionAllowedBones = { HumanBodyBones.Hips, HumanBodyBones.LastBone };
 
@@ -443,7 +368,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         var clipAndDictionariesTuple = await PrepareAndGetAnimationData(fbxData, animationClipDataPath);
 
                         var doesAvatarHasAllRequiredBones =
-                            clipAndDictionariesTuple.DictTuple.HumanBodyBonesByTransform.Count !=
+                            clipAndDictionariesTuple.TransformsByHumanBodyBones.Count !=
                             clipAndDictionariesTuple.Clip.usedHumanoidBonesIndexArrayForUnityImporterPlugin.Length;
 
                         if (doesAvatarHasAllRequiredBones)
