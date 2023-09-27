@@ -308,37 +308,8 @@ namespace Retinize.Editor.AnimotiveImporter
                     // do not add the rotations of the root transform to animation clip
                     if (pair.Key != HumanBodyBones.LastBone)
                     {
-                        var boneGlobalRotationThisFrameFromAnimFile = globalQuaternionsByFrame[pair.Key][frame];
-
-                        var editorTPoseList = editorTPoseTransformInfoList.transformsByStrings
-                            .Where(a => a.Name == pair.Key).ToList();
-
-                        var editorTPoseGlobalRotationForThisBone = Quaternion.identity;
-
-                        if (editorTPoseList.Count != 0)
-                            editorTPoseGlobalRotationForThisBone = editorTPoseList[0].GlobalRotation;
-
-                        var animotiveTPoseGlobalRotationForThisBone = Quaternion.identity;
-
-                        // if (clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone.ContainsKey(pair.Key))
-                        // {
-                        //     animotiveTPoseGlobalRotationForThisBone =
-                        //         clip.sourceCharacterTPoseRotationInRootLocalSpaceByHumanoidBone[pair.Key];
-                        // }
-
-                        var invAnimotiveTPoseRotationThisBone =
-                            Quaternion.Inverse(animotiveTPoseGlobalRotationForThisBone);
-
-                        var boneRotation = /*invAnimotiveTPoseRotationThisBone * */
-                            boneGlobalRotationThisFrameFromAnimFile *
-                            editorTPoseGlobalRotationForThisBone;
-
                         var localRotation = localTransformValuesFromAnimFile[pair.Key][frame].Rotation;
                         pair.Value.localRotation = localRotation;
-
-                        var inversedParentBoneRotation = Quaternion.Inverse(pair.Value.parent == null
-                            ? Quaternion.identity
-                            : pair.Value.parent.rotation);
 
                         var finalLocalRotation = localRotation;
                         var localRotationX = new Keyframe(time, finalLocalRotation.x);
