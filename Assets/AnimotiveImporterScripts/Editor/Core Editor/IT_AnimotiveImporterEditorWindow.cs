@@ -72,71 +72,69 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
-            if (!_isAnimotiveFolderImported)
+            if (_isAnimotiveFolderImported)
             {
-                return;
+                bool isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
+
+                if (isCharactersFolderEmpty)
+                {
+                    Debug.LogError("No character found under Characters folder. Can't start the process...");
+                }
+
+                _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
+                EditorGUI.BeginDisabledGroup(!_disableImport);
+                Stopwatch sw = new Stopwatch();
+                if (GUILayout.Button("Import Animotive Scene"))
+                {
+                    sw.Start();
+                    await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
+                    await Task.Yield();
+
+                    var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
+
+                    var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
+                    var scene = await IT_SceneEditor.CreateScene(sceneData.latestSceneName);
+
+                    AssetDatabase.Refresh();
+
+                    var groupDatas =
+                        await IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
+                    await Task.Yield();
+
+                    var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
+
+
+                    //create animation clips
+                    await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
+                        groupDatas,
+                        fbxDatasAndHoldersTuples);
+                    AssetDatabase.Refresh();
+                    await Task.Yield();
+
+
+                    await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
+                        fbxDatasAndHoldersTuples, clipsFolderPath);
+                    await Task.Yield();
+
+                    IT_EntityOperations.HandleEntityOperations(sceneData);
+
+
+                    //create timeline using animation clips
+                    IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
+
+                    EditorSceneManager.SaveScene(scene);
+
+                    AssetDatabase.Refresh();
+                }
+
+                if (sw.IsRunning && !EditorApplication.isUpdating)
+                {
+                    sw.Stop();
+                    Debug.Log(string.Concat(sw.Elapsed.Minutes, "  ", sw.Elapsed.Seconds));
+                }
+
+                EditorGUI.EndDisabledGroup();
             }
-
-            bool isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
-
-            if (isCharactersFolderEmpty)
-            {
-                Debug.LogError("No character found under Characters folder. Can't start the process...");
-            }
-
-            _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
-            EditorGUI.BeginDisabledGroup(!_disableImport);
-            Stopwatch sw = new Stopwatch();
-            if (GUILayout.Button("Import Animotive Scene"))
-            {
-                sw.Start();
-                await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
-                await Task.Yield();
-
-                var clipsFolderPath = Path.Combine(UserChosenDirectoryToImportUnityExports, "Clips");
-
-                var sceneData = IT_SceneDataOperations.LoadSceneData(UserChosenDirectoryToImportUnityExports);
-                var scene = await IT_SceneEditor.CreateScene(sceneData.latestSceneName);
-
-                AssetDatabase.Refresh();
-
-                var groupDatas =
-                    await IT_AnimotiveImporterEditorUtilities.GetGroupDataListByType(sceneData, clipsFolderPath);
-                await Task.Yield();
-
-                var fbxDatasAndHoldersTuples = IT_FbxOperations.GetFbxDataAndHolders(groupDatas);
-
-
-                //create animation clips
-                await IT_BodyAnimationClipEditor.HandleBodyAnimationClipOperations(
-                    groupDatas,
-                    fbxDatasAndHoldersTuples);
-                AssetDatabase.Refresh();
-                await Task.Yield();
-
-
-                await IT_BlendshapeAnimationClipEditor.HandleFacialAnimationOperations(groupDatas,
-                    fbxDatasAndHoldersTuples, clipsFolderPath);
-                await Task.Yield();
-
-                IT_EntityOperations.HandleEntityOperations(sceneData);
-
-
-                //create timeline using animation clips
-                IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
-
-                EditorSceneManager.SaveScene(scene);
-
-                AssetDatabase.Refresh();
-            }
-
-            if (sw.IsRunning && !EditorApplication.isUpdating)
-            {
-                sw.Stop();
-                Debug.Log(string.Concat(sw.Elapsed.Minutes, "  ", sw.Elapsed.Seconds));
-            }
-
-            EditorGUI.EndDisabledGroup();
 
             #endregion
 
