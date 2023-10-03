@@ -32,7 +32,7 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 var choosenFolder = EditorUtility.OpenFolderPanel("Import Animotive into Unity ",
                     Directory.GetCurrentDirectory(), "");
-
+                IT_AnimotiveImporterEditorUtilities.RunFileCheck();
                 if (!string.IsNullOrEmpty(choosenFolder))
                 {
                     if (IT_AnimotiveImporterEditorUtilities.IsFolderInCorrectFormatToImport(choosenFolder))
@@ -72,9 +72,14 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #region Import Animotive Scene
 
+            if (!_isAnimotiveFolderImported)
+            {
+                return;
+            }
+
             bool isCharactersFolderEmpty = IT_AnimotiveImporterEditorUtilities.IsCharactersFolderEmpty();
 
-            if (isCharactersFolderEmpty && _isAnimotiveFolderImported)
+            if (isCharactersFolderEmpty)
             {
                 Debug.LogError("No character found under Characters folder. Can't start the process...");
             }
@@ -135,7 +140,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #endregion
 
-            // if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
+            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
         }
 
         /// <summary>

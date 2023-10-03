@@ -16,6 +16,31 @@ namespace Retinize.Editor.AnimotiveImporter
     /// </summary>
     public static class IT_AnimotiveImporterEditorUtilities
     {
+        public static void RunFileCheck()
+        {
+            string[] files = new[]
+            {
+                IT_AnimotiveImporterEditorConstants.UnityFilesBase,
+                IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesCharactersDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesScenesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory,
+                IT_AnimotiveImporterEditorConstants.UnityFilesFacialAnimationDirectory
+            };
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (!Directory.Exists(files[i]))
+                {
+                    Directory.CreateDirectory(files[i]);
+                }
+            }
+
+            AssetDatabase.Refresh();
+        }
+
         /// <summary>
         ///     Checks if the folder that user trying to import is compatible with the plugin
         /// </summary>
