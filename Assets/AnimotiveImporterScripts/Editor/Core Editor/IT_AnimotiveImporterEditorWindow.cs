@@ -140,7 +140,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
             #endregion
 
-            if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
+            // if (GUILayout.Button("Clear Accumulation")) ClearAccumulatedFiles();
         }
 
         /// <summary>
