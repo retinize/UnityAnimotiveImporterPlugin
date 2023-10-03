@@ -158,6 +158,11 @@ namespace Retinize.Editor.AnimotiveImporter
                         var jsonFullPath = cluster.FacialAnimationClipData.ClipDataPath;
                         var fullFileName = Path.GetFileName(jsonFullPath);
 
+                        if (string.IsNullOrEmpty(jsonFullPath))
+                        {
+                            continue;
+                        }
+
                         var contains = blendshapesDictionary.ContainsKey(jsonFullPath);
 
                         if (!contains) continue;
