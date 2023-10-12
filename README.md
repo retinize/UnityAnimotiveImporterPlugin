@@ -12,7 +12,7 @@
 ![import_browser](https://github.com/retinize/UnityAnimotiveImporterPlugin/assets/98883482/d5640ebe-118e-41e0-a524-e4528cf72b60)
 7. After selecting the export folder the editor-system will run validations and if any fail it'll show you a warning with an explanation as to why it has failed. If all goes good it'll start importing FBXes. 
 IMPORTANT NOTE: Importing FBX files into Unity may take a while depending on how big are the source files and how many of them are there.
-  7.a From now on the importer won't re-import the same FBXes again and again instead it'll use the existing ones for future. If you want to re-import the FBXes into your project to overwrite the existing ones you can check "Reimport Characters" checkbox
+ From now on the importer won't re-import the same FBXes again and again instead it'll use the existing ones for future. If you want to re-import the FBXes into your project to overwrite the existing ones you can check "Reimport Characters" checkbox
    ![image](https://github.com/retinize/UnityAnimotiveImporterPlugin/assets/98883482/3fad3b96-63ef-4752-9e70-0c18a3cf1f99)
 
 9. Once the validation is done you'll see "Import Animotive Scene" button appearing on the window
