@@ -1,5 +1,9 @@
 # Animotive Animation Transfer Tools for Unity
 
+This unitypackage contains an importer tool equipped with Unity-Editor scripts for straightforward integration of Animotive exports into Unity. It ensures animations are displayed in Unity as they were captured in Animotive.
+
+# Steps to Follow for importing
+
 1. Download the latest release from releases page and download it.
 2. Once downloaded, drag & drop the .unitypackage into your Unity project.
 3. Once imported you'll see a new tab appearing in top menu called "Animotive"
