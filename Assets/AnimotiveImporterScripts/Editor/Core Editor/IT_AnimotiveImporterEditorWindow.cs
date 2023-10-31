@@ -206,7 +206,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
             for (var i = 0; i < directories.Length; i++)
             {
-                Directory.Delete(directories[i], true);
+                var currentDir = directories[i];
+                if (Directory.Exists(currentDir))
+                {
+                    Directory.Delete(currentDir, true);
+                }
             }
 
 
