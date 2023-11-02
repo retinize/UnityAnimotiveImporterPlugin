@@ -52,10 +52,16 @@ namespace Retinize.Editor.AnimotiveImporter
                 for (var j = 0; j < clip.characterGeos[i].blendShapeNames.Count; j++)
                 {
                     var blendShapeName = clip.characterGeos[i].blendShapeNames[j];
-                    blendshapeCurves.Add(blendShapeName, new AnimationCurve());
-                    auxiliary.Add(blendShapeName, new Tuple<string, string>("", ""));
+
+                    var geoAndShapeNameSeperatedWithAnUnderscore =
+                        clip.characterGeos[i].skinnedMeshRendererName + "_" + blendShapeName;
+                    blendshapeCurves.Add(geoAndShapeNameSeperatedWithAnUnderscore, new AnimationCurve());
+
+                    auxiliary.Add(geoAndShapeNameSeperatedWithAnUnderscore, new Tuple<string, string>("", ""));
                 }
             }
+
+            var skinnedMeshRenderers = itFbxData.FbxGameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
 
             for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
             {
@@ -64,44 +70,58 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
-                    var characterGeoDescriptor = clip.characterGeos[blendShapeData.g];
+                    // var skinnedMeshRendererName = skinnedMeshRenderers[blendShapeData.g].name;
 
-                    var skinnedMeshRendererName = characterGeoDescriptor.skinnedMeshRendererName;
+                    var skinnedMeshRenderer = skinnedMeshRenderers[blendShapeData.g];
 
-                    Transform tr;
-                    var skinnedMeshRenderers = itFbxData.FbxGameObject.GetComponentsInChildren<SkinnedMeshRenderer>()
-                        .Where(a => a.name == skinnedMeshRendererName).ToList();
-
-                    if (skinnedMeshRenderers.Count == 0)
+                    if (skinnedMeshRenderer == null)
                     {
                         throw new Exception(
                             "Couldn't find the skinnedmeshrenderer that you recorded with. Please make sure that you're using the correct character model that you recorded the animation with");
                     }
 
-                    tr = skinnedMeshRenderers[0].transform;
 
-                    var skinnedMeshRenderer = tr.gameObject.GetComponent<SkinnedMeshRenderer>();
                     var blendshapeName = skinnedMeshRenderer.sharedMesh.GetBlendShapeName(blendShapeData.i);
                     var blendshapeValue = blendShapeData.v;
                     var keyframe = new Keyframe(time, blendshapeValue);
 
-                    var relativePath = AnimationUtility.CalculateTransformPath(tr, itFbxData.FbxGameObject.transform);
+                    var relativePath = AnimationUtility.CalculateTransformPath(skinnedMeshRenderer.transform,
+                        itFbxData.FbxGameObject.transform);
 
                     var blendshapeSplittedName = blendshapeName.Split('.')[1];
 
-                    var curve = blendshapeCurves[blendshapeSplittedName];
-                    curve.AddKey(keyframe);
+                    var geoAndShapeNameSeperatedWithAnUnderscore =
+                        skinnedMeshRenderer.name + "_" + blendshapeSplittedName;
 
+                    blendshapeCurves[geoAndShapeNameSeperatedWithAnUnderscore].AddKey(keyframe);
                     var propertyName = string.Concat("blendShape.", blendshapeName);
-                    auxiliary[blendshapeSplittedName] = new Tuple<string, string>(relativePath, propertyName);
+                    auxiliary[geoAndShapeNameSeperatedWithAnUnderscore] =
+                        new Tuple<string, string>(relativePath, propertyName);
                 }
             }
 
+            // for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
+            // {
+            //     var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
+            //     for (var j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
+            //     {
+            //         var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
+            //
+            //         var characterGeoDescriptor = clip.characterGeos[blendShapeData.g];
+            //
+            //         var skinnedMeshRendererName = characterGeoDescriptor.skinnedMeshRendererName;
+            //
+            //
+            //     }
+            // }
 
             foreach (var pair in blendshapeCurves)
             {
-                var relativePath = auxiliary[pair.Key].Item1;
-                var propertyName = auxiliary[pair.Key].Item2;
+                var relativePath = auxiliary[pair.Key].Item1; //relative path
+                var propertyName = auxiliary[pair.Key].Item2; //underscored property name
+
+                // var splittedPropertyName = propertyName.Split("_")[1];
+
                 var curve = pair.Value;
 
                 animationClip.SetCurve(relativePath, typeof(SkinnedMeshRenderer), propertyName,
