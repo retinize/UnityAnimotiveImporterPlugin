@@ -88,7 +88,14 @@ namespace Retinize.Editor.AnimotiveImporter
                     var relativePath = AnimationUtility.CalculateTransformPath(skinnedMeshRenderer.transform,
                         itFbxData.FbxGameObject.transform);
 
-                    var blendshapeSplittedName = blendshapeName.Split('.')[1];
+                    var blendshapeSplittedNames = blendshapeName.Split('.');
+                    var blendshapeSplittedName = blendshapeName;
+
+                    if (blendshapeSplittedNames.Length == 2)
+                    {
+                        blendshapeSplittedName = blendshapeSplittedNames[1];
+                    }
+
 
                     var geoAndShapeNameSeperatedWithAnUnderscore =
                         skinnedMeshRenderer.name + "_" + blendshapeSplittedName;
