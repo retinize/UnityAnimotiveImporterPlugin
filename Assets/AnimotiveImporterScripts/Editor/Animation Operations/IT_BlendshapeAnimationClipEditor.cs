@@ -70,9 +70,10 @@ namespace Retinize.Editor.AnimotiveImporter
                 {
                     var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
 
-                    // var skinnedMeshRendererName = skinnedMeshRenderers[blendShapeData.g].name;
 
-                    var skinnedMeshRenderer = skinnedMeshRenderers[blendShapeData.g];
+                    var skinnedMeshRendererName = clip.characterGeos[blendShapeData.g].skinnedMeshRendererName;
+
+                    var skinnedMeshRenderer = skinnedMeshRenderers.Single(a => a.name == skinnedMeshRendererName);
 
                     if (skinnedMeshRenderer == null)
                     {
@@ -107,27 +108,11 @@ namespace Retinize.Editor.AnimotiveImporter
                 }
             }
 
-            // for (var i = 0; i < clip.facialAnimationFrames.Count; i++)
-            // {
-            //     var time = i * clip.fixedDeltaTimeBetweenKeyFrames;
-            //     for (var j = 0; j < clip.facialAnimationFrames[i].blendShapesUsed.Count; j++)
-            //     {
-            //         var blendShapeData = clip.facialAnimationFrames[i].blendShapesUsed[j];
-            //
-            //         var characterGeoDescriptor = clip.characterGeos[blendShapeData.g];
-            //
-            //         var skinnedMeshRendererName = characterGeoDescriptor.skinnedMeshRendererName;
-            //
-            //
-            //     }
-            // }
 
             foreach (var pair in blendshapeCurves)
             {
-                var relativePath = auxiliary[pair.Key].Item1; //relative path
-                var propertyName = auxiliary[pair.Key].Item2; //underscored property name
-
-                // var splittedPropertyName = propertyName.Split("_")[1];
+                var relativePath = auxiliary[pair.Key].Item1;
+                var propertyName = auxiliary[pair.Key].Item2;
 
                 var curve = pair.Value;
 
