@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimotiveImporterDLL;
-using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace Retinize.Editor.AnimotiveImporter
             await Task.Run(delegate
             {
                 var json = File.ReadAllText(jsonFileSystemFullPath);
-                clip = JsonConvert.DeserializeObject<FacialAnimationExportWrapper>(json);
+                clip = JsonUtility.FromJson<FacialAnimationExportWrapper>(json);
             });
 
             return clip;
