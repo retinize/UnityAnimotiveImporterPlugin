@@ -9,12 +9,9 @@ public static class IT_EntityOperations
     public static async void HandleEntityOperations(IT_SceneInternalData sceneData)
     {
         var entityTypeList = await IT_AnimotiveImporterEditorUtilities.GetPropertiesData(sceneData);
-
-
         var entitiesRoot = new GameObject("Entities");
 
         var typeRoots = new Dictionary<IT_EntityType, GameObject>();
-
 
         foreach (var pair in entityTypeList)
         {
@@ -26,10 +23,7 @@ public static class IT_EntityOperations
             {
                 var baseEntity = pair.Value[i];
 
-                var tuple = CreateObjectsForEntity(baseEntity, typeRoots[pair.Key]);
-                var holderObject = tuple.Item1;
-                var rootObject = tuple.Item2;
-
+                var rootObject = CreateSceneGameObjectsForEntityAndReturnRootObject(baseEntity, typeRoots[pair.Key]);
 
                 switch (pair.Key)
                 {
@@ -53,7 +47,8 @@ public static class IT_EntityOperations
         }
     }
 
-    private static Tuple<GameObject, GameObject> CreateObjectsForEntity(IT_BaseEntity baseEntity, GameObject typeRoot)
+    private static GameObject CreateSceneGameObjectsForEntityAndReturnRootObject(IT_BaseEntity baseEntity,
+        GameObject typeRoot)
     {
         var holderObject = new GameObject(baseEntity.DisplayName + "_HOLDER");
         holderObject.transform.SetParent(typeRoot.transform);
@@ -67,7 +62,6 @@ public static class IT_EntityOperations
         rootObject.transform.position = baseEntity.RootPosition;
         rootObject.transform.rotation = baseEntity.RootRotation;
 
-
-        return new Tuple<GameObject, GameObject>(holderObject, rootObject);
+        return rootObject;
     }
 }
