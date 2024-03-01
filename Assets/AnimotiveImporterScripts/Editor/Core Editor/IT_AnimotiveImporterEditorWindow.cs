@@ -20,6 +20,13 @@ namespace Retinize.Editor.AnimotiveImporter
 
         public async void OnGUI()
         {
+            if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesBase) &&
+                !string.IsNullOrEmpty(UserChosenDirectoryToImportUnityExports))
+            {
+                UserChosenDirectoryToImportUnityExports = "";
+                _isAnimotiveFolderImported = false;
+            }
+
             #region Choose Animotive folder
 
             GUILayout.BeginHorizontal();
