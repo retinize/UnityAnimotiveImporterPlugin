@@ -10,13 +10,11 @@ namespace Retinize.Editor.AnimotiveImporter
         public IT_FbxData FbxData { get; }
         public GameObject HolderObject { get; }
 
-        public IT_TransformInfoList EditorTPose { get; }
 
-        public IT_FbxDatasAndHoldersTuple(IT_FbxData fbxData, GameObject holderObject, IT_TransformInfoList editorTPose)
+        public IT_FbxDatasAndHoldersTuple(IT_FbxData fbxData, GameObject holderObject)
         {
             FbxData = fbxData;
             HolderObject = holderObject;
-            EditorTPose = editorTPose;
         }
     }
 }

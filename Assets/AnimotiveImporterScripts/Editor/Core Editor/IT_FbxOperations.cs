@@ -83,9 +83,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                         var fbxData = LoadFbx(pathToFbx, fullPathToHumanoidMappingJson);
                         var holderObject = new GameObject(string.Concat(fbxData.FbxGameObject.name, "_HOLDER"));
-                        var pluginTPose = IT_PoseTestManager.GetPoseFromAnimator(fbxData.FbxAnimator);
 
-                        var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject, pluginTPose);
+                        var temp = new IT_FbxDatasAndHoldersTuple(fbxData, holderObject);
 
                         fbxDatasAndHoldersTuples.Add(clipData.ModelName, temp);
                     }
