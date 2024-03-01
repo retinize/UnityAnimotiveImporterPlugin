@@ -18,7 +18,7 @@ namespace Retinize.Editor.AnimotiveImporter
     {
         public static void RunFileCheck()
         {
-            string[] files = new[]
+            string[] files =
             {
                 IT_AnimotiveImporterEditorConstants.UnityFilesBase,
                 IT_AnimotiveImporterEditorConstants.UnityFilesAudioDirectory,
@@ -412,7 +412,6 @@ namespace Retinize.Editor.AnimotiveImporter
                             var rootRotation =
                                 (Quaternion)propertyDatasDict[IT_AnimotiveImporterEditorConstants.RootRotationString];
 
-
                             IT_BaseEntity itEntity;
 
                             switch (entityType)
@@ -420,20 +419,16 @@ namespace Retinize.Editor.AnimotiveImporter
                                 case IT_EntityType.Camera:
                                 {
                                     var focalLength = (float)propertyDatasDict["DepthOfFieldFocalLength"];
-                                    itEntity = new IT_CameraEntity(IT_EntityType.Camera, holderPosition, rootPosition,
+                                    itEntity = new IT_CameraEntity(holderPosition, rootPosition,
                                         holderRotation, rootRotation, displayName, focalLength);
 
                                     break;
                                 }
-                                case IT_EntityType.Spotlight:
-                                {
-                                    itEntity = new IT_SpotLightEntity(IT_EntityType.Spotlight, holderPosition,
-                                        rootPosition, holderRotation, rootRotation, displayName);
-                                    break;
-                                }
                                 default:
                                 {
-                                    throw new ArgumentOutOfRangeException();
+                                    itEntity = new IT_BaseEntity(holderPosition,
+                                        rootPosition, holderRotation, rootRotation, displayName);
+                                    break;
                                 }
                             }
 

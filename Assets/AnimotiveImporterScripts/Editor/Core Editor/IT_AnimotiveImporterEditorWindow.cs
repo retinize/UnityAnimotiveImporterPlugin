@@ -124,7 +124,7 @@ namespace Retinize.Editor.AnimotiveImporter
 
 
                     //create timeline using animation clips
-                    IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples, sceneData);
+                    IT_AnimotiveImporterEditorTimeline.HandleGroups(groupDatas, fbxDatasAndHoldersTuples);
 
                     EditorSceneManager.SaveScene(scene);
 

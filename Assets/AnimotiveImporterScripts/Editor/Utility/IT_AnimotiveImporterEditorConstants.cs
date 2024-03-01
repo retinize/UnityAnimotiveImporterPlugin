@@ -12,8 +12,6 @@ namespace Retinize.Editor.AnimotiveImporter
         public const string ModelExtension = ".fbx";
         public const string FacialAnimationFileExtension = ".json";
 
-        public const string FacialAnimationClipContentString = "FacialParametersAnimation";
-
         public const string WarningTitle = " Animotive Reader Plugin : WARNING";
 
         public const string HolderPositionString = "HolderPosition";
@@ -26,7 +24,6 @@ namespace Retinize.Editor.AnimotiveImporter
             "UnityFiles");
 
         public static string UnityFilesAudioDirectory = Path.Combine(UnityFilesBase, "Audio");
-
 
         public static string UnityFilesCharactersDirectory = Path.Combine(UnityFilesBase, "Characters");
         public static string UnityFilesScenesDirectory = Path.Combine(UnityFilesBase, "Scenes");
@@ -41,25 +38,10 @@ namespace Retinize.Editor.AnimotiveImporter
         public static string UnityFilesFacialAnimationDirectory =
             Path.Combine(UnityFilesAnimationDirectory, "FacialAnimations");
 
-
         public static readonly Dictionary<IT_EntityType, string> EntityTypesByKeyword =
-            new Dictionary<IT_EntityType, string>
+            new()
             {
                 { IT_EntityType.Camera, "Camera" }, { IT_EntityType.Spotlight, "Spot Light" }
             };
-
-
-        #region Hardcoded PoC Paths
-
-        public const string FacialAnimationSourcePath =
-            @"Assets\AnimotivePluginExampleStructure\Example Data\Animation\Json\Frank _FacialParametersAnimation_1_T00_01_00.json";
-
-        public const string FacialAnimationDirectory =
-            @"Assets/AnimotivePluginExampleStructure/UnityFiles/Animation/Blendshape/";
-
-        public const string FacialAnimationCreatedPath =
-            FacialAnimationDirectory + "blenshapeAnim.anim";
-
-        #endregion
     }
 }

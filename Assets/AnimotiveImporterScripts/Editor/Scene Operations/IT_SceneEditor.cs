@@ -46,9 +46,7 @@ namespace Retinize.Editor.AnimotiveImporter
                 sceneFullPath = similarName;
             }
 
-
             EditorSceneManager.SaveScene(scene, sceneFullPath);
-
 
             return scene;
         }

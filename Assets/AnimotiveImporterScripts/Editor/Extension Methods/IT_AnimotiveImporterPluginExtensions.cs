@@ -1,38 +1,39 @@
 using UnityEngine;
 
-public static class IT_AnimotiveImporterPluginExtensions
+namespace Retinize.Editor.AnimotiveImporter
 {
-    public static Transform FindChildRecursively(this Transform obj, string name)
+    public static class IT_AnimotiveImporterPluginExtensions
     {
-        var trans = obj.transform;
-        var childTrans = trans.Find(name);
-        if (childTrans != null) return childTrans;
-
-
-        if (trans.childCount != 0)
+        public static Transform FindChildRecursively(this Transform thisTransform, string name)
         {
-            for (var i = 0; i < trans.childCount; i++)
+            var childTrans = thisTransform.Find(name);
+            if (childTrans != null) return childTrans;
+
+            if (thisTransform.childCount != 0)
             {
-                var result = FindChildRecursively(trans.GetChild(i), name);
-                if (result != null) return result;
+                for (var i = 0; i < thisTransform.childCount; i++)
+                {
+                    var result = FindChildRecursively(thisTransform.GetChild(i), name);
+                    if (result != null) return result;
+                }
             }
+
+            return null;
         }
 
-        return null;
-    }
+        /// <summary>
+        ///     Adds given component to the given game object if it doesn't exist already and returns it. If it does, gets and
+        ///     returns it.
+        /// </summary>
+        /// <param name="obj">Object to add or get</param>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <returns>Added/get component</returns>
+        public static T AddOrGetComponent<T>(this GameObject obj) where T : Component
+        {
+            var get = obj.GetComponent<T>();
+            if (get == null) return obj.AddComponent<T>();
 
-    /// <summary>
-    ///     Adds given component to the given game object if it doesn't exist already and returns it. If it does, gets and
-    ///     returns it.
-    /// </summary>
-    /// <param name="obj">Object to add or get</param>
-    /// <typeparam name="T">Component type</typeparam>
-    /// <returns>Added/get component</returns>
-    public static T AddOrGetComponent<T>(this GameObject obj) where T : Component
-    {
-        var get = obj.GetComponent<T>();
-        if (get == null) return obj.AddComponent<T>();
-
-        return get;
+            return get;
+        }
     }
 }

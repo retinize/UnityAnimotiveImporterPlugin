@@ -17,10 +17,8 @@ namespace Retinize.Editor.AnimotiveImporter
         /// </summary>
         /// <param name="transformGroupDatas">List of groupDatas which includes clusters and take datas inside them</param>
         /// <param name="fbxDatasAndHoldersTuples">Imported FBX datas and their holders in the scene</param>
-        /// <param name="sceneInternalData">Binary scene data.</param>
         public static async void HandleGroups(List<IT_GroupData> transformGroupDatas,
-            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples,
-            IT_SceneInternalData sceneInternalData)
+            Dictionary<string, IT_FbxDatasAndHoldersTuple> fbxDatasAndHoldersTuples)
         {
             if (!Directory.Exists(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory))
                 Directory.CreateDirectory(IT_AnimotiveImporterEditorConstants.UnityFilesPlayablesDirectory);
@@ -46,7 +44,7 @@ namespace Retinize.Editor.AnimotiveImporter
                         playableDirector,
                         fbxDatasAndHoldersTuples, takeData);
 
-                    playableDirector.playableAsset = await CreatePlayableAssets(timelineData, sceneInternalData);
+                    playableDirector.playableAsset = await CreatePlayableAssets(timelineData);
                 }
             }
         }
@@ -55,10 +53,8 @@ namespace Retinize.Editor.AnimotiveImporter
         ///     Creates a playable asset, tracks and clips and binds them to the given gameObject
         /// </summary>
         /// <param name="timelineData"></param>
-        /// <param name="sceneInternalData"></param>
         /// <returns></returns>
-        public static async Task<PlayableAsset> CreatePlayableAssets(IT_TimelineData timelineData,
-            IT_SceneInternalData sceneInternalData)
+        public static async Task<PlayableAsset> CreatePlayableAssets(IT_TimelineData timelineData)
         {
             var playableDirector = timelineData.PlayableDirector;
 
