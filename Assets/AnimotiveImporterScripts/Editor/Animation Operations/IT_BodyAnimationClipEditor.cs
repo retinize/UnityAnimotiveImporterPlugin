@@ -21,6 +21,7 @@ namespace Retinize.Editor.AnimotiveImporter
         /// <summary>
         ///     Creates and returns two dictionary where 'HumanBodyBones' and 'Transform' types are key/value and vice versa.
         /// </summary>
+        /// <param name="fbxData">Gameobject, animator and bone data of the imported fbx character</param>
         /// <param name="usedHumanoidBonesSorted">Array that has the bone indexes used in the clip</param>
         /// <returns></returns>
         private static Dictionary<HumanBodyBones, Transform> GetBoneTransformDictionaries(IT_FbxData fbxData,
@@ -48,16 +49,15 @@ namespace Retinize.Editor.AnimotiveImporter
             return humanBodyBonesByTransforms;
         }
 
-
         /// <summary>
         ///     Stores all the localRotation data from the binary animation data into a dictionary.
         /// </summary>
         /// <param name="clip">Animation data that read from binary file and casted into 'IT_CharacterTransformAnimationClip' type.</param>
         /// <param name="transformsByHumanBoneName">Dictionary that contains 'Transform' by 'HumanBodyBones'</param>
         /// <returns></returns>
-        private static Dictionary<HumanBodyBones, List<IT_TransformValues>>
-            GetLocalTransformValuesFromAnimFile(IT_CharacterTransformAnimationClip clip,
-                Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
+        private static Dictionary<HumanBodyBones, List<IT_TransformValues>> GetLocalTransformValuesFromAnimFile(
+            IT_CharacterTransformAnimationClip clip,
+            Dictionary<HumanBodyBones, Transform> transformsByHumanBoneName)
         {
             var localQuaternionsByFrame = new Dictionary<HumanBodyBones, List<IT_TransformValues>>(55);
 

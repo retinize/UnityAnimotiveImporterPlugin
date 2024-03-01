@@ -15,7 +15,6 @@ namespace Retinize.Editor.AnimotiveImporter
         private static bool _isAnimotiveFolderImported;
 
         public static string UserChosenDirectoryToImportUnityExports = "";
-
         public static bool EnableImportConfig;
         public static bool ReimportAssets { get; private set; }
 
@@ -24,8 +23,6 @@ namespace Retinize.Editor.AnimotiveImporter
             #region Choose Animotive folder
 
             GUILayout.BeginHorizontal();
-
-
             EditorGUILayout.TextField("Animotive Export Folder :", UserChosenDirectoryToImportUnityExports);
 
             if (GUILayout.Button("Choose Folder to Import"))
@@ -151,7 +148,6 @@ namespace Retinize.Editor.AnimotiveImporter
             window.Show();
         }
 
-
         /// <summary>
         ///     Moves audio files into Unity editor and sorts them.
         /// </summary>
@@ -192,7 +188,7 @@ namespace Retinize.Editor.AnimotiveImporter
         }
 
         /// <summary>
-        ///     Deletes all accumulated files such as; Scenes, audios, animations and playables. But doesn't delete characters
+        ///     Deletes all imported files such as; Scenes, audios, animations and playables. But doesn't delete characters
         /// </summary>
         private static void ClearAccumulatedFiles()
         {
@@ -217,7 +213,6 @@ namespace Retinize.Editor.AnimotiveImporter
             ResetWindow();
             AssetDatabase.Refresh();
         }
-
 
         /// <summary>
         ///     Resets plugin window to it's default state
