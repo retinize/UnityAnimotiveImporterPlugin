@@ -92,8 +92,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     continue;
                 }
 
-                //TODO: Will be updated to add facial animations as well
-
                 var groupTrack = asset.CreateTrack<GroupTrack>();
                 groupTrack.name = timelineData.GroupName;
 
@@ -126,7 +124,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     bodyAnimationPath,
                     playableDirector,
                     objToBind, IT_AnimotiveImporterEditorConstants.UnityFilesBodyAnimationDirectory);
-                // CreateAnimationTrack(); //facial animation
                 CreateAudioTrack(asset, groupTrack, clipCluster.AudioClipData, playableDirector,
                     objToBind);
             }

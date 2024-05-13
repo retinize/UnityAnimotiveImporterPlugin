@@ -87,10 +87,8 @@ namespace Retinize.Editor.AnimotiveImporter
 
                 _disableImport = _isAnimotiveFolderImported && !isCharactersFolderEmpty;
                 EditorGUI.BeginDisabledGroup(!_disableImport);
-                Stopwatch sw = new Stopwatch();
                 if (GUILayout.Button("Import Animotive Scene"))
                 {
-                    sw.Start();
                     await MoveAudiosIntoUnity(UserChosenDirectoryToImportUnityExports);
                     await Task.Yield();
 
@@ -131,11 +129,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     AssetDatabase.Refresh();
                 }
 
-                if (sw.IsRunning && !EditorApplication.isUpdating)
-                {
-                    sw.Stop();
-                    Debug.Log(string.Concat(sw.Elapsed.Minutes, "  ", sw.Elapsed.Seconds));
-                }
 
                 EditorGUI.EndDisabledGroup();
             }

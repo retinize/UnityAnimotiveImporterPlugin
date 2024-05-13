@@ -148,11 +148,11 @@ namespace Retinize.Editor.AnimotiveImporter
 
             var startFrame = 0;
             var lastFrame = clip.lastFrameInTimelineWhenItWasCaptured - clip.startFrameInTimelineWhenItWasCaptured;
+            HumanBodyBones[] positionAllowedBones = { HumanBodyBones.Hips, HumanBodyBones.LastBone };
 
             //loop as long as the frame count from the binary file (exported from Animotive)
             for (var frame = startFrame; frame <= lastFrame; frame++)
             {
-                var transformIndex = 0;
                 var time = clip.fixedDeltaTime * frame;
 
                 //loop through every bone at every frame
@@ -187,7 +187,6 @@ namespace Retinize.Editor.AnimotiveImporter
                     pathAndKeyframesDictionary[relativePath][5].Add(localRotationZ);
                     pathAndKeyframesDictionary[relativePath][6].Add(localRotationW);
 
-                    HumanBodyBones[] positionAllowedBones = { HumanBodyBones.Hips, HumanBodyBones.LastBone };
 
                     //add the position of selected bones to animationclip
                     if (positionAllowedBones.Any(a => a == pair.Key))
@@ -203,8 +202,6 @@ namespace Retinize.Editor.AnimotiveImporter
                         pathAndKeyframesDictionary[relativePath][1].Add(localPositionY);
                         pathAndKeyframesDictionary[relativePath][2].Add(localPositionZ);
                     }
-
-                    transformIndex++;
                 }
             }
 
