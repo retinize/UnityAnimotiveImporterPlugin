@@ -324,14 +324,14 @@ namespace Retinize.Editor.AnimotiveImporter
                         clipCluster.NumberOfCaptureInWhichItWasCaptured =
                             clipAndDictionariesTuple.Clip.numberOfCaptureInWhichItWasCaptured;
 
-                        fbxData.FbxGameObject.transform.localScale =
-                            clipAndDictionariesTuple.Clip.lossyScaleRoot *
-                            Vector3.one; // since the character has no parent at this point
-                        // we can safely assign lossy scale data to character's root
-
                         holderObject.transform.position = clipAndDictionariesTuple.Clip.worldPositionHolder;
                         holderObject.transform.rotation = clipAndDictionariesTuple.Clip.worldRotationHolder;
+                        var x = float.Parse(fbxData.humanBodyBoneEnumAsIntByHumanoidBoneName[-1]);
+                        var y = float.Parse(fbxData.humanBodyBoneEnumAsIntByHumanoidBoneName[-2]);
+                        var z = float.Parse(fbxData.humanBodyBoneEnumAsIntByHumanoidBoneName[-3]);
+                        var localScale = new Vector3(x, y, z);
 
+                        holderObject.transform.localScale = localScale;
                         if (!IsBoneCountMatchWithTheClipData(clipAndDictionariesTuple,
                                 clipAndDictionariesTuple.Clip.numberOfHumanoidBonesUsed))
                         {
@@ -355,6 +355,7 @@ namespace Retinize.Editor.AnimotiveImporter
             foreach (var pair in fbxDatasAndHoldersTuples)
             {
                 pair.Value.FbxData.FbxGameObject.transform.SetParent(pair.Value.HolderObject.transform);
+                pair.Value.FbxData.FbxGameObject.transform.localScale = Vector3.one;
                 pair.Value.FbxData.FbxAnimator.avatar = null;
             }
         }

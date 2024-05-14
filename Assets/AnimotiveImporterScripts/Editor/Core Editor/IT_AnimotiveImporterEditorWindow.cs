@@ -25,6 +25,12 @@ namespace Retinize.Editor.AnimotiveImporter
             {
                 UserChosenDirectoryToImportUnityExports = "";
                 _isAnimotiveFolderImported = false;
+                var scene = AssetDatabase.LoadAssetAtPath("Assets/AnimotiveImporterDefaultScene.unity",
+                    typeof(SceneAsset));
+                if (scene != null)
+                {
+                    EditorSceneManager.OpenScene("Assets/AnimotiveImporterDefaultScene.unity");
+                }
             }
 
             #region Choose Animotive folder

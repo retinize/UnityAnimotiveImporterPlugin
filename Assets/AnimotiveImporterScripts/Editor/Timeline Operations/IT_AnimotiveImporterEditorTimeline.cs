@@ -166,12 +166,18 @@ namespace Retinize.Editor.AnimotiveImporter
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(animationPath);
 
 
+            var animation = playableDirector.playableAsset as AnimationPlayableAsset;
+            if (animation != null) animation.removeStartOffset = false;
+
             var timelineClip = animationTrack.CreateClip(bodyAnimationClip);
             timelineClip.displayName =
                 Path.GetFileNameWithoutExtension(Path.Combine(Directory.GetCurrentDirectory(), animationPath));
             timelineClip.start = 0;
 
             playableDirector.SetGenericBinding(animationTrack, objToBind);
+
+            var animationAsset = playableDirector.playableAsset as AnimationPlayableAsset;
+            if (animationAsset != null) animationAsset.removeStartOffset = false;
         }
 
         /// <summary>
